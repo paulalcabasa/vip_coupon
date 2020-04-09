@@ -32,8 +32,8 @@
         <KTFooter></KTFooter>
       </div>
     </div>
-    <KTStickyToolbar v-if="toolbarDisplay"></KTStickyToolbar>
-    <KTQuickPanel></KTQuickPanel>
+<!--     <KTStickyToolbar v-if = "toolbarDisplay"></KTStickyToolbar> -->
+  <!--   <KTQuickPanel></KTQuickPanel> -->
     <KTScrollTop></KTScrollTop>
   </div>
 </template>
@@ -46,8 +46,8 @@ import KTHeaderMobile from "@/views/theme/header/HeaderMobile.vue";
 import KTFooter from "@/views/theme/footer/Footer.vue";
 import HtmlClass from "@/common/htmlclass.service";
 import KTSubheader from "@/views/theme/subheader/Subheader.vue";
-import KTStickyToolbar from "@/views/partials/layout/StickyToolbar.vue";
-import KTQuickPanel from "@/views/partials/layout/QuickPanel.vue";
+//import KTStickyToolbar from "@/views/partials/layout/StickyToolbar.vue";
+//import KTQuickPanel from "@/views/partials/layout/QuickPanel.vue";
 import KTScrollTop from "@/views/partials/layout/ScrollTop";
 import Loader from "@/views/partials/content/Loader.vue";
 import {
@@ -63,8 +63,8 @@ export default {
     KTHeaderMobile,
     KTFooter,
     KTSubheader,
-    KTStickyToolbar,
-    KTQuickPanel,
+    //KTStickyToolbar,
+  //  KTQuickPanel,
     KTScrollTop,
     Loader
   },

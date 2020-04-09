@@ -19,7 +19,13 @@ export const SET_MESSAGE = "setMessage";
 const state = {
   errors: null,
   message : '',
-  user: {},
+  user: {
+    'employee_id' : '',
+    'employee_no' : '',
+    'first_name' : '',
+    'middle_name' : '',
+    'last_name' : ''
+  },
   isAuthenticated: !!JwtService.getToken()
 };
 
@@ -38,10 +44,12 @@ const getters = {
 const actions = {
   [LOGIN](context, credentials) {
     return new Promise(resolve => {
-      ApiService.post('/api/authenticate', credentials)
+      ApiService.post('/api/auth/login', credentials)
         .then(res => {
           if(res.status == 200){
-            context.commit(SET_AUTH, res.data.user_data);
+            //console.log("nice login");
+            //console.log(res.data);
+            context.commit(SET_AUTH, res.data);
           }
           resolve(res);
         })
@@ -79,6 +87,26 @@ const actions = {
   [VERIFY_AUTH](context) {
     if (JwtService.getToken()) {
       ApiService.setHeader();
+      ApiService.post('/api/auth/me')
+        .then(res => {
+          var user = {
+            'user' : res.data,
+            'access_token' : JwtService.getToken()
+          };
+          context.commit(SET_AUTH, user);
+        })
+        .catch(err => { 
+          context.commit(PURGE_AUTH);
+          context.commit(SET_ERROR, ['Your session has expired.']);
+          
+        });
+    }
+    else {
+      context.commit(PURGE_AUTH);
+      return false;
+    }  
+    /* if (JwtService.getToken()) {
+      ApiService.setHeader();
       ApiService.get("verify")
         .then(({ data }) => {
           context.commit(SET_AUTH, data);
@@ -88,7 +116,7 @@ const actions = {
         });
     } else {
       context.commit(PURGE_AUTH);
-    }
+    } */
   },
   [UPDATE_USER](context, payload) {
     const { email, username, password, image, bio } = payload;
@@ -113,13 +141,19 @@ const mutations = {
   },
   [SET_AUTH](state, user) {
     state.isAuthenticated = true;
-    state.user = user;
+    state.user = user.user;
     state.errors = {};
-    JwtService.saveToken(state.user.token);
+    JwtService.saveToken(user.access_token);
   },
   [PURGE_AUTH](state) {
     state.isAuthenticated = false;
-    state.user = {};
+    state.user = {
+      'employee_id': '',
+      'employee_no': '',
+      'first_name': '',
+      'middle_name': '',
+      'last_name': ''
+    };
     state.errors = {};
     JwtService.destroyToken();
   }

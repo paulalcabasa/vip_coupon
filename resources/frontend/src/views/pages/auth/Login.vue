@@ -41,8 +41,8 @@
               id="example-input-1"
               name="example-input-1"
               placeholder="Employee No."
-              v-model="$v.form.email.$model"
-              :state="validateState('email')"
+              v-model="$v.form.employee_no.$model"
+              :state="validateState('employee_no')"
               aria-describedby="input-1-live-feedback"
             ></b-form-input>
 
@@ -143,14 +143,14 @@ export default {
     return {
       // Remove this dummy login info
       form: {
-        email: "",
+        employee_no: "",
         password: ""
       }
     };
   },
   validations: {
     form: {
-      email: {
+      employee_no: {
         required
       },
       password: {
@@ -166,7 +166,7 @@ export default {
     },
     resetForm() {
       this.form = {
-        email: null,
+        employee_no: null,
         password: null
       };
 
@@ -180,7 +180,7 @@ export default {
         return;
       }
 
-      const email = this.$v.form.email.$model;
+      const employee_no = this.$v.form.employee_no.$model;
       const password = this.$v.form.password.$model;
 
       // clear existing errors
@@ -193,13 +193,13 @@ export default {
         "kt-spinner--light",
         "kt-spinner--right"
       );
-
+      
       // dummy delay
       setTimeout(() => {
         // send login request
         
         this.$store
-          .dispatch(LOGIN, { email, password })
+          .dispatch(LOGIN, { employee_no, password })
           // go to which page after successfully login
           .then(() => this.$router.push({ name: "dashboard" }));
 

@@ -14,12 +14,26 @@ export default new Router({
         {
           path: "/dashboard",
           name: "dashboard",
-          component: () => import("@/views/pages/Dashboard.vue")
+          component: () => import("@/views/pages/Dashboard.vue"),
+          meta: {
+            requiresAuth: true
+          }
         },
         {
           path: "/builder",
           name: "builder",
-          component: () => import("@/views/pages/Builder.vue")
+          component: () => import("@/views/pages/Builder.vue"),
+          meta: {
+            requiresAuth: true
+          }
+        },
+        {
+          path: "/blank",
+          name: "blank",
+          component: () => import("@/views/pages/Blank.vue"),
+          meta: {
+            requiresAuth: true
+          }
         },
      /*    {
           path: "/vue-bootstrap",
