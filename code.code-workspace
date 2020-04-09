@@ -1,0 +1,20 @@
+{
+	"folders": [
+		{
+			"path": "resources\\frontend"
+		},
+		{
+			"path": "app\\Http\\Controllers"
+		},
+		{
+			"path": "app\\Http\\Middleware"
+		},
+		{
+			"path": "config"
+		},
+		{
+			"path": "routes"
+		}
+	],
+	"settings": {}
+}

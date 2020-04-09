@@ -1,0 +1,3 @@
+/src/assets
+"**/*"
+/src/views/pages/auth/*
