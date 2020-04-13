@@ -3,12 +3,12 @@
   "self": {
 	"layout": "fluid",
 	"body": {
-	  "background-image": "assets/media/misc/bg-1.jpg"
+	  "background-image": "assets/media/misc/bg-2.jpg"
 	},
 	"logo": {
 	  "dark": "assets/media/logos/logo-light.png",
-	  "light": "assets/media/logos/logo-dark.png",
-	  "brand": "assets/media/logos/logo-light.png",
+	  "light": "assets/media/logos/logo-light.png",
+	  "brand": "assets/media/logos/vip-logo.png",
 	  "green": "assets/media/logos/logo-light.png"
 	}
   },
@@ -121,7 +121,7 @@
 	}
   },
   "subheader": {
-	"display": true,
+	"display": false,
 	"displayDesc": false,
 	"displayDaterangepicker": true,
 	"layout": "subheader-v1",

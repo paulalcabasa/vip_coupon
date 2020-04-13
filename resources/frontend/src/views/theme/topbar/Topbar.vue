@@ -66,7 +66,7 @@
           <img
          
             alt="Pic"
-            src="@/assets/media/users/300_25.jpg"
+            src="@/assets/media/users/default.jpg"
           />
           <!--use below badge element instead the user avatar to display username's first letter(remove kt-hidden class to display it) -->
           <span

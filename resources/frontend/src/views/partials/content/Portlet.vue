@@ -70,7 +70,11 @@ export default {
     /**
      * Set portlet body to fluid
      */
-    bodyFluid: Boolean
+    bodyFluid: Boolean,
+    /**
+     * Set portlet to solid
+     */
+    solidClass: String
   },
   components: {},
   methods: {},
@@ -79,9 +83,13 @@ export default {
       const cls = {
         "kt-portlet--height-fluid": this.fluidHeight,
         "kt-portlet--height-fluid-half": this.fluidHalfHeight,
-        "kt-portlet--head-overlay": this.headOverlay
+        "kt-portlet--head-overlay": this.headOverlay,
+        
       };
       cls[this.headSizeClass] = this.headSizeClass;
+      if(this.solidClass !== undefined){
+        cls[this.solidClass] = true;
+      }
       return cls;
     },
     hasTitleSlot() {

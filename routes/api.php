@@ -36,5 +36,6 @@ Route::group([
 
 Route::group(['middleware' => 'auth'], function () {
     Route::get('posts','DashboardController@posts');
+    Route::get('dealers','DealerController@get');
 });
 

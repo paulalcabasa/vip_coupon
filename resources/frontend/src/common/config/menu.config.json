@@ -3,77 +3,16 @@
     "self": {},
     "items": [
       {
-        "title": "Dashboards",
+        "title": "Home",
         "root": true,
-        "page": "dashboard",
-        "translate": "MENU.DASHBOARD"
+        "page": "dashboard"
       },
       {
-        "title": "Builder",
+        "title": "Request",
         "root": true,
         "page": "builder"
-      },
-      {
-        "title": "Custom",
-        "root": true,
-        "toggle": "click",
-        "submenu": [
-          {
-            "title": "Error Pages",
-            "bullet": "dot",
-            "icon": "flaticon2-list-2",
-            "submenu": [
-              {
-                "title": "Error 1",
-                "page": "error/error-1"
-              },
-              {
-                "title": "Error 2",
-                "page": "error/error-2"
-              },
-              {
-                "title": "Error 3",
-                "page": "error/error-3"
-              },
-              {
-                "title": "Error 4",
-                "page": "error/error-4"
-              },
-              {
-                "title": "Error 5",
-                "page": "error/error-5"
-              },
-              {
-                "title": "Error 6",
-                "page": "error/error-6"
-              }
-            ]
-          },
-          {
-            "title": "Wizard",
-            "bullet": "dot",
-            "icon": "flaticon2-mail-1",
-            "submenu": [
-              {
-                "title": "Wizard 1",
-                "page": "wizard/wizard-1"
-              },
-              {
-                "title": "Wizard 2",
-                "page": "wizard/wizard-2"
-              },
-              {
-                "title": "Wizard 3",
-                "page": "wizard/wizard-3"
-              },
-              {
-                "title": "Wizard 4",
-                "page": "wizard/wizard-4"
-              }
-            ]
-          }
-        ]
       }
+      
     ]
   },
   "aside": {
@@ -88,50 +27,44 @@
         "bullet": "dot"
       },
       {
-        "title": "Layout Builder",
+        "section": "REQUESTS"
+      },
+      {
+        "title": "New Request",
         "root": true,
         "icon": "flaticon2-expand",
-        "page": "builder"
+        "page": "request"
       },
       {
-        "title": "Blank",
+        "title": "All Requests",
         "root": true,
         "icon": "flaticon2-expand",
-        "page": "blank"
+        "page": "all-request"
       },
       {
-        "section": "Module"
+        "section": "REPORTS"
       },
       {
-        "title": "Requests",
+        "title": "Summary",
         "root": true,
-        "bullet": "dot",
-        "icon": "flaticon2-digital-marketing",
-        "submenu": [
-          {
-            "title": "Alert",
-            "page": "vue-bootstrap/alert"
-          },
- 
-          {
-            "title": "Buttons",
-            "submenu": [
-              {
-                "title": "Button",
-                "page": "vue-bootstrap/button"
-              },
-              {
-                "title": "Button Group",
-                "page": "vue-bootstrap/button-group"
-              },
-              {
-                "title": "Button Toolbar",
-                "page": "vue-bootstrap/button-toolbar"
-              }
-            ]
-          }
-        ]
-      }   
+        "icon": "flaticon2-expand",
+        "page": "all-request"
+      },
+      {
+        "title": "All Requests",
+        "root": true,
+        "icon": "flaticon2-expand",
+        "page": "all-request"
+      },
+      {
+        "section": "SETTINGS"
+      },
+      {
+        "title": "CONFIGURATION",
+        "root": true,
+        "icon": "flaticon2-expand",
+        "page": "all-request"
+      }
     ]
   }
 }
