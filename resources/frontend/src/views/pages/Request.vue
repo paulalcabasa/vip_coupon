@@ -2,7 +2,7 @@
   <div>
     <KTPortlet v-bind:title="'New Request'" >
       <template v-slot:toolbar>
-        Toolbar
+        <b-button variant="success" @click.prevent="submitRequest()">Submit</b-button>
       </template> 
 
       <template v-slot:body>
@@ -28,13 +28,15 @@
                     <table class="table">
                         <thead>
                             <tr>
-                                <th>Amount</th>    
-                                <th>Quantity</th>    
+                                <th width="150">Amount</th>    
+                                <th width="100">Quantity</th>    
                                 <th>CS No.</th>    
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr v-for="(row,index) in denominations" :key="index">
+                                
                                 <td>
                                     <b-form-input
                                         v-model="row.amount"
@@ -47,23 +49,32 @@
                                 </td>
                                 <td>
                                     <vue-tags-input
-                                        v-model="tag"
-                                        :tags="tags"
-                                        :autocomplete-items="filteredItems"
-                                        @tags-changed="newTags => tags = newTags"
+                                      placeholder="add vehicle"
+                                        v-model="row.csNumber"
+                                        :tags="row.csNumbers"
+                                        @tags-changed="newTags => row.csNumbers = newTags"
                                     />
+                                </td>
+                                <td>
+                                  <a href="#" @click.prevent="deleteDenomination(index)"><i class="fa fa-trash text-danger"></i></a>
                                 </td>
                             </tr>
                         </tbody>
+                        <tfoot>
+                          <tr>
+                            <th>Total</th>
+                            <th>{{ total }}</th>
+                            <th></th>
+                            <th><a href="#" @click.prevent="addDenomination()" style="font-weight:normal;font-style:underline"><i class="fa fa-plus-square text-success"></i> Add</a></th>
+                          </tr>
+                        </tfoot>
                     </table>
                 </b-col>
             </b-row>
         </b-container>
       </template>
 
-      <template v-slot:foot>
-        Footer
-      </template>
+
     </KTPortlet>
   </div>
 </template>
@@ -93,26 +104,32 @@ export default {
             {
                 amount : 100,
                 quantity : 0,
-                csNumbers : []
+                csNumbers : [],
+                csNumber : ''
+            },
+            {
+                amount : 500,
+                quantity : 0,
+                csNumbers : [],
+                csNumber : ''
+            },
+            {
+                amount : 1000,
+                quantity : 0,
+                csNumbers : [],
+                csNumber : ''
             }
         ],
-        tag: '',
-        tags: [],
-        autocompleteItems: [{
-            text: 'Spain',
-            }, {
-                text: 'France',
-            }, {
-                text: 'USA',
-            }, {
-                text: 'Germany',
-            }, {
-                text: 'China',
-            }],
-            }
-        
+      
+    }    
   },
   created() {
+    /* this.dealers = [
+      {
+        cust_account_id : 1,
+        account_name : 'PASIG'
+      }
+    ]; */
     axios.get('/api/dealers')
     .then(res => {
         this.dealers = res.data;
@@ -121,13 +138,47 @@ export default {
         console.log(error)
     });
   },
-  computed: {
-    filteredItems() {
-      return this.autocompleteItems.filter(i => {
-        return i.text.toLowerCase().indexOf(this.tag.toLowerCase()) !== -1;
+  methods: {
+    deleteDenomination(index){
+      if(this.denominations.length > 1){
+        this.denominations.splice(index,1)
+      }
+      else {
+        this.makeToast('danger','There must be atleast one denomination amount.','System message');
+      }
+    },
+    addDenomination(){
+      this.denominations.push({
+        amount : 0,
+        quantity : 0,
+        csNumbers : [],
+        csNumber : ''
       });
     },
+    makeToast(variant = null,body,title) {
+       this.$bvToast.toast(body, {
+         title: `${title}`,
+         variant: variant,
+         solid: true
+       })
+     },
+     submitRequest(){
+       
+       if(this.total <= 0){
+         this.makeToast('danger','Amount should have a value.','System message');
+         return false;
+       }
+
+       alert("submit");
+     }
   },
+
+  computed : {
+    total : function() {
+      return this.denominations.reduce( (acc,item) => parseFloat(acc) + (parseFloat(item.amount) * parseFloat(item.quantity)),0);
+    }
+  }
+ 
   
 };
 </script>
