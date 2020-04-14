@@ -38,5 +38,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('posts','DashboardController@posts');
     Route::get('dealers','DealerController@get');
     Route::get('allCSNumbers','CSNumberController@getCSNumbers');
+
+    Route::post('request/submit','RequestController@store');
 });
 

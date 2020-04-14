@@ -163,13 +163,24 @@ export default {
        })
      },
      submitRequest(){
-       
+       var self = this;
        if(this.total <= 0){
          this.makeToast('danger','Amount should have a value.','System message');
          return false;
        }
-
-       alert("submit");
+        alert(self.dealer);
+       axios.post('api/request/submit', {
+         dealer_id : self.dealer,
+         denominations : self.denominations
+       }).then(res => {
+         console.log(res);
+       })
+       .catch(err => {
+         console.log(err);
+       })
+       .finally( () => {
+       
+       });
      }
   },
 
