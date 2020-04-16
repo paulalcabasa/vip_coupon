@@ -9,20 +9,12 @@ use DB;
 class CSNumber extends Model
 {
     protected $connection = "oracle";
-    protected $table = "apps.mtl_serial_numbers";
+    protected $table = "ipc.ipc_vpc_cs_numbers";
+    protected $primaryKey = 'cs_number_id';
+    const CREATED_AT = 'creation_date';
+    const UPDATED_AT = 'update_date';
 
-    public function getCSNumbers($csNumber)
-    {
-        $sql = "SELECT serial_number
-                FROM mtl_serial_numbers
-                WHERE 1 = 1
-                AND c_attribute30 is null
-                AND serial_number like '".$csNumber."%'
-                AND rownum <= 10";
-        
-      //  $query = DB::select($sql);
-        $query = DB::connection('oracle')->select($sql);
-
-        return $query;
+    public function batch_insert($params){
+        $this->insert($params);
     }
 }

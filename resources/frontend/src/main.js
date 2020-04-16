@@ -21,15 +21,24 @@ import "./common/plugins/highlight-js";
 import "@babel/polyfill";
 import "@mdi/font/css/materialdesignicons.css";
 
+
+
+
 // API service init
 ApiService.init();
 
 // Remove this to disable mock API
 //MockService.init();
+const DEFAULT_TITLE = 'VIP Coupon';
 
 // Ensure we checked auth before each page load.
 router.beforeEach((to, from, next) => {
   Promise.all([store.dispatch(VERIFY_AUTH)]).then(res => {
+
+    Vue.nextTick(() => {
+      document.title = to.meta.title || DEFAULT_TITLE;
+    });
+
     if (to.matched.some(record => record.meta.requiresAuth) && !store.getters.isAuthenticated) {
       next({ name: "login" })
     }

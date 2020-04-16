@@ -57,6 +57,7 @@ import {
 
 export default {
   name: "Base",
+  
   components: {
     KTAside,
     KTHeader,

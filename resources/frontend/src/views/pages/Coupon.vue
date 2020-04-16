@@ -1,6 +1,6 @@
 <template>
   <div>
-    <KTPortlet v-bind:title="'New Request'" >
+    <KTPortlet v-bind:title="'New Coupon'" >
       <template v-slot:toolbar>
         <b-button variant="success" @click.prevent="submitRequest()">Submit</b-button>
       </template> 
@@ -49,7 +49,7 @@
                                 </td>
                                 <td>
                                     <vue-tags-input
-                                      placeholder="add vehicle"
+                                        placeholder="add vehicle"
                                         v-model="row.csNumber"
                                         :tags="row.csNumbers"
                                         @tags-changed="newTags => row.csNumbers = newTags"
@@ -79,8 +79,7 @@
   </div>
 </template>
 
-<script>
-import { SET_BREADCRUMB } from "@/store/breadcrumbs.module";    
+<script>  
 import KTPortlet from "@/views/partials/content/Portlet.vue";
 import { mapGetters } from "vuex";
 import axios from 'axios';
@@ -89,7 +88,7 @@ import VueTagsInput from '@johmun/vue-tags-input';
 export default {
   name: "request",
   mounted() {
-    this.$store.dispatch(SET_BREADCRUMB, [{ title: "New Request" }]);
+   
   },
   components: {
     KTPortlet,
@@ -124,15 +123,21 @@ export default {
     }    
   },
   created() {
-    /* this.dealers = [
-      {
-        cust_account_id : 1,
-        account_name : 'PASIG'
-      }
-    ]; */
     axios.get('/api/dealers')
     .then(res => {
-        this.dealers = res.data;
+        this.dealers = [
+          {
+            'cust_account_id' : null,
+            'account_name' : 'SELECT A DEALER'
+          }
+        ];
+        res.data.map( (row) => {
+          this.dealers.push({
+            'cust_account_id' : row.cust_account_id,
+            'account_name' : row.account_name
+          });
+        });
+       // this.dealers = res.data;
     })
     .catch(error => {
         console.log(error)
@@ -164,16 +169,25 @@ export default {
      },
      submitRequest(){
        var self = this;
+      
+       if(self.dealer == null){
+         this.makeToast('danger','Select the dealer','System message');
+         return false;
+       }
+
        if(this.total <= 0){
          this.makeToast('danger','Amount should have a value.','System message');
          return false;
        }
-        alert(self.dealer);
+    
        axios.post('api/request/submit', {
-         dealer_id : self.dealer,
-         denominations : self.denominations
+         dealer_id    : self.dealer,
+         denominations: self.denominations,
+         created_by   : self.$store.getters.currentUser.employee_id
        }).then(res => {
-         console.log(res);
+         if(res.data.error){
+           this.makeToast('danger',res.data.message + " : " + (res.data.invalid_cs_numbers),'System message');
+         }
        })
        .catch(err => {
          console.log(err);

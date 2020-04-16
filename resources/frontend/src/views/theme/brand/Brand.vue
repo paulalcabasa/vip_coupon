@@ -83,7 +83,7 @@ export default {
         const logos = this.layoutConfig("self.logo");
         logo = logos[Object.keys(logos)[0]];
       }
-      console.log(process.env.BASE_URL + logo);
+    //  console.log(process.env.BASE_URL + logo);
       return process.env.BASE_URL + logo;
     }
   },

@@ -27,19 +27,19 @@
         "bullet": "dot"
       },
       {
-        "section": "REQUESTS"
+        "section": "COUPON"
       },
       {
-        "title": "New Request",
+        "title": "New Coupon",
         "root": true,
         "icon": "flaticon2-expand",
-        "page": "request"
+        "page": "coupon"
       },
       {
-        "title": "All Requests",
+        "title": "Coupons",
         "root": true,
         "icon": "flaticon2-expand",
-        "page": "all-request"
+        "page": "all-coupons"
       },
       {
         "section": "REPORTS"

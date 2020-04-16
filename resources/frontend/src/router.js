@@ -10,21 +10,24 @@ export default new Router({
       path: "/",
       redirect: "/dashboard",
       component: () => import("@/views/theme/Base"),
+     
       children: [
         {
           path: "/dashboard",
           name: "dashboard",
           component: () => import("@/views/pages/Dashboard.vue"),
           meta: {
-            requiresAuth: true
+            requiresAuth: true,
+            title: 'Dashboard'
           }
         },
         {
-          path: "/request",
-          name: "request",
-          component: () => import("@/views/pages/Request.vue"),
+          path: "/coupon",
+          name: "coupon",
+          component: () => import("@/views/pages/Coupon.vue"),
           meta: {
-            requiresAuth: true
+            requiresAuth: true,
+            title: 'Coupon'
           }
         },
       ]
