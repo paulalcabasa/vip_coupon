@@ -20,7 +20,8 @@ import "./common/plugins/perfect-scrollbar";
 import "./common/plugins/highlight-js";
 import "@babel/polyfill";
 import "@mdi/font/css/materialdesignicons.css";
-
+import BlockUI from 'vue-blockui';
+Vue.use(BlockUI);
 
 
 

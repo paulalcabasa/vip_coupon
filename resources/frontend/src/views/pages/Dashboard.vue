@@ -42,7 +42,6 @@
 </template>
 
 <script>
-import { SET_BREADCRUMB } from "@/store/breadcrumbs.module";
 import KTPortlet from "@/views/partials/content/Portlet.vue";
 import Statistics from "@/views/partials/widgets/Statistics.vue";
 
@@ -81,7 +80,7 @@ export default {
     };
   },
   mounted() {
-    this.$store.dispatch(SET_BREADCRUMB, [{ title: "Dashboard" }]);
+    
   },
   methods: {
  

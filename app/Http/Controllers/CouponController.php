@@ -71,12 +71,17 @@ class CouponController extends Controller
                 }
                 $cs_num = new CSNumber;
                 $cs_num->batch_insert($cs_number_params);
-                return response()->json($cs_number_params);
-
+                
             }
 
-
             DB::commit();
+
+            return response()->json([
+                'message'  => 'Coupon request has been saved.',
+                'couponId' => $coupon_id,
+                'error'    => false
+            ],200);
+
         } catch(\Exception $e) {
             DB::rollBack();
             return $e;

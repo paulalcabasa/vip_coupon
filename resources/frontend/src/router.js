@@ -30,6 +30,15 @@ export default new Router({
             title: 'Coupon'
           }
         },
+        {
+          path: "/coupon/view/:couponId",
+          name: "view-coupon",
+          component: () => import("@/views/pages/ViewCoupon.vue"),
+          meta: {
+            requiresAuth: true,
+            title: 'Coupon'
+          }
+        },
       ]
     },
 

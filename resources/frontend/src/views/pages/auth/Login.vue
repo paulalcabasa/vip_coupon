@@ -7,7 +7,7 @@
     <!--end::Head-->
 
     <!--begin::Body-->
-    <div class="kt-login__body">
+    <div class="kt-login__body" >
       <!--begin::Signin-->
       <div class="kt-login__form">
         <div class="kt-login__title">
@@ -74,12 +74,12 @@
           <!--begin::Action-->
           <div class="kt-login__actions">
             <a href="#" class="kt-link kt-login__link-forgot">
-              {{ $t("AUTH.FORGOT.TITLE") }}
+             
             </a>
             <b-button
               type="submit"
               id="kt_submit"
-              class="btn btn-primary btn-elevate kt-login__btn-primary"
+              class="btn btn-danger btn-elevate kt-login__btn-primary"
             >
               {{ $t("AUTH.LOGIN.BUTTON") }}
             </b-button>

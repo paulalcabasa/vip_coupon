@@ -11,7 +11,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 class User extends Authenticatable implements JWTSubject
 {
     use Notifiable;
-    protected $table = "ipc_central.active_users";
+    protected $table = "ipc_central.vpc_users";
     protected $primaryKey = "employee_id";
     /**
      * The attributes that are mass assignable.

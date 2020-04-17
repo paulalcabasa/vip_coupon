@@ -4,8 +4,9 @@
       <template v-slot:toolbar>
         <b-button variant="success" @click.prevent="submitRequest()">Submit</b-button>
       </template> 
-
+  
       <template v-slot:body>
+        <BlockUI :message="blockui.msg" :html="blockui.html" v-if="blockui.state"></BlockUI>
         <b-container fluid>
             <b-row>
                 <b-col sm="3">
@@ -65,7 +66,7 @@
                             <th>Total</th>
                             <th>{{ total }}</th>
                             <th></th>
-                            <th><a href="#" @click.prevent="addDenomination()" style="font-weight:normal;font-style:underline"><i class="fa fa-plus-square text-success"></i> Add</a></th>
+                            <th><b-link @click.prevent="addDenomination()"><i class="fa fa-plus-square text-success"></i> Add</b-link></th>
                           </tr>
                         </tfoot>
                     </table>
@@ -81,7 +82,6 @@
 
 <script>  
 import KTPortlet from "@/views/partials/content/Portlet.vue";
-import { mapGetters } from "vuex";
 import axios from 'axios';
 import VueTagsInput from '@johmun/vue-tags-input';
 
@@ -119,10 +119,17 @@ export default {
                 csNumber : ''
             }
         ],
-      
+        blockui : {
+          msg : 'Please wait',
+          html : '<i class="fa fa-cog fa-spin fa-3x fa-fw"></i>',
+          state : false
+        }
+
     }    
   },
   created() {
+    var self = this;
+    self.blockui.state = true;
     axios.get('/api/dealers')
     .then(res => {
         this.dealers = [
@@ -140,7 +147,11 @@ export default {
        // this.dealers = res.data;
     })
     .catch(error => {
-        console.log(error)
+      self.makeToast('danger','Failed loading dealers, please refresh the page to continue.','System message');
+      console.log(error);
+    })
+    .finally( () => {
+      self.blockui.state = false;
     });
   },
   methods: {
@@ -179,7 +190,8 @@ export default {
          this.makeToast('danger','Amount should have a value.','System message');
          return false;
        }
-    
+       
+       self.blockui.state = true;
        axios.post('api/request/submit', {
          dealer_id    : self.dealer,
          denominations: self.denominations,
@@ -188,12 +200,18 @@ export default {
          if(res.data.error){
            this.makeToast('danger',res.data.message + " : " + (res.data.invalid_cs_numbers),'System message');
          }
+         else {
+           this.makeToast('success', res.data.message ,'System message');
+           setTimeout( () => {
+             this.$router.push({ name : 'view-coupon', params : { couponId : res.data.couponId} });
+           },1500)
+         }
        })
        .catch(err => {
          console.log(err);
        })
        .finally( () => {
-       
+         self.blockui.state = false;
        });
      }
   },

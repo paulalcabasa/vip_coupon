@@ -16,13 +16,6 @@ module.exports = {
     : 'index.html',
   configureWebpack: {
   
-
-    
-   
-    devServer: {
- //     proxy: 'http://localhost:8081',
-      headers: { "Access-Control-Allow-Origin": "*" }
-    },
     resolve: {
       alias: {
         // If using the runtime only build
@@ -61,7 +54,8 @@ module.exports = {
       },
       scss: {
         prependData: `@import "@/assets/sass/global/integration/frameworks/vue/vuetify/variables.scss";`
-      }
+      },
+      
     }
   },
   transpileDependencies: ["vuetify"]
