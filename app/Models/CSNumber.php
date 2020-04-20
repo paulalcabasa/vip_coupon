@@ -10,11 +10,17 @@ class CSNumber extends Model
 {
     protected $connection = "oracle";
     protected $table = "ipc.ipc_vpc_cs_numbers";
-    protected $primaryKey = 'cs_number_id';
-    const CREATED_AT = 'creation_date';
-    const UPDATED_AT = 'update_date';
+    protected $primaryKey = 'id';
+    public $timestamps = false;
 
-    public function batch_insert($params){
+    public function batchInsert($params){
         $this->insert($params);
+    }
+
+    public function getByDenomination($denominationId){
+        return $this
+            ->where('denomination_id', $denominationId)
+            ->select('cs_number')
+            ->get();
     }
 }

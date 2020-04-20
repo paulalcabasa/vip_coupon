@@ -24,14 +24,9 @@ class AuthController extends Controller
      */
     public function login(Request $request)
     {
-        //$credentials = request(['employee_no', 'password']);
-        /* if (! $token = auth()->attempt($credentials)) {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
-        return $this->respondWithToken($token); */
         $user = User::where([
-            ['employee_no', $request->employee_no],
-            ['password' , $request->password]
+            ['user_name', $request->employee_no],
+            ['user_pass' , $request->password]
         ])->first();
         
         if(empty($user)){

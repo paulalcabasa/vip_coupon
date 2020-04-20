@@ -11,8 +11,9 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 class User extends Authenticatable implements JWTSubject
 {
     use Notifiable;
-    protected $table = "ipc_central.vpc_users";
-    protected $primaryKey = "employee_id";
+    protected $connection = "oracle";
+    protected $table = "apps.ipc_vpc_users_v";
+    protected $primaryKey = "user_id";
     /**
      * The attributes that are mass assignable.
      *
@@ -45,6 +46,6 @@ class User extends Authenticatable implements JWTSubject
     }
 
     public function getJWTCustomClaims(){
-        return ['name' => 'paul'];
+        return [];
     }
 }

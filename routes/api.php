@@ -39,6 +39,9 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('dealers','DealerController@get');
     Route::get('allCSNumbers','CSNumberController@getCSNumbers');
 
-    Route::post('request/submit','CouponController@store');
+    Route::post('coupon/submit','CouponController@store');
+    Route::get('coupon/show/{couponId}','CouponController@show');
+    Route::get('timeline/show/{couponId}','TimelineController@show');
+    Route::get('denomination/show/{couponId}','DenominationController@show');
 });
 

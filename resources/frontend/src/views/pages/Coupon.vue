@@ -16,7 +16,7 @@
                     <b-form-select 
                         v-model="dealer" 
                         :options="dealers"
-                        value-field="cust_account_id"
+                        value-field="id"
                         text-field="account_name"
                     ></b-form-select>
                 </b-col>
@@ -86,7 +86,7 @@ import axios from 'axios';
 import VueTagsInput from '@johmun/vue-tags-input';
 
 export default {
-  name: "request",
+  name: "coupon",
   mounted() {
    
   },
@@ -97,7 +97,7 @@ export default {
   },
   data(){
     return {
-        dealer: null,
+        dealer: '',
         dealers : [],
         denominations : [
             {
@@ -134,13 +134,13 @@ export default {
     .then(res => {
         this.dealers = [
           {
-            'cust_account_id' : null,
+            'id' : '',
             'account_name' : 'SELECT A DEALER'
           }
         ];
         res.data.map( (row) => {
           this.dealers.push({
-            'cust_account_id' : row.cust_account_id,
+            'id' : row.id,
             'account_name' : row.account_name
           });
         });
@@ -181,7 +181,7 @@ export default {
      submitRequest(){
        var self = this;
       
-       if(self.dealer == null){
+       if(self.dealer == ''){
          this.makeToast('danger','Select the dealer','System message');
          return false;
        }
@@ -192,10 +192,11 @@ export default {
        }
        
        self.blockui.state = true;
-       axios.post('api/request/submit', {
-         dealer_id    : self.dealer,
+       axios.post('api/coupon/submit', {
+         dealerId    : self.dealer,
          denominations: self.denominations,
-         created_by   : self.$store.getters.currentUser.employee_id
+         createdBy   : self.$store.getters.currentUser.user_id,
+         userSource   : self.$store.getters.currentUser.user_source_id,
        }).then(res => {
          if(res.data.error){
            this.makeToast('danger',res.data.message + " : " + (res.data.invalid_cs_numbers),'System message');
@@ -203,7 +204,7 @@ export default {
          else {
            this.makeToast('success', res.data.message ,'System message');
            setTimeout( () => {
-             this.$router.push({ name : 'view-coupon', params : { couponId : res.data.couponId} });
+            this.$router.push({ name : 'view-coupon', params : { couponId : res.data.couponId} });
            },1500)
          }
        })

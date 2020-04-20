@@ -10,6 +10,11 @@ class Denomination extends Model
     protected $table = "ipc.ipc_vpc_denominations";
     const CREATED_AT = 'creation_date';
     const UPDATED_AT = 'update_date';
-    protected $primaryKey = 'denomination_id';
+    protected $primaryKey = 'id';
     
+    public function getByCoupon($couponId){
+        return $this
+            ->where('coupon_id',$couponId)
+            ->get();
+    }
 }
