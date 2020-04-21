@@ -31,7 +31,7 @@ export default new Router({
           }
         },
         {
-          path: "/coupon/view/:couponId",
+          path: "/coupon/:action/:couponId",
           name: "view-coupon",
           component: () => import("@/views/pages/ViewCoupon.vue"),
           meta: {
@@ -46,6 +46,15 @@ export default new Router({
           meta: {
             requiresAuth: true,
             title: 'Coupons'
+          }
+        },
+        {
+          path: "/approval",
+          name: "approval",
+          component: () => import("@/views/pages/Approval.vue"),
+          meta: {
+            requiresAuth: true,
+            title: 'Approval'
           }
         },
       ]

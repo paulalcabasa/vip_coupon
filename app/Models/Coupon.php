@@ -54,4 +54,38 @@ class Coupon extends Model
         $query = DB::select($sql);
         return $query;
     }
+
+    public function getPending(){
+        $sql = "SELECT cp.id coupon_id,
+                    dlr.account_name,
+                    usr.first_name || ' ' || usr.last_name created_by,
+                    TRIM(TO_CHAR(cp.creation_date, 'Month')) || ' ' ||  TO_CHAR(cp.creation_date,'D, YYYY') date_created,
+                    lower(st.status) status
+                FROM ipc.ipc_vpc_coupons cp
+                    LEFT JOIN ipc_portal.dealers dlr
+                        ON cp.dealer_id = dlr.id
+                    LEFT JOIN apps.ipc_vpc_users_v usr
+                        ON usr.user_id = cp.created_by
+                        AND usr.user_source_id = cp.create_user_source
+                    LEFT JOIN ipc.ipc_vpc_status st
+                        ON st.id = cp.status
+                WHERE cp.status = :status_id";
+        $query = DB::select($sql,[
+            'status_id' => 1
+        ]);
+        return $query;
+    }
+
+    public function updateStatus($params){
+        $this
+            ->where([
+                [ 'id', '=' , $params['couponId'] ],
+            ])
+            ->update([
+                'status'             => $params['status'],
+                'updated_by'         => $params['userId'],
+                'update_user_source' => $params['userSource'],
+                'update_date'        => $params['updateDate']
+            ]);
+    }
 }

@@ -101,7 +101,7 @@
 <script>
  
 import KTPortlet from "@/views/partials/content/Portlet.vue";
-import axios from 'axios';
+import axios from 'axios'; 
 export default {
     name: "coupons",
     mounted() {
@@ -185,7 +185,13 @@ export default {
     },
     methods: {
         info(item) {
-            this.$router.push({ name : 'view-coupon', params : { couponId : item.coupon_id} });
+            this.$router.push({ 
+                name : 'view-coupon', 
+                params : { 
+                    couponId : item.coupon_id,
+                    action : 'view'
+                } 
+            });
         },
         onFiltered(filteredItems) {
             // Trigger pagination to update the number of buttons/pages due to filtering

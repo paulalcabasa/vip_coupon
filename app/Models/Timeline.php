@@ -23,10 +23,15 @@ class Timeline extends Model
                     INNER JOIN apps.ipc_vpc_users_v usr
                         ON usr.user_id = tl.user_id
                         AND usr.user_source_id = tl.user_source
-                WHERE tl.coupon_id = :coupon_id";
+                WHERE tl.coupon_id = :coupon_id
+                ORDER BY tl.created_at DESC";
         $query = DB::select($sql,[
             'coupon_id' => $couponId
         ]);
         return $query;
+    }
+
+    public function saveTimeline($params){
+        $this->insert($params);
     }
 }

@@ -21,8 +21,9 @@ import "./common/plugins/highlight-js";
 import "@babel/polyfill";
 import "@mdi/font/css/materialdesignicons.css";
 import BlockUI from 'vue-blockui';
+import VueSweetalert2 from 'vue-sweetalert2';
 Vue.use(BlockUI);
-
+Vue.use(VueSweetalert2);
 
 
 // API service init

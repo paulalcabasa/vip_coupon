@@ -7,5 +7,8 @@
         "build": "cd resources/frontend && npm run build",
         "lint": "cd resources/frontend && npm run lint",
         "test": "cd resources/frontend && npm run test:unit"
+    },
+    "dependencies": {
+        "vue-sweetalert2": "^3.0.3"
     }
 }

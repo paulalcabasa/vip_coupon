@@ -17,17 +17,13 @@
 </template>
 
 <script>
-import { SET_BREADCRUMB } from "@/store/breadcrumbs.module";    
+
 import KTPortlet from "@/views/partials/content/Portlet.vue";
-import { mapGetters } from "vuex";
+
 export default {
   name: "blank",
   mounted() {
-     //  if (!this.isAuthenticated) {
-     // this.$router.push({ name: "login" });
-  //  }
- // console.log("auth state : " + this.isAuthenticated);
-    this.$store.dispatch(SET_BREADCRUMB, [{ title: "Blank" }]);
+ 
   },
   data(){
     return {

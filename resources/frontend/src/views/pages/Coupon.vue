@@ -204,7 +204,15 @@ export default {
          else {
            this.makeToast('success', res.data.message ,'System message');
            setTimeout( () => {
-            this.$router.push({ name : 'view-coupon', params : { couponId : res.data.couponId} });
+            this.$router.push(
+              { 
+                name : 'view-coupon', 
+                params : { 
+                  couponId : res.data.couponId,
+                  action : 'view'
+                } 
+              }
+            );
            },1500)
          }
        })
