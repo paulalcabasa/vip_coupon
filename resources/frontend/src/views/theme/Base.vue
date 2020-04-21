@@ -15,11 +15,11 @@
           class="kt-content kt-grid__item kt-grid__item--fluid kt-grid kt-grid--hor"
           id="kt_content"
         >
-          <KTSubheader
+        <!--   <KTSubheader
             v-if="subheaderDisplay"
             v-bind:breadcrumbs="breadcrumbs"
             v-bind:title="pageTitle"
-          ></KTSubheader>
+          ></KTSubheader> -->
           <div
             class="kt-container kt-grid__item kt-grid__item--fluid"
             v-bind:class="{ 'kt-container--fluid': contentFluid }"
@@ -32,8 +32,8 @@
         <KTFooter></KTFooter>
       </div>
     </div>
-    <KTStickyToolbar v-if="toolbarDisplay"></KTStickyToolbar>
-    <KTQuickPanel></KTQuickPanel>
+<!--     <KTStickyToolbar v-if = "toolbarDisplay"></KTStickyToolbar> -->
+  <!--   <KTQuickPanel></KTQuickPanel> -->
     <KTScrollTop></KTScrollTop>
   </div>
 </template>
@@ -45,9 +45,9 @@ import KTHeader from "@/views/theme/header/Header.vue";
 import KTHeaderMobile from "@/views/theme/header/HeaderMobile.vue";
 import KTFooter from "@/views/theme/footer/Footer.vue";
 import HtmlClass from "@/common/htmlclass.service";
-import KTSubheader from "@/views/theme/subheader/Subheader.vue";
-import KTStickyToolbar from "@/views/partials/layout/StickyToolbar.vue";
-import KTQuickPanel from "@/views/partials/layout/QuickPanel.vue";
+//import KTSubheader from "@/views/theme/subheader/Subheader.vue";
+//import KTStickyToolbar from "@/views/partials/layout/StickyToolbar.vue";
+//import KTQuickPanel from "@/views/partials/layout/QuickPanel.vue";
 import KTScrollTop from "@/views/partials/layout/ScrollTop";
 import Loader from "@/views/partials/content/Loader.vue";
 import {
@@ -57,14 +57,15 @@ import {
 
 export default {
   name: "Base",
+  
   components: {
     KTAside,
     KTHeader,
     KTHeaderMobile,
     KTFooter,
-    KTSubheader,
-    KTStickyToolbar,
-    KTQuickPanel,
+//    KTSubheader,
+    //KTStickyToolbar,
+  //  KTQuickPanel,
     KTScrollTop,
     Loader
   },
@@ -146,3 +147,10 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+
+.kt-header--fixed.kt-subheader--fixed.kt-subheader--enabled .kt-wrapper {
+  padding-top:70px !important;
+}
+</style>

@@ -1,13 +1,6 @@
 <template>
   <div class="kt-widget17">
-    <div
-      class="kt-widget17__visual kt-widget17__visual--chart kt-portlet-fit--top kt-portlet-fit--sides"
-      style="background-color: #fd397a"
-    >
-      <div class="kt-widget17__chart" style="height:320px;">
-        <Chart1 ref="chart" v-bind:options="chartOptions"></Chart1>
-      </div>
-    </div>
+    <br/><br /><br/>
     <div class="kt-widget17__stats">
       <div class="kt-widget17__items">
         <div class="kt-widget17__item">

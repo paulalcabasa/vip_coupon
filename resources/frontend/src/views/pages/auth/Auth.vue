@@ -14,26 +14,24 @@
         >
           <div class="kt-grid__item">
             <a href="#" class="kt-login__logo">
-              <img src="@/assets/media/logos/logo-4.png" />
+              <img src="@/assets/media/logos/isuzu-logo-white.png" width="150" />
             </a>
           </div>
           <div class="kt-grid__item kt-grid__item--fluid kt-grid kt-grid--ver">
             <div class="kt-grid__item kt-grid__item--middle">
-              <h3 class="kt-login__title">Welcome to Metronic!</h3>
+              <h3 class="kt-login__title"></h3>
               <h4 class="kt-login__subtitle">
-                The ultimate Bootstrap &amp; Angular 6 admin theme framework for
-                next generation web apps.
+                
               </h4>
             </div>
           </div>
           <div class="kt-grid__item">
             <div class="kt-login__info">
               <div class="kt-login__copyright">
-                © 2020 Metronic
+                © 2020 VIP Coupon
               </div>
               <div class="kt-login__menu">
-                <a href="#" class="kt-link">Privacy</a>
-                <a href="#" class="kt-link">Legal</a>
+                <a href="#" class="kt-link">About</a>
                 <a href="#" class="kt-link">Contact</a>
               </div>
             </div>
@@ -44,6 +42,7 @@
         <!--begin::Content-->
         <div
           class="kt-grid__item kt-grid__item--fluid kt-grid__item--order-tablet-and-mobile-1 kt-login__wrapper"
+          
         >
           <router-view></router-view>
         </div>
@@ -69,7 +68,7 @@ export default {
       errors: state => state.auth.errors
     }),
     backgroundImage() {
-      return process.env.BASE_URL + "assets/media/bg/bg-4.jpg";
+      return process.env.BASE_URL + "assets/media/bg/bg-2.jpg";
     }
   }
 };

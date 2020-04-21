@@ -11,28 +11,28 @@
       <div class="kt-footer__copyright">
         2020 &nbsp;&copy;&nbsp;
         <a
-          href="http://keenthemes.com/metronic"
+          href="#"
           target="_blank"
           class="kt-link ml-1"
         >
-          Keenthemes
+          Isuzu Philippines Corporation
         </a>
       </div>
       <div class="kt-footer__menu">
         <a
-          href="http://keenthemes.com/metronic"
+          href="#"
           target="_blank"
           class="kt-footer__menu-link kt-link"
           >About</a
         >
         <a
-          href="http://keenthemes.com/metronic"
+          href="#"
           target="_blank"
           class="kt-footer__menu-link kt-link"
           >Team</a
         >
         <a
-          href="http://keenthemes.com/metronic"
+          href="#"
           target="_blank"
           class="kt-footer__menu-link kt-link"
           >Contact</a

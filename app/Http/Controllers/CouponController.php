@@ -1,0 +1,30 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use DB;
+use App\Services\CouponService;
+
+class CouponController extends Controller
+{
+
+    private $couponService;
+
+    public function __construct(){
+        $this->couponService = new CouponService;
+
+    }
+    public function store(Request $request){
+        return $this->couponService->saveCoupon($request);
+    }
+
+    public function show(Request $request){
+        $couponId = $request->couponId;    
+        return response()->json($this->couponService->getDetails($couponId),200);
+    }
+
+    public function get(){
+        return response()->json($this->couponService->getCoupons(),200);
+    }
+}

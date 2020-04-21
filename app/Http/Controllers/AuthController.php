@@ -24,14 +24,9 @@ class AuthController extends Controller
      */
     public function login(Request $request)
     {
-        //$credentials = request(['employee_no', 'password']);
-        /* if (! $token = auth()->attempt($credentials)) {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
-        return $this->respondWithToken($token); */
         $user = User::where([
-            ['employee_no', $request->employee_no],
-            ['password' , $request->password]
+            ['user_name', $request->employee_no],
+            ['user_pass' , $request->password]
         ])->first();
         
         if(empty($user)){
@@ -39,8 +34,8 @@ class AuthController extends Controller
         }
   
         $token = JWTAuth::fromUser($user);
-    
-        return $this->respondWithToken($token);
+        
+        return $this->respondWithToken($token,$user);
         
     }
 
@@ -83,12 +78,13 @@ class AuthController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    protected function respondWithToken($token)
+    protected function respondWithToken($token,$user)
     {
         return response()->json([
             'access_token' => $token,
-            'token_type' => 'bearer',
-            'expires_in' => auth()->factory()->getTTL() * 60
+            'token_type'   => 'bearer',
+            'user'         => $user,
+            'expires_in'   => auth()->factory()->getTTL() * 60
         ]);
     }
 

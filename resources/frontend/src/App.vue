@@ -25,7 +25,7 @@
 import { OVERRIDE_LAYOUT_CONFIG } from "@/store/config.module";
 
 export default {
-  name: "MetronicVue",
+  name: "VipCoupon",
   mounted() {
     /**
      * this is to override the layout config using saved data from localStorage
