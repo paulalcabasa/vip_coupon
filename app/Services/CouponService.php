@@ -108,4 +108,10 @@ class CouponService {
 
         return $couponDetails;
     }
+
+    public function getCoupons(){
+        $coupon = new Coupon();
+        $coupons = $coupon->getCoupons();
+        return $coupons;
+    }
 }

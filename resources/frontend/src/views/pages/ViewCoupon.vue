@@ -62,10 +62,14 @@
 
     <KTPortlet v-bind:title="'Denomination'" >
        <template v-slot:toolbar>
-        <h5>Total amount : 15,000</h5>
+        <h5>Total amount : {{ formatPrice(total) }}</h5>
       </template> 
       <template v-slot:body>
-          <b-table striped hover :items="denomination"></b-table>
+          <b-table striped hover :items="denomination">
+            <template v-slot:cell(cs_number)="data">
+              <span v-html="data.value"></span>
+            </template>
+          </b-table>
       </template>
     </KTPortlet>
 
@@ -106,6 +110,11 @@ export default {
   },
   created() {
 
+  },
+  computed : {
+    total : function() {
+      return this.denomination.reduce( (acc,item) => parseFloat(acc) + (parseFloat(item.amount) * parseFloat(item.quantity)),0);
+    }
   },
   methods: {
     loadCouponHeader(){
@@ -158,7 +167,10 @@ export default {
           self.blockui.state = false;
         })
       });
-    }
+    },
+    formatPrice(value){
+      return (parseFloat(value).toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,'));
+    },
   }
   
 };

@@ -15,11 +15,14 @@ class DenominationService {
     $denomArr = [];
     foreach($denominationData as $row){
         $csNumbers = $csNumber->getByDenomination($row->id);
+        $csNumHtml = "";
+        foreach($csNumbers as $csNum){
+          $csNumHtml .= "<span class='badge mr-1 badge-info'>".$csNum->cs_number."</span>";
+        }
         array_push($denomArr,[
-            'denomination_id' => $row->denomination_id,
-            'amount'   => $row->amount,
-            'quantity' => $row->quantity,
-            'cs_number' => $csNumbers
+            'amount'          => $row->amount,
+            'quantity'        => $row->quantity,
+            'cs_number'       => $csNumHtml
         ]);
     }
     return $denomArr;

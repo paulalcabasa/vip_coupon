@@ -39,6 +39,15 @@ export default new Router({
             title: 'Coupon'
           }
         },
+        {
+          path: "/coupons",
+          name: "all-coupon",
+          component: () => import("@/views/pages/AllCoupons.vue"),
+          meta: {
+            requiresAuth: true,
+            title: 'Coupons'
+          }
+        },
       ]
     },
 

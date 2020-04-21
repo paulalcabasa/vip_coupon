@@ -32,14 +32,20 @@
       {
         "title": "New Coupon",
         "root": true,
-        "icon": "flaticon2-expand",
+        "icon": "flaticon-add",
         "page": "coupon"
       },
       {
         "title": "Coupons",
         "root": true,
-        "icon": "flaticon2-expand",
-        "page": "all-coupons"
+        "icon": "flaticon2-tag",
+        "page": "coupons"
+      },
+      {
+        "title": "Approval",
+        "root": true,
+        "icon": "flaticon2-check-mark",
+        "page": "approval"
       },
       {
         "section": "REPORTS"
