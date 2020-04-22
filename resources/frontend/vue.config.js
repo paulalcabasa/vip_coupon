@@ -5,6 +5,7 @@ module.exports = {
   // publicPath: '/metronic/preview/vue/demo1/',
   // output built static files to Laravel's public dir.
   // note the "build" script in package.json needs to be modified as well.
+
   outputDir: '../../public/assets/app',
   publicPath: process.env.NODE_ENV === 'production'
     ? 'public/assets/app/'
