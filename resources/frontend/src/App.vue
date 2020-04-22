@@ -32,6 +32,7 @@ export default {
      * remove this to use config only from static json (@/common/config/layout.config.json)
      */
     this.$store.dispatch(OVERRIDE_LAYOUT_CONFIG);
+ 
   }
 };
 </script>
