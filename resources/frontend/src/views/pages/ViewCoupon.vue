@@ -45,7 +45,7 @@
                   <label class="text-bold">Status</label>
                 </b-col>
                 <b-col sm="8">
-                  <b-badge class="mr-1" variant="secondary">{{ couponDetails.status }}</b-badge>
+                  <b-badge class="mr-1" :variant="statusColors[couponDetails.status.trim().toLowerCase()]">{{ couponDetails.status.toLowerCase() }}</b-badge>
                 </b-col>
               </b-row>
             </b-container>
@@ -82,8 +82,9 @@
 import KTPortlet from "@/views/partials/content/Portlet.vue";
 import { mapGetters } from "vuex";
 import Timeline2 from "@/views/partials/widgets/Timeline2.vue";
-
 import axios from 'axios';
+import badge from '@/common/config/status.config.json';
+
 export default {
   name: "ViewCoupon",
   components: {
@@ -94,12 +95,18 @@ export default {
     return {
       couponId : null,
       action : '',
-      couponDetails : [],
+      couponDetails : {
+        created_by : '',
+        date_created : '',
+        status : '',
+        coupon_id : ''
+      },
       blockui : {
           msg : 'Please wait',
           html : '<i class="fa fa-cog fa-spin fa-3x fa-fw"></i>',
           state : true
       },
+      statusColors : badge.badgeColors,
       isAbleToApprove : false,
       isAbleToPrint : false,
       denomination: [],
@@ -112,8 +119,7 @@ export default {
     this.loadCouponHeader();
     this.loadTimeline();
     this.loadDenomination();
-    //self.blockui.state = false;
-    console.log(this.action, couponDetails)
+    
   },
   created() {
 
@@ -130,7 +136,14 @@ export default {
         axios.get('api/coupon/show/' + this.couponId)
         .then( (res) => {
           self.couponDetails = res.data;
+          if(res.data.status.trim() == "PENDING" && self.action == "approve"){
+            self.isAbleToApprove = true;
+          }
+          if(res.data.status.trim() == "APPROVED" && self.action == "view"){
+            self.isAbleToPrint = true;
+          }
           resolve(res);
+          
         })
         .catch( err => {
           this.$router.push({name : '404'});
@@ -147,7 +160,7 @@ export default {
         axios.get('api/timeline/show/' + self.couponId)
         .then( (res) => {
           self.timelines = res.data;
-          resolve(res);
+          resolve(res); 
         })
         .catch( err => {
           self.$router.push({name : '404'});
@@ -210,9 +223,11 @@ export default {
                 'Approved!',
                 res.data.message,
                 'success'
-              );
-              this.loadCouponHeader();
-              this.loadTimeline();
+              ).then(() => {
+                self.$router.push({ 
+                  name : 'approval'
+                });
+              });
             }
           }).catch(err => {
             swalWithBootstrapButtons.fire(
@@ -259,9 +274,12 @@ export default {
                 'Rejected',
                 res.data.message,
                 'error'
-              );
-              this.loadCouponHeader();
-              this.loadTimeline();
+              ).then(() => {
+                self.$router.push({ 
+                  name : 'approval'
+                });
+              });
+
             }
           }).catch(err => {
             swalWithBootstrapButtons.fire(

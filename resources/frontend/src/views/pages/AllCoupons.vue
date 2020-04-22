@@ -46,7 +46,7 @@
                     >
                     
                         <template v-slot:cell(status)="row">
-                            <b-badge class="mr-1" variant="secondary">{{ row.value }}</b-badge>
+                            <b-badge class="mr-1" :variant="statusColors[row.value.trim()]">{{ row.value }}</b-badge>
                         </template>
 
                         <template v-slot:cell(actions)="row">
@@ -102,6 +102,7 @@
  
 import KTPortlet from "@/views/partials/content/Portlet.vue";
 import axios from 'axios'; 
+import badge from '@/common/config/status.config.json';
 export default {
     name: "coupons",
     mounted() {
@@ -109,6 +110,7 @@ export default {
     },
     data(){
         return {
+            statusColors : badge.badgeColors,
             items: [],
             fields: [
                 { 
