@@ -23,4 +23,10 @@ class CSNumber extends Model
             ->select('cs_number')
             ->get();
     }
+
+    public function deleteByDenomination($denominationId){
+        $this
+            ->where('denomination_id', $denominationId)
+            ->delete();
+    }
 }

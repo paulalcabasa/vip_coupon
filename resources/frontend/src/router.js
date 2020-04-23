@@ -23,8 +23,17 @@ export default new Router({
           }
         },
         {
-          path: "/coupon",
-          name: "coupon",
+          path: "/coupon/:action",
+          name: "create-coupon",
+          component: () => import("@/views/pages/Coupon.vue"),
+          meta: {
+            requiresAuth: true,
+            title: 'Coupon'
+          }
+        },
+        {
+          path: "/coupon/:action/:couponId",
+          name: "edit-coupon",
           component: () => import("@/views/pages/Coupon.vue"),
           meta: {
             requiresAuth: true,

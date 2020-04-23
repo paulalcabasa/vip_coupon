@@ -19,10 +19,13 @@ class DenominationService {
         foreach($csNumbers as $csNum){
           $csNumHtml .= "<span class='badge mr-1 badge-info'>".$csNum->cs_number."</span>";
         }
+        $csNumbers = collect($csNumbers)->pluck('cs_number')->toArray();
         array_push($denomArr,[
             'amount'          => $row->amount,
             'quantity'        => $row->quantity,
-            'cs_number'       => $csNumHtml
+            'cs_number'       => $csNumHtml,
+            'csNumbers'       => $csNumbers,
+            'csNumber'        => ''
         ]);
     }
     return $denomArr;

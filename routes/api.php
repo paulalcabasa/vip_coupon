@@ -44,6 +44,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('coupon/get/','CouponController@get');
     Route::post('coupon/approve/','ApprovalController@approve');
     Route::post('coupon/reject/','ApprovalController@reject');
+    Route::post('coupon/update/','CouponController@update');
 
     Route::get('timeline/show/{couponId}','TimelineController@show');
     Route::get('denomination/show/{couponId}','DenominationController@show');

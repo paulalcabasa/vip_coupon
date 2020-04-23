@@ -27,7 +27,7 @@
         "title": "New Coupon",
         "root": true,
         "icon": "flaticon-add",
-        "page": "coupon"
+        "page": "coupon/create"
       },
       {
         "title": "Coupons",
