@@ -70,7 +70,7 @@
 		}
 	  },
 	  "quick-actions": {
-		"display": true,
+		"display": false,
 		"layout": "dropdown",
 		"dropdown": {
 		  "style": "dark"
