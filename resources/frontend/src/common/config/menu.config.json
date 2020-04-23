@@ -6,13 +6,7 @@
         "title": "Home",
         "root": true,
         "page": "dashboard"
-      },
-      {
-        "title": "Request",
-        "root": true,
-        "page": "builder"
-      }
-      
+      }      
     ]
   },
   "aside": {
@@ -46,30 +40,6 @@
         "root": true,
         "icon": "flaticon2-check-mark",
         "page": "approval"
-      },
-      {
-        "section": "REPORTS"
-      },
-      {
-        "title": "Summary",
-        "root": true,
-        "icon": "flaticon2-expand",
-        "page": "all-request"
-      },
-      {
-        "title": "All Requests",
-        "root": true,
-        "icon": "flaticon2-expand",
-        "page": "all-request"
-      },
-      {
-        "section": "SETTINGS"
-      },
-      {
-        "title": "CONFIGURATION",
-        "root": true,
-        "icon": "flaticon2-expand",
-        "page": "all-request"
       }
     ]
   }

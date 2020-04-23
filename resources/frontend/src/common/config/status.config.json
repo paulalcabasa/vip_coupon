@@ -1,0 +1,7 @@
+{
+    "badgeColors" : {
+        "pending" : "warning",
+        "approved" : "success",
+        "rejected" : "danger"
+    }
+}
