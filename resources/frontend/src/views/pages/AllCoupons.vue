@@ -53,6 +53,9 @@
                             <b-button size="sm" @click="info(row.item)" class="mr-1">
                                 <i class="fa fa-search"></i>
                             </b-button>
+                             <b-button size="sm" @click="edit(row.item)" class="mr-1">
+                                <i class="fa fa-edit"></i>
+                            </b-button> 
                         </template>
                     </b-table>
 
@@ -192,6 +195,15 @@ export default {
                 params : { 
                     couponId : item.coupon_id,
                     action : 'view'
+                } 
+            });
+        },
+        edit(item){
+            this.$router.push({ 
+                name : 'edit-coupon', 
+                params : { 
+                    action : 'edit',
+                    couponId : item.coupon_id
                 } 
             });
         },

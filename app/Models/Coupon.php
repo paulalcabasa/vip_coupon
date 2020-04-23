@@ -19,7 +19,8 @@ class Coupon extends Model
                         dlr.account_name,
                         usr.first_name || ' ' || usr.last_name created_by,
                         TRIM(TO_CHAR(cp.creation_date, 'Month')) || ' ' ||  TO_CHAR(cp.creation_date,'D, YYYY') date_created,
-                        st.status
+                        st.status,
+                        cp.dealer_id
                 FROM ipc.ipc_vpc_coupons cp
                     INNER JOIN ipc_portal.dealers dlr
                         ON dlr.id = cp.dealer_id
@@ -42,7 +43,8 @@ class Coupon extends Model
                     dlr.account_name,
                     usr.first_name || ' ' || usr.last_name created_by,
                     TRIM(TO_CHAR(cp.creation_date, 'Month')) || ' ' ||  TO_CHAR(cp.creation_date,'D, YYYY') date_created,
-                    lower(st.status) status
+                    lower(st.status) status,
+                    cp.dealer_id
                 FROM ipc.ipc_vpc_coupons cp
                     LEFT JOIN ipc_portal.dealers dlr
                         ON cp.dealer_id = dlr.id
@@ -60,7 +62,8 @@ class Coupon extends Model
                     dlr.account_name,
                     usr.first_name || ' ' || usr.last_name created_by,
                     TRIM(TO_CHAR(cp.creation_date, 'Month')) || ' ' ||  TO_CHAR(cp.creation_date,'D, YYYY') date_created,
-                    lower(st.status) status
+                    lower(st.status) status,
+                    cp.dealer_id
                 FROM ipc.ipc_vpc_coupons cp
                     LEFT JOIN ipc_portal.dealers dlr
                         ON cp.dealer_id = dlr.id

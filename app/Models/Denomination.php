@@ -17,4 +17,10 @@ class Denomination extends Model
             ->where('coupon_id',$couponId)
             ->get();
     }
+
+    public function deleteByCoupon($couponId){
+        $this
+            ->where('coupon_id', $couponId)
+            ->delete();
+    }
 }

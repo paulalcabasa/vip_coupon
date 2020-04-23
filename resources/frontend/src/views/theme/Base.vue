@@ -25,7 +25,7 @@
             v-bind:class="{ 'kt-container--fluid': contentFluid }"
           >
             <transition name="fade-in-up">
-              <router-view></router-view>
+              <router-view :key="$route.fullPath"></router-view>
             </transition>
           </div>
         </div>

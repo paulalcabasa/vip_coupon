@@ -9,6 +9,7 @@
             <b-button v-if="isAbleToApprove" @click="approve" size="sm" variant="success"><i class="flaticon2-check-mark"></i></b-button>
             <b-button v-if="isAbleToApprove" @click="reject" size="sm" variant="danger" class="ml-2"><i class="flaticon2-cross"></i></b-button>
             <b-button v-if="isAbleToPrint" size="sm" variant="primary" class="ml-2"><i class="flaticon2-print"></i></b-button>
+            <b-button v-if="isAbletoEdit" @click="edit" size="sm" variant="primary" class="ml-2"><i class="flaticon2-edit"></i></b-button>
           </template> 
           <template v-slot:body>
             <b-container fluid>
@@ -67,7 +68,7 @@
         <h5>Total amount : {{ formatPrice(total) }}</h5>
       </template> 
       <template v-slot:body>
-          <b-table striped hover :items="denomination">
+          <b-table striped hover :items="denomination" :fields="fields">
             <template v-slot:cell(cs_number)="data">
               <span v-html="data.value"></span>
             </template>
@@ -106,9 +107,31 @@ export default {
           html : '<i class="fa fa-cog fa-spin fa-3x fa-fw"></i>',
           state : true
       },
+      fields: [
+          { 
+              key: 'amount', 
+              label: 'Amount', 
+              sortable: true, 
+              sortDirection: 'desc' 
+          },
+         
+          { 
+              key: 'quantity', 
+              label: 'Quantity By', 
+              sortable: true, 
+              class: 'text-center' 
+          },    
+          { 
+              key: 'cs_number', 
+              label: 'CS Numbers', 
+              sortable: true, 
+          },    
+      ],
+
       statusColors : badge.badgeColors,
       isAbleToApprove : false,
       isAbleToPrint : false,
+      isAbletoEdit : false,
       denomination: [],
       timelines: []
     }
@@ -142,6 +165,10 @@ export default {
           if(res.data.status.trim() == "APPROVED" && self.action == "view"){
             self.isAbleToPrint = true;
           }
+          if(res.data.status.trim() == "PENDING" && self.action == "view"){
+            self.isAbletoEdit = true;
+          }
+          
           resolve(res);
           
         })
@@ -292,6 +319,15 @@ export default {
           });
           
         } 
+      });
+    },
+    edit(){
+      this.$router.push({ 
+          name : 'edit-coupon', 
+          params : { 
+              action : 'edit',
+              couponId : this.couponId
+          } 
       });
     }
   }

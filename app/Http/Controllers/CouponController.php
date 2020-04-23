@@ -27,4 +27,8 @@ class CouponController extends Controller
     public function get(){
         return response()->json($this->couponService->getCoupons(),200);
     }
+
+    public function update(Request $request){
+        return response()->json($this->couponService->updateCoupon($request),200);
+    }
 }
