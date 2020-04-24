@@ -23,6 +23,9 @@
 		},
 		{
 			"path": "resources\\frontend\\src\\views\\pages"
+		},
+		{
+			"path": "resources\\frontend\\src\\common"
 		}
 	],
 	"settings": {}

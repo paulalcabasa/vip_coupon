@@ -10,6 +10,9 @@
             <b-button v-if="isAbleToApprove" @click="reject" size="sm" variant="danger" class="ml-2"><i class="flaticon2-cross"></i></b-button>
             <b-button v-if="isAbleToPrint" @click="print" size="sm" variant="primary" class="ml-2"><i class="flaticon2-print"></i></b-button>
             <b-button v-if="isAbletoEdit" @click="edit" size="sm" variant="primary" class="ml-2"><i class="flaticon2-edit"></i></b-button>
+            <b-button v-if="isAbleToIssue" @click="issue" size="sm" variant="success" class="ml-2"><i class="flaticon-paper-plane"></i></b-button>
+            <b-button v-if="isAbleToReceiveByFleet" @click="receiveFleet" size="sm" variant="primary" class="ml-2"><i class="flaticon-like"></i></b-button>
+            <b-button v-if="isAbleToReceiveByDealer" @click="receiveDealer" size="sm" variant="success" class="ml-2"><i class="la la-truck"></i></b-button>
           </template> 
           <template v-slot:body>
             <b-container fluid>
@@ -132,6 +135,9 @@ export default {
       isAbleToApprove : false,
       isAbleToPrint : false,
       isAbletoEdit : false,
+      isAbleToIssue : false,
+      isAbleToReceiveByFleet : false,
+      isAbleToReceiveByDealer : false,
       denomination: [],
       timelines: []
     }
@@ -168,6 +174,18 @@ export default {
           if(res.data.status.trim() == "PENDING" && self.action == "view"){
             self.isAbletoEdit = true;
           }
+          if(res.data.status.trim() == "PRINTED" && self.action == "view"){
+            self.isAbleToIssue = true;
+          }
+          if(res.data.status.trim() == "ISSUED" && self.action == "view"){
+            self.isAbleToReceiveByFleet = true;
+          }
+          if(res.data.status.trim() == "FLEET RECEIVED" && self.action == "view"){
+            self.isAbleToReceiveByDealer = true;
+          }
+          
+
+          
           
           resolve(res);
           
@@ -359,10 +377,158 @@ export default {
       }).finally( () => {
         self.blockui.state = false;
       });
-    //  console.log(process.env.VUE_APP_API_URL + '/api/print-coupon/' + this.couponId);
-      //window.open(process.env.VUE_APP_API_URL + '/api/print-coupon/' + this.couponId);
+    },
+    issue(){
+      var self = this;
+      const swalWithBootstrapButtons = this.$swal.mixin({
+        customClass: {
+          confirmButton: 'btn btn-success',
+          cancelButton: 'btn btn-danger'
+        },
+        buttonsStyling: false
+      })
+      
+      swalWithBootstrapButtons.fire({
+        title: 'Are you sure to issue the coupons?',
+        icon: 'info',
+        showCancelButton: true,
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'Cancel',
+        //reverseButtons: true
+      }).then((result) => {
+        if (result.value) {
+          self.blockui.state = true;
+          axios.post('api/coupon/issue', {
+            couponId : self.couponId,
+            userId   : self.$store.getters.currentUser.user_id,
+            userSource   : self.$store.getters.currentUser.user_source_id,
+            status : 7,
+            action : 5
+          }).then(res => {
+            if(!res.data.error){
+              swalWithBootstrapButtons.fire(
+                'Document has been issued.',
+                res.data.message,
+                'success'
+              ).then(() => {
+                this.loadCouponHeader();
+              });
+            }
+          }).catch(err => {
+            swalWithBootstrapButtons.fire(
+              'System message',
+              res.data.message,
+              'error'
+            );
+          }).finally( () => {
+              self.blockui.state = false;
+          });
+          
+        } 
+      });
+    },
+    receiveFleet(){
+      var self = this;
+      const swalWithBootstrapButtons = this.$swal.mixin({
+        customClass: {
+          confirmButton: 'btn btn-success',
+          cancelButton: 'btn btn-danger'
+        },
+        buttonsStyling: false
+      })
+      
+      swalWithBootstrapButtons.fire({
+        title: 'Are you sure to receive coupons by fleet sales?',
+        icon: 'info',
+        showCancelButton: true,
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'Cancel',
+        //reverseButtons: true
+      }).then((result) => {
+        if (result.value) {
+          self.blockui.state = true;
+          axios.post('api/coupon/receive-fleet', {
+            couponId : self.couponId,
+            userId   : self.$store.getters.currentUser.user_id,
+            userSource   : self.$store.getters.currentUser.user_source_id,
+            status : 8,
+            action : 3
+          }).then(res => {
+            if(!res.data.error){
+              swalWithBootstrapButtons.fire(
+                'Document has been issued.',
+                res.data.message,
+                'success'
+              ).then(() => {
+                this.loadCouponHeader();
+              });
+            }
+          }).catch(err => {
+            swalWithBootstrapButtons.fire(
+              'System message',
+              res.data.message,
+              'error'
+            );
+          }).finally( () => {
+              self.blockui.state = false;
+          });
+          
+        } 
+      });
+    },
+    receiveDealer(){
+      var self = this;
+      const swalWithBootstrapButtons = this.$swal.mixin({
+        customClass: {
+          confirmButton: 'btn btn-success',
+          cancelButton: 'btn btn-danger'
+        },
+        buttonsStyling: false
+      })
+      
+      swalWithBootstrapButtons.fire({
+        title: 'Are you sure to receive coupons by fleet sales?',
+        icon: 'info',
+        showCancelButton: true,
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'Cancel',
+        //reverseButtons: true
+      }).then((result) => {
+        if (result.value) {
+          self.blockui.state = true;
+          axios.post('api/coupon/receive-dealer', {
+            couponId : self.couponId,
+            userId   : self.$store.getters.currentUser.user_id,
+            userSource   : self.$store.getters.currentUser.user_source_id,
+            status : 9,
+            action : 4
+          }).then(res => {
+            if(!res.data.error){
+              swalWithBootstrapButtons.fire(
+                'Document has been issued.',
+                res.data.message,
+                'success'
+              ).then(() => {
+                this.loadCouponHeader();
+                this.loadTimeline();
+              });
+            }
+          }).catch(err => {
+            swalWithBootstrapButtons.fire(
+              'System message',
+              res.data.message,
+              'error'
+            );
+          }).finally( () => {
+              self.blockui.state = false;
+          });
+          
+        } 
+      });
     }
-  }
+  
+  },
+  
   
 };
 </script>

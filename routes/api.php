@@ -48,6 +48,9 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('coupon/approve/','ApprovalController@approve');
     Route::post('coupon/reject/','ApprovalController@reject');
     Route::post('coupon/update/','CouponController@update');
+    Route::post('coupon/issue/','CouponController@issue');
+    Route::post('coupon/receive-fleet/','CouponController@receiveFleet');
+    Route::post('coupon/receive-dealer/','CouponController@receiveDealer');
 
     // Documents
     Route::post('coupon/generate/','CouponDocsController@generate');
