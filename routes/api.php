@@ -17,6 +17,9 @@ use Illuminate\Http\Request;
     return $request->user();
 });
  */
+ 
+Route::get('print-coupon/{coupon_id}', 'PdfController@printCoupon');
+
 
 Route::group([
 
@@ -30,15 +33,15 @@ Route::group([
     Route::post('refresh', 'AuthController@refresh');
     Route::post('me', 'AuthController@me');
     Route::post('payload', 'AuthController@payload');
-    
-
+   
 });
 
 Route::group(['middleware' => 'auth'], function () {
     Route::get('posts','DashboardController@posts');
     Route::get('dealers','DealerController@get');
     Route::get('allCSNumbers','CSNumberController@getCSNumbers');
-
+    
+    // Coupon
     Route::post('coupon/submit','CouponController@store');
     Route::get('coupon/show/{couponId}','CouponController@show');
     Route::get('coupon/get/','CouponController@get');
@@ -46,10 +49,15 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('coupon/reject/','ApprovalController@reject');
     Route::post('coupon/update/','CouponController@update');
 
+    // Documents
+    Route::post('coupon/generate/','CouponDocsController@generate');
+
+    
     Route::get('timeline/show/{couponId}','TimelineController@show');
     Route::get('denomination/show/{couponId}','DenominationController@show');
     
     Route::get('approval/get/','ApprovalController@get');
     
 });
+
 

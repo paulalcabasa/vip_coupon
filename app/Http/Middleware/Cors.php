@@ -15,7 +15,13 @@ class Cors
      */
     public function handle($request, Closure $next)
     {  
-        $domains = ['http://localhost:8080','http://localhost:8000','http://localhost/vip_coupon','http://idh.isuzuphil.com/vip_coupon','http://ecommerce4/vip_coupon'];
+        $domains = [
+            'http://localhost:8080',
+            'http://localhost:8000',
+            'http://localhost/vip_coupon',
+            'http://idh.isuzuphil.com/vip_coupon',
+            'http://ecommerce4/vip_coupon'
+        ];
 
         if(isset($request->server()['HTTP_ORIGIN'])) {
             $origin = $request->server()['HTTP_ORIGIN'];
