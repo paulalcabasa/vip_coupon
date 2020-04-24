@@ -1,9 +1,6 @@
 {
 	"folders": [
 		{
-			"path": "resources\\frontend"
-		},
-		{
 			"path": "app\\Http\\Controllers"
 		},
 		{
@@ -20,6 +17,12 @@
 		},
 		{
 			"path": "app\\Services"
+		},
+		{
+			"path": "resources\\views"
+		},
+		{
+			"path": "resources\\frontend\\src\\views\\pages"
 		}
 	],
 	"settings": {}

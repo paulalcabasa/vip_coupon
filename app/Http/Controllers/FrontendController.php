@@ -14,4 +14,6 @@ class FrontendController extends Controller
     {
         return view('app');
     }
+
+  
 }

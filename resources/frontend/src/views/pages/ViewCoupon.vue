@@ -8,7 +8,7 @@
           <template v-slot:toolbar>
             <b-button v-if="isAbleToApprove" @click="approve" size="sm" variant="success"><i class="flaticon2-check-mark"></i></b-button>
             <b-button v-if="isAbleToApprove" @click="reject" size="sm" variant="danger" class="ml-2"><i class="flaticon2-cross"></i></b-button>
-            <b-button v-if="isAbleToPrint" size="sm" variant="primary" class="ml-2"><i class="flaticon2-print"></i></b-button>
+            <b-button v-if="isAbleToPrint" @click="print" size="sm" variant="primary" class="ml-2"><i class="flaticon2-print"></i></b-button>
             <b-button v-if="isAbletoEdit" @click="edit" size="sm" variant="primary" class="ml-2"><i class="flaticon2-edit"></i></b-button>
           </template> 
           <template v-slot:body>
@@ -329,6 +329,38 @@ export default {
               couponId : this.couponId
           } 
       });
+    },
+    makeToast(variant = null,body,title) {
+      this.$bvToast.toast(body, {
+        title: `${title}`,
+        variant: variant,
+        solid: true
+      })
+    },
+    print(){
+      var self = this;
+      self.blockui.state = true;
+      axios.post('api/coupon/generate',{
+        couponId  : self.couponId,
+        userId    : self.$store.getters.currentUser.user_id,
+        userSource: self.$store.getters.currentUser.user_source_id,
+      }).then(res => {
+        if(!res.data.error){
+          self.makeToast('success',res.data.message,'System message');
+        //  self.loadCouponHeader();
+          window.open(process.env.VUE_APP_API_URL + '/api/print-coupon/' + res.data.couponId);
+        }
+        else {
+          self.makeToast('danger',res.data.message,'System message');
+        }
+      }).catch(err => {
+        self.makeToast('danger',err,'System message');
+        console.log(err);
+      }).finally( () => {
+        self.blockui.state = false;
+      });
+    //  console.log(process.env.VUE_APP_API_URL + '/api/print-coupon/' + this.couponId);
+      //window.open(process.env.VUE_APP_API_URL + '/api/print-coupon/' + this.couponId);
     }
   }
   
