@@ -26,6 +26,9 @@
 		},
 		{
 			"path": "resources\\frontend\\src\\common"
+		},
+		{
+			"path": "resources\\frontend\\src"
 		}
 	],
 	"settings": {}

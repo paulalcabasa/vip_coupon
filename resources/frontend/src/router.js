@@ -23,7 +23,7 @@ export default new Router({
           }
         },
         {
-          path: "/coupon/:action",
+          path: "/coupon/:action/",
           name: "create-coupon",
           component: () => import("@/views/pages/Coupon.vue"),
           meta: {
@@ -41,7 +41,7 @@ export default new Router({
           }
         },
         {
-          path: "/coupon/:action/:couponId",
+          path: "/view-coupon/:action/:couponId",
           name: "view-coupon",
           component: () => import("@/views/pages/ViewCoupon.vue"),
           meta: {
@@ -67,6 +67,24 @@ export default new Router({
             title: 'Approval'
           }
         },
+        {
+          path: "/payment/request",
+          name: "payment-request",
+          component: () => import("@/views/pages/PaymentRequest.vue"),
+          meta: {
+            requiresAuth: true,
+            title: 'Approval'
+          }
+        },
+        {
+          path: "/payments",
+          name: "all-payments",
+          component: () => import("@/views/pages/AllPayments.vue"),
+          meta: {
+            requiresAuth: true,
+            title: 'Approval'
+          }
+        }
       ]
     },
 

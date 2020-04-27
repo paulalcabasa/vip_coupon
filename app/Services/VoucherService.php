@@ -7,9 +7,10 @@ use App\Models\Coupon;
 use App\Models\Denomination;
 use App\Models\CSNumber;
 use App\Models\Timeline;
-use App\Models\CouponDocs;
+use App\Models\Voucher;
 
-class CouponDocsService {
+class VoucherService {
+
 
     public function generate($request){
 
@@ -17,11 +18,11 @@ class CouponDocsService {
         $user       = $request->userId;
         $userSource = $request->userSource;
 
-        $couponDocs = new CouponDocs;
+        $voucher = new Voucher;
       
-        if(count($couponDocs->getByCoupon($couponId)) > 0){
+        if(count($voucher->getByCoupon($couponId)) > 0){
             return response()->json([
-                'message'  => 'Document already exists!',
+                'message'  => 'Voucher already exists!',
                 'couponId' => $couponId,
                 'error'    => true
             ],200);
@@ -45,22 +46,22 @@ class CouponDocsService {
 
                 for($i = 1; $i <= $row['quantity']; $i++){
                     array_push($docs,[
+                        'coupon_id'          => $couponId,
+                        'denomination_id'    => $row['id'],
                         'amount'             => $row['amount'],
                         'cs_number'          => array_shift($csNumbers),
                         'status'             => 3,
                         'created_by'         => $user,
                         'create_user_source' => $userSource,
                         'creation_date'      => Carbon::now(),
-                        'print_date'         => Carbon::now(),
-                        'denomination_id'    => $row['id'],
-                        'coupon_id'         => $couponId
+                        'print_date'         => Carbon::now()
                     ]);
                 }
             }
 
 
             // insert documents
-            $couponDocs->batchInsert($docs);
+            $voucher->batchInsert($docs);
 
             // update status of coupon
             $coupon = new Coupon;
@@ -88,7 +89,7 @@ class CouponDocsService {
             DB::commit();
 
             return response()->json([
-                'message'  => 'Documents has been generated and ready for printing',
+                'message'  => 'Voucher has been generated and ready for printing',
                 'couponId' => $couponId,
                 'error'    => false
             ],200);
@@ -99,6 +100,11 @@ class CouponDocsService {
         }
     }
 
+
+    public function getVouchers($couponId){
+        $voucher = new Voucher;
+        return response()->json($voucher->getByCoupon($couponId),200);
+    }
   
 }
 

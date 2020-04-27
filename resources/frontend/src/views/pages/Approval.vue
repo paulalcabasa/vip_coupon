@@ -1,6 +1,5 @@
 <template>
   <div>
-    <BlockUI :message="blockui.msg" :html="blockui.html" v-if="blockui.state"></BlockUI>
     <KTPortlet v-bind:title="'Approval'" >
       <template v-slot:toolbar>
           <b-col lg="12" class="my-1">
@@ -156,12 +155,8 @@ export default {
             sortDesc: false,
             sortDirection: 'asc',
             filter: null,
-            filterOn: [],
-            blockui : {
-                msg : 'Please wait',
-                html : '<i class="fa fa-cog fa-spin fa-3x fa-fw"></i>',
-                state : false
-            }
+            filterOn: []
+        
         }
   },
   components: {
@@ -197,20 +192,26 @@ export default {
     },
     loadPending(){
         var self = this;
-        self.blockui.state = true;
+        self.$Progress.start();
         return new Promise(resolve => {
             axios.get('api/approval/get')
                 .then( (res) => {
                     self.items = res.data;
                     self.totalRows = self.items.length;
+                    self.$Progress.finish();
                     resolve(res);
                 })
                 .catch( err => {
-                    self.$router.push({name : '404'});
+                    self.$bvToast.toast('Failed loading resources, please refresh the page.', {
+                        title: 'System message',
+                        variant: 'danger',
+                        solid: true
+                    });
+                    self.$Progress.fail();
                     resolve(err);
                 })
                 .finally( () => {
-                    self.blockui.state = false;
+                    
                 });
         });
     }

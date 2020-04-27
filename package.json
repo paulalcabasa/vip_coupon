@@ -9,6 +9,7 @@
         "test": "cd resources/frontend && npm run test:unit"
     },
     "dependencies": {
+        "vue-progressbar": "^0.7.5",
         "vue-sweetalert2": "^3.0.3"
     }
 }

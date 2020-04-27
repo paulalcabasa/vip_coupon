@@ -221,8 +221,8 @@ class CouponService {
         $couponId   = $request->couponId;
         $userId     = $request->userId;
         $userSource = $request->userSource;
-        $status     = $request->status;
-        $action     = $request->action;
+        $status     = 7;
+        $action     = 5;
 
         // approve request
         DB::beginTransaction();
@@ -270,8 +270,8 @@ class CouponService {
         $couponId   = $request->couponId;
         $userId     = $request->userId;
         $userSource = $request->userSource;
-        $status     = $request->status;
-        $action     = $request->action;
+        $status     = 8;
+        $action     = 3;
 
         // approve request
         DB::beginTransaction();
@@ -319,8 +319,8 @@ class CouponService {
         $couponId   = $request->couponId;
         $userId     = $request->userId;
         $userSource = $request->userSource;
-        $status     = $request->status;
-        $action     = $request->action;
+        $status     = 9;
+        $action     = 4;
 
         // approve request
         DB::beginTransaction();

@@ -19,8 +19,8 @@ class ApprovalService {
         $couponId   = $request->couponId;
         $userId     = $request->userId;
         $userSource = $request->userSource;
-        $status     = $request->status;
-        $action     = $request->action;
+        $status     = 2;
+        $action     = 1;
 
         // approve request
         DB::beginTransaction();
@@ -67,8 +67,8 @@ class ApprovalService {
         $couponId   = $request->couponId;
         $userId     = $request->userId;
         $userSource = $request->userSource;
-        $status     = $request->status;
-        $action     = $request->action;
+        $status     = 6;
+        $action     = 9;
 
         // approve request
         DB::beginTransaction();

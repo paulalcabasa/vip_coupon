@@ -22,8 +22,15 @@ import "@babel/polyfill";
 import "@mdi/font/css/materialdesignicons.css";
 import BlockUI from 'vue-blockui';
 import VueSweetalert2 from 'vue-sweetalert2';
+import VueProgressBar from 'vue-progressbar';
 Vue.use(BlockUI);
 Vue.use(VueSweetalert2);
+
+Vue.use(VueProgressBar, {
+  color: 'rgb(143, 255, 199)',
+  failedColor: 'red',
+  height: '2px'
+});
 
 
 // API service init

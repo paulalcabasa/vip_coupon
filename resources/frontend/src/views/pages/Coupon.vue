@@ -2,7 +2,13 @@
   <div>
     <KTPortlet v-bind:title="title" >
       <template v-slot:toolbar>
-        <b-button v-if="action == 'create'" variant="success" @click.prevent="submit()">Submit</b-button>
+        <b-button 
+          v-if="action == 'create'" 
+          class="btn btn-success btn-elevate"
+          @click.prevent="submit()" 
+          :disabled="disableSubmit"
+          id="submit"
+        >Submit</b-button>
         <b-button v-if="action == 'edit'" variant="success" @click.prevent="update()">Save</b-button>
       </template> 
   
@@ -131,6 +137,7 @@ export default {
   },
   data(){
     return {
+        disableSubmit : false, 
         dealer: '',
         dealers : [],
         denominations : [],
@@ -153,7 +160,7 @@ export default {
   },
   created() {
     var self = this;
-    self.blockui.state = true;
+    this.$Progress.start();
     axios.get('/api/dealers')
     .then(res => {
         this.dealers = [
@@ -168,13 +175,15 @@ export default {
             'account_name' : row.account_name
           });
         });
+      this.$Progress.finish();
     })
     .catch(error => {
       self.makeToast('danger','Failed loading dealers, please refresh the page to continue.','System message');
       console.log(error);
+      this.$Progress.fail();
     })
     .finally( () => {
-      self.blockui.state = false;
+      
     });
   },
   methods: {
@@ -212,10 +221,11 @@ export default {
        if(this.total <= 0){
          this.makeToast('danger','Amount should have a value.','System message');
          return false;
-      }
- 
-       
-       self.blockui.state = true;
+      } 
+         // set spinner to submit button
+      self.disableSubmit = true;
+  
+       self.$Progress.start();
        axios.post('api/coupon/submit', {
          dealerId    : self.dealer,
          denominations: self.denominations,
@@ -223,6 +233,7 @@ export default {
          userSource   : self.$store.getters.currentUser.user_source_id,
        }).then(res => {
          
+        self.$Progress.finish();
         if(res.data.error){
            this.makeToast('danger',res.data.message + " : " + (res.data.invalid_cs_numbers),'System message');
          }
@@ -238,14 +249,16 @@ export default {
                 } 
               }
             );
-           },1500)
+           },500)
          }
        })
        .catch(err => {
          console.log(err);
+         self.$Progress.fail();
        })
        .finally( () => {
-         self.blockui.state = false;
+     
+        self.disableSubmit = false;
        });
     },
     loadCouponHeader(){

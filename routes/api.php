@@ -49,17 +49,21 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('coupon/reject/','ApprovalController@reject');
     Route::post('coupon/update/','CouponController@update');
     Route::post('coupon/issue/','CouponController@issue');
-    Route::post('coupon/receive-fleet/','CouponController@receiveFleet');
-    Route::post('coupon/receive-dealer/','CouponController@receiveDealer');
+    Route::post('coupon/receive/fleet','CouponController@receiveFleet');
+    Route::post('coupon/receive/dealer','CouponController@receiveDealer');
 
     // Documents
-    Route::post('coupon/generate/','CouponDocsController@generate');
+    Route::post('coupon/generate/','VoucherController@generate');
 
     
     Route::get('timeline/show/{couponId}','TimelineController@show');
     Route::get('denomination/show/{couponId}','DenominationController@show');
     
     Route::get('approval/get/','ApprovalController@get');
+
+    
+    // Payment
+    Route::get('voucher/get/{couponId}','VoucherController@show');
     
 });
 
