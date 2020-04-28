@@ -61,7 +61,7 @@
         <div class="qr-code">
             <img  src="data:image/png;base64, {!! base64_encode(QrCode::format('png')
                 ->size(500)->errorCorrection('H')
-                ->generate(sprintf('%06d',$row->id))) !!} "
+                ->generate($row->voucher_code)) !!} "
                 width="84" />
         </div>
 

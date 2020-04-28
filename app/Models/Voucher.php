@@ -17,18 +17,32 @@ class Voucher extends Model
         $this->insert($params);
     }
 
+    public function inserVoucher($params){
+        $this->insert($params);
+    }
+
     public function getByCoupon($couponId){
         //return $this->where('coupon_id', $couponId)->get();
         $sql = "SELECT cd.id,
                     cd.amount,
                     cd.cs_number,
                     st.status,
-                    lpad(cd.id,6,0) voucher_no
+                    lpad(cd.id,6,0) voucher_no,
+                    cd.voucher_code
                 FROM ipc.ipc_vpc_vouchers cd
                     LEFT JOIN ipc.ipc_vpc_status st
                     ON cd.status = st.id
                 WHERE cd.coupon_id = :coupon_id";
         $query = DB::select($sql,['coupon_id' => $couponId]);
         return $query;
+    }
+
+    public function isExist($voucherCode){
+        $query = $this->where('voucher_code', $voucherCode)->count();
+      
+        if($query > 0){
+            return true;
+        }
+        return false;
     }
 }

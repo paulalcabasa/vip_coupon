@@ -8,6 +8,7 @@ use App\Models\Denomination;
 use App\Models\CSNumber;
 use App\Models\Timeline;
 use App\Models\Voucher;
+use App\Services\CodeService;
 
 class VoucherService {
 
@@ -40,12 +41,23 @@ class VoucherService {
 
             foreach($denominations as $row){
                 $csNumber = new CSNumber;
-            
+                
                 $csNumbers = $csNumber->getByDenomination($row->id);
                 $csNumbers = collect($csNumbers)->pluck('cs_number')->toArray();
+                
+                
 
                 for($i = 1; $i <= $row['quantity']; $i++){
-                    array_push($docs,[
+                    
+                    do {
+                        $voucherCode = CodeService::generate([
+                            'length' => 8,
+                            'numbers' => true,
+                            'letters' => true
+                        ]); 
+                    } while($voucher->isExist($voucherCode));
+
+                    $voucher->insert([
                         'coupon_id'          => $couponId,
                         'denomination_id'    => $row['id'],
                         'amount'             => $row['amount'],
@@ -54,14 +66,14 @@ class VoucherService {
                         'created_by'         => $user,
                         'create_user_source' => $userSource,
                         'creation_date'      => Carbon::now(),
-                        'print_date'         => Carbon::now()
+                        'print_date'         => Carbon::now(),
+                        'voucher_code'       => $voucherCode
                     ]);
                 }
             }
 
 
-            // insert documents
-            $voucher->batchInsert($docs);
+           
 
             // update status of coupon
             $coupon = new Coupon;
@@ -104,6 +116,18 @@ class VoucherService {
     public function getVouchers($couponId){
         $voucher = new Voucher;
         return response()->json($voucher->getByCoupon($couponId),200);
+    }
+
+    public function generateVoucherCode($strength = 8) {
+        $input = '0123456789BCDFGHJKLMNPQRSTVWXYZ';
+        $input_length = strlen($input);
+        $random_string = '';
+        for($i = 0; $i < $strength; $i++) {
+            $random_character = $input[mt_rand(0, $input_length - 1)];
+            $random_string .= $random_character;
+        }
+        
+        return $random_string;
     }
   
 }

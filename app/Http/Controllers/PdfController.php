@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use PDF;
 use App\Services\VoucherService;
 use App\Models\Voucher;
-
+use App\Services\CodeService;
 
 class PdfController extends Controller
 {   
@@ -14,7 +14,6 @@ class PdfController extends Controller
     public function printCoupon(Request $request){
         $voucher = new Voucher;
         $docs = $voucher->getByCoupon($request->coupon_id);
-       
         $data = [
             'docs' => $docs
         ];
