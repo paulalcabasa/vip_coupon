@@ -20,6 +20,26 @@ use Illuminate\Http\Request;
  
 Route::get('print-coupon/{coupon_id}', 'PdfController@printCoupon');
 
+ // Download Route
+Route::get('download/voucher-template', function(){
+ 
+    // Check if file exists in app/storage/file folder
+    $filename = 'voucher_template.xlsx';
+    $file_path = storage_path() .'/app/public/' . $filename;
+    if (file_exists($file_path))
+    {
+        // Send Download
+        return Response::download($file_path, $filename, [
+            'Content-Length: '. filesize($file_path)
+        ]);
+    }
+    else
+    {
+        // Error
+        exit('Requested file does not exist on our server!');
+    }
+});
+
 
 Route::group([
 
@@ -64,6 +84,9 @@ Route::group(['middleware' => 'auth'], function () {
     
     // Payment
     Route::get('voucher/get/{couponId}','VoucherController@show');
+    Route::post('payment-request/submit','PaymentRequestController@store');
+
+   
     
 });
 

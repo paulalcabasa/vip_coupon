@@ -45,4 +45,17 @@ class Voucher extends Model
         }
         return false;
     }
+
+    public function getInvalidVouchers($voucherCodes){
+        $query = DB::connection('oracle')->table('ipc.ipc_vpc_vouchers vch')
+                //    ->leftJoin('ipc.ipc_vpc_payment_lines pl', 'pl.voucher_id','=','vch.id')
+                //    ->leftJoin('ipc.ipc_vpc_payment_headers ph', 'ph.id','=','pl.payment_header_id')
+                    ->whereIn('vch.voucher_code', $voucherCodes)
+                //    ->where('ph.status', 4) // approved
+                 //   ->whereRaw('pl.id IS NULL')
+                    ->select('vch.voucher_code')
+                    ->get();
+        $isExist = collect($query)->pluck('voucher_code')->toArray();
+        return array_diff($voucherCodes,$isExist);
+    }
 }

@@ -29,6 +29,9 @@
 		},
 		{
 			"path": "resources\\frontend\\src"
+		},
+		{
+			"path": "storage"
 		}
 	],
 	"settings": {}

@@ -1,5 +1,6 @@
 <template>
   <div>
+    
     <!-- Statistics -->
     <div class="row">
       <div class="col-lg-4 col-xl-4 order-lg-1 order-xl-1">

@@ -72,10 +72,16 @@
               <template v-slot:cell(cs_number)="data">
                 <span v-html="data.value"></span>
               </template>
+           
             </b-table> 
           </b-tab>
           <b-tab title="Voucher">
-            <b-table striped hover :items="voucherItems" :fields="voucherFields"></b-table>
+            <b-table striped hover :items="voucherItems" :fields="voucherFields">
+              <template v-slot:cell(voucher_code)="data">
+                <span v-html="maskVoucher(data.value)"></span>
+              </template>
+       
+            </b-table>
           </b-tab>
         </b-tabs>
       </template>
@@ -137,6 +143,12 @@ export default {
         { 
               key: 'amount', 
               label: 'Amount', 
+              sortable: true, 
+              sortDirection: 'desc' 
+        },
+        { 
+              key: 'voucher_code', 
+              label: 'Code', 
               sortable: true, 
               sortDirection: 'desc' 
         },
@@ -346,6 +358,11 @@ export default {
     },
     receiveDealer(){
       this.doAction('api/coupon/receive/dealer', 'Received','success', 'receive-fleet', 'Are you sure to receive coupons by dealer?');
+    },
+    maskVoucher(voucherCode){
+      let endStr = voucherCode.substr(5,voucherCode.length);
+      let maskedCode = 'XXXXX' + endStr;
+      return maskedCode;
     }
   },
   
