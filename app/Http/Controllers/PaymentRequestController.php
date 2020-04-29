@@ -13,8 +13,8 @@ class PaymentRequestController extends Controller
         return response()->json($paymentRequestService->handlePaymentSave($request),200);
     }
 
-    public function get(PaymentRequestService $paymentRequestService){
-        return response()->json($paymentRequestService->getPayments(),200);
+    public function get(Request $request,PaymentRequestService $paymentRequestService){
+        return response()->json($paymentRequestService->getPayments($request),200);
     }
 
     public function getLines(Request $request, PaymentRequestService $paymentRequestService){
@@ -23,5 +23,13 @@ class PaymentRequestController extends Controller
 
     public function getHeader(Request $request, PaymentRequestService $paymentRequestService){
         return response()->json($paymentRequestService->getHeader($request),200);
+    }
+
+    public function cancelPayment(Request $request, PaymentRequestService $paymentRequestService){
+        return response()->json($paymentRequestService->cancelPayment($request),200);
+    }
+
+    public function updateStatus(Request $request, PaymentRequestService $paymentRequestService){
+        return response()->json($paymentRequestService->updateStatus($request),200);
     }
 }

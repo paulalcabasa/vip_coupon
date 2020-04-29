@@ -17,7 +17,14 @@ class PaymentHeader extends Model
         return $this->insertGetId($params);
     }
 
-    public function getHeaders(){
+    public function getHeaders($status){
+
+        $where = "";
+
+        if($status == "pending"){
+            $where .= 'AND ph.status = 1';
+        }
+
         $sql = "SELECT ph.id,
                     st.status,
                     ph.creation_date,
@@ -29,7 +36,10 @@ class PaymentHeader extends Model
                     ON ph.status = st.id
                 LEFT JOIN apps.ipc_vpc_users_v usr
                     ON usr.user_id = ph.created_by
-                    AND usr.user_source_id = ph.create_user_source";
+                    AND usr.user_source_id = ph.create_user_source
+                WHERE 1 = 1";
+        
+        $sql .= $where;
         $query = DB::select($sql);
         return $query;
     }
@@ -51,4 +61,18 @@ class PaymentHeader extends Model
         $query = DB::select($sql, ['payment_header_id' => $paymentHeaderId]);
         return !empty($query) ? $query[0] : $query;
     }
+
+    public function updateStatus($params){
+        $this
+            ->where([
+                [ 'id', '=' , $params['payment_header_id'] ],
+            ])
+            ->update([
+                'status'             => $params['status'],
+                'updated_by'         => $params['updated_by'],
+                'update_user_source' => $params['update_user_source']
+            ]);
+    }
+
+
 }

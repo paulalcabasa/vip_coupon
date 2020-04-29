@@ -52,9 +52,9 @@
                             <b-button size="sm" @click="info(row.item)" class="mr-1">
                                 <i class="fa fa-search"></i>
                             </b-button>
-                             <b-button v-if="row.item.status.trim() == 'pending'" size="sm" @click="edit(row.item)" class="mr-1">
+                          <!--    <b-button v-if="row.item.status.trim() == 'pending'" size="sm" @click="edit(row.item)" class="mr-1">
                                 <i class="fa fa-edit"></i>
-                            </b-button> 
+                            </b-button>  -->
                         </template>
                     </b-table>
 
@@ -109,11 +109,13 @@ export default {
     name: "coupons",
     mounted() {
         this.loadRequests();
+      
     },
     data(){
         return {
             statusColors : badge.badgeColors,
             items: [],
+            currentRoute : '',
             fields: [
                 { 
                     key: 'actions', 
@@ -174,15 +176,27 @@ export default {
                 .map(f => {
                 return { text: f.label, value: f.key }
             })
+        },
+        currentRouteName() {
+            return this.$route.name;
         }
     },
     methods: {
         info(item) {
+            var action = "";
+            var self = this;
+            if(self.currentRouteName == "all-payments"){
+                action = "view";
+            }
+            else if(self.currentRouteName == "payments-approval"){
+                action = "approve";
+            }
+         
             this.$router.push({ 
                 name : 'view-payment-request', 
                 params : { 
                     paymentHeaderId : item.id,
-                    action : 'view'
+                    action : action
                 } 
             });
         },
@@ -202,9 +216,17 @@ export default {
         },
         loadRequests(){
             var self = this;
+            var apiUrl = "";
+            if(self.currentRouteName == "all-payments"){
+                apiUrl ='api/payments/get/all';
+            }
+            else if(self.currentRouteName == "payments-approval"){
+                apiUrl ='api/payments/get/pending';
+            }
+            
             self.$Progress.start();
             return new Promise(resolve => {
-                axios.get('api/payments/get')
+                axios.get(apiUrl)
                     .then( (res) => {
                         self.items = res.data;
                         self.totalRows = self.items.length;

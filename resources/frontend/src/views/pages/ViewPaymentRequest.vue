@@ -29,7 +29,9 @@
             <b-col sm="8">
                 <KTPortlet v-bind:title="'Voucher Codes'" >
                     <template v-slot:toolbar>
-                        Toolbar
+                        <b-button v-if="action == 'view' && paymentHeader.status.trim() == 'pending'" size="sm" variant="danger" @click.prevent="cancel()" :disabled="formBusy">Cancel</b-button>
+                        <b-button v-if="action == 'approve' && paymentHeader.status.trim() == 'pending'" class="mr-2" size="sm" variant="success" @click.prevent="approve()" :disabled="formBusy">Approve</b-button>
+                        <b-button v-if="action == 'approve' && paymentHeader.status.trim() == 'pending'"  size="sm" variant="danger" @click.prevent="reject()" :disabled="formBusy">Reject</b-button>
                     </template> 
 
                     <template v-slot:body>
@@ -62,10 +64,13 @@ export default {
     name: "blank",
     mounted() {
         this.paymentHeaderId = this.$route.params.paymentHeaderId;
+        this.action = this.$route.params.action;
         this.loadData();
     },
     data(){
         return {
+            formBusy : false,
+            action : '',
             statusColors : badge.badgeColors,
             paymentHeaderId : '',
             paymentHeader : {
@@ -137,6 +142,57 @@ export default {
             }).finally(() => {
                 
             });
+        },
+        doAction(apiUrl, action, status, verb, toastState){
+            var self = this;
+            const swalWithBootstrapButtons = this.$swal.mixin({
+                customClass: {
+                confirmButton: 'btn btn-success',
+                cancelButton: 'btn btn-danger'
+                },
+                buttonsStyling: false
+            })
+      
+            swalWithBootstrapButtons.fire({
+                title: "Are you sure to " + action +" this payment request?",
+                icon: 'info',
+                showCancelButton: true,
+                confirmButtonText: 'Yes',
+                cancelButtonText: 'Cancel',
+                //reverseButtons: true
+            }).then((result) => {
+                
+                if (result.value) {
+                    self.$Progress.start();
+                    self.formBusy = true;
+                    axios.post(apiUrl,{
+                        paymentHeaderId: self.paymentHeaderId,
+                        userId         : self.$store.getters.currentUser.user_id,
+                        userSource     : self.$store.getters.currentUser.user_source_id,
+                        status         : status,
+                        statusVerb     : verb
+                    }).then(res => {
+                        self.makeToast(toastState,res.data.message,'System message');
+                        self.paymentHeader.status = res.data.status;
+                        self.$Progress.finish();
+                        self.formBusy = false;
+
+                    }).catch(err => {
+                        self.makeToast('error',err,'System message');
+                        self.$Progress.fail();
+                        self.formBusy = false;
+                    });
+                }
+            });
+        },
+        cancel(){
+            this.doAction('api/payment/update/status', 'cancel', 4, 'cancelled', 'danger');
+        },
+        approve(){
+            this.doAction('api/payment/update/status', 'approve', 2, 'approved', 'success');
+        },
+        reject(){
+            this.doAction('api/payment/update/status', 'reject', 6, 'rejected', 'danger');
         }
     }
 };

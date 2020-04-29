@@ -94,6 +94,15 @@ export default new Router({
             title: 'Approval'
           }
         },
+        {
+          path: "/payments/approval",
+          name: "payments-approval",
+          component: () => import("@/views/pages/AllPayments.vue"),
+          meta: {
+            requiresAuth: true,
+            title: 'Approval'
+          }
+        },
       ]
     },
 

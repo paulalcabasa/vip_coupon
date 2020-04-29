@@ -55,6 +55,12 @@
         "root": true,
         "icon": "flaticon-file-2",
         "page": "payments"
+      },
+      {
+        "title": "Approval",
+        "root": true,
+        "icon": "flaticon2-check-mark",
+        "page": "payments/approval"
       }
     ]
   }

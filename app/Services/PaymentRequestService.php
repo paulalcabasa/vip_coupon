@@ -84,9 +84,10 @@ class PaymentRequestService {
         
     }
 
-    public function getPayments(){
+    public function getPayments($request){
         $paymentHeader = new PaymentHeader();
-        return $paymentHeader->getHeaders();
+        $status = $request->status;
+        return $paymentHeader->getHeaders($status);
     }
 
     public function getLines($request){
@@ -97,6 +98,35 @@ class PaymentRequestService {
     public function getHeader($request){
         $paymentHeader = new PaymentHeader();
         return $paymentHeader->get($request->paymentHeaderId);
+    }
+
+    public function cancelPayment($request){
+        $paymentHeader = new PaymentHeader();
+        $paymentHeader->updateStatus([
+            'status'             => 4,
+            'updated_by'         => $request->userId,
+            'update_user_source' => $request->userSource,
+            'payment_header_id'    => $request->paymentHeaderId
+        ]);
+
+        return [
+            'message' => 'Payment request has been cancelled.'
+        ];
+    }
+
+    public function updateStatus($request){
+        $paymentHeader = new PaymentHeader();
+        $paymentHeader->updateStatus([
+            'status'             => $request->status,
+            'updated_by'         => $request->userId,
+            'update_user_source' => $request->userSource,
+            'payment_header_id'    => $request->paymentHeaderId
+        ]);
+
+        return [
+            'message' => 'Payment request has been ' . $request->statusVerb . ".",
+            'status' => $request->statusVerb
+        ];
     }
 
 }
