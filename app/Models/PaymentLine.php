@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use DB;
 
 class PaymentLine extends Model
 {
@@ -14,5 +15,31 @@ class PaymentLine extends Model
 
     public function insertLine($params){
         $this->insert($params);
+    }
+
+    public function getClaimedVouchers($voucherCodes){
+        $query = DB::connection('oracle')->table('ipc.ipc_vpc_vouchers vch')
+                    ->leftJoin('ipc.ipc_vpc_payment_lines pl', 'pl.voucher_code','=','vch.voucher_code')
+                    ->leftJoin('ipc.ipc_vpc_payment_headers ph', 'ph.id','=','pl.payment_header_id')
+                    ->whereIn('vch.voucher_code', $voucherCodes)
+                    ->whereNotIn('ph.status', [4]) // approved
+                    ->select('vch.voucher_code')
+                    ->get();
+        $codes = collect($query)->pluck('voucher_code')->toArray();
+        return $codes;
+    }
+
+    public function get($paymentHeaderId){
+        $sql = "SELECT pl.id,
+                        pl.voucher_code,
+                        vch.cs_number,
+                        vch.amount,
+                        vch.coupon_id coupon_no
+                FROM ipc.ipc_vpc_payment_lines pl
+                    LEFT JOIN ipc.ipc_vpc_vouchers vch
+                        ON pl.voucher_code = vch.voucher_code
+                WHERE pl.payment_header_id = :payment_header_id";
+        $query = DB::select($sql, ['payment_header_id' => $paymentHeaderId]);
+        return $query;
     }
 }

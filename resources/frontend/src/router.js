@@ -84,7 +84,16 @@ export default new Router({
             requiresAuth: true,
             title: 'Approval'
           }
-        }
+        },
+        {
+          path: "view-payment-request/:action/:paymentHeaderId",
+          name: "view-payment-request",
+          component: () => import("@/views/pages/ViewPaymentRequest.vue"),
+          meta: {
+            requiresAuth: true,
+            title: 'Approval'
+          }
+        },
       ]
     },
 

@@ -58,4 +58,6 @@ class Voucher extends Model
         $isExist = collect($query)->pluck('voucher_code')->toArray();
         return array_diff($voucherCodes,$isExist);
     }
+
+
 }

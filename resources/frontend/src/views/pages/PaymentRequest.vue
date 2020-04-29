@@ -6,7 +6,8 @@
     <b-card-text>
       <h6>{{ title}}</h6>
       <p>{{ message }} </p>
-      <p class="mb-0">{{ invalidVoucherCodes }}</p>
+      <p class="mb-0" v-if="invalidVoucherCodes != ''"><strong>Not existing</strong> : {{ invalidVoucherCodes }}</p>
+      <p class="mb-0"><strong>Already claimed</strong> : {{ claimedVoucherCodes }}</p>
     </b-card-text>
     </b-card>
      
@@ -21,7 +22,7 @@
           </template> 
 
           <template v-slot:body>
-            <input type="file" id="file" ref="file" v-on:change="handleFileUpload()"/>
+            <input type="file"  v-if="uploadReady"  id="file" ref="file" v-on:change="handleFileUpload()"/>
           </template>
           
           <template v-slot:foot>
@@ -54,8 +55,10 @@ export default {
       formBusy : false,
       isError : false,
       invalidVoucherCodes : [],
+      claimedVoucherCodes : [],
       message : '',
-      title : ''
+      title : '',
+      uploadReady: true
     }
   },
   methods: {
@@ -64,6 +67,12 @@ export default {
     },
     downloadUrl(){
       return process.env.VUE_APP_API_URL + '/api/download/voucher-template';
+    },
+    clear () {
+      this.uploadReady = false
+      this.$nextTick(() => {
+        this.uploadReady = true
+      })
     },
     makeToast(variant = null,body,title) {
       this.$bvToast.toast(body, {
@@ -74,6 +83,12 @@ export default {
     },
     submit(){
       var self = this;
+
+      if(self.file == null){
+        self.makeToast('danger','Please select the file to upload.','System message');
+        return false;
+      };
+
       self.$Progress.start();
       self.formBusy = true;
       let formData = new FormData();
@@ -92,16 +107,29 @@ export default {
      
         if(res.data.error){
           self.invalidVoucherCodes = res.data.invalidVoucherCodes;
+          self.claimedVoucherCodes = res.data.claimedVoucherCodes;
           self.message = res.data.message;
           self.isError = true;
           self.title = "Transaction failed!";
+          self.clear();
+          self.$Progress.fail();
         }
         else {
           self.isError = false;
           self.makeToast('success',res.data.message,'System message');
-        //  self.file = null;
+          self.clear();
+          self.$Progress.finish();
+          setTimeout(() => {
+            this.$router.push({
+              name : 'view-payment-request',
+              params : {
+                'action' : 'view',
+                'paymentHeaderId' : res.data.paymentHeaderId
+              }
+            });
+          },1500);
         }
-        self.$Progress.finish();
+   
       
       })
       .catch(function(){

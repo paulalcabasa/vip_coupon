@@ -15,14 +15,33 @@ class PaymentRequestService {
         $user = $request->userId;
         $userSource = $request->userSource;
         $data = Excel::load($request->voucher_file)->get();
-        $voucherCodes = collect($data)->pluck('voucher_code')->toArray();
+
         $voucher = new Voucher;
-        $invalidVoucherCodes = $voucher->getInvalidVouchers($voucherCodes);
-       
-        if(!empty($invalidVoucherCodes)) {
+        $paymentHeader = new PaymentHeader;
+        $paymentLine = new PaymentLine;
+
+        $excelHeaders = $data->first()->keys()->toArray();
+
+        $requiredHeaders = array('voucher_code');
+        
+        if($excelHeaders !== $requiredHeaders) {
             return [
-                'message'             => 'Payment request fail to upload because there are voucher codes that does not exist.',
+                'message'             => 'Payment request fail to upload because of invalid headers, please refer to the voucher template.',
+                'invalidVoucherCodes' => '',
+                'error'               => true
+            ];
+        }
+
+        $voucherCodes = collect($data)->pluck('voucher_code')->toArray();
+      
+        $invalidVoucherCodes = $voucher->getInvalidVouchers($voucherCodes);
+        $claimedVoucherCodes = $paymentLine->getClaimedVouchers($voucherCodes);
+
+        if(!empty($invalidVoucherCodes) || !empty($claimedVoucherCodes)) {
+            return [
+                'message'             => 'Payment request fail to upload.',
                 'invalidVoucherCodes' => implode(", ", $invalidVoucherCodes),
+                'claimedVoucherCodes' => implode("," , $claimedVoucherCodes),
                 'error'               => true
             ];
         }
@@ -30,9 +49,7 @@ class PaymentRequestService {
         DB::beginTransaction();
         try {
 
-            $paymentHeader = new PaymentHeader;
-
-            $paymentLine = new PaymentLine;
+            
 
             $paymentHeaderId = $paymentHeader->insertHeader([
                 'status'             => 1,
@@ -54,8 +71,9 @@ class PaymentRequestService {
             DB::commit();
 
             return [
-                'message'  => 'Payment Request has been created.',
-                'error'    => false
+                'message'         => 'Payment Request has been created.',
+                'error'           => false,
+                'paymentHeaderId' => $paymentHeaderId
             ];
         
     
@@ -64,6 +82,21 @@ class PaymentRequestService {
             return $e;
         }
         
+    }
+
+    public function getPayments(){
+        $paymentHeader = new PaymentHeader();
+        return $paymentHeader->getHeaders();
+    }
+
+    public function getLines($request){
+        $paymentLine = new PaymentLine();
+        return $paymentLine->get($request->paymentHeaderId);
+    }
+
+    public function getHeader($request){
+        $paymentHeader = new PaymentHeader();
+        return $paymentHeader->get($request->paymentHeaderId);
     }
 
 }

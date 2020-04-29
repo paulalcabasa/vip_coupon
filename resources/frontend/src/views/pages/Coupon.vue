@@ -226,7 +226,7 @@ export default {
          // set spinner to submit button
       self.disableSubmit = true;
   
-       self.$Progress.start();
+     //  self.$Progress.start();
        axios.post('api/coupon/submit', {
          dealerId    : self.dealer,
          denominations: self.denominations,
@@ -234,7 +234,7 @@ export default {
          userSource   : self.$store.getters.currentUser.user_source_id,
        }).then(res => {
          
-        self.$Progress.finish();
+       // self.$Progress.finish();
         if(res.data.error){
            this.makeToast('danger',res.data.message + " : " + (res.data.invalid_cs_numbers),'System message');
          }
@@ -250,15 +250,14 @@ export default {
                 } 
               }
             );
-           },500)
+           },1000)
          }
        })
        .catch(err => {
          console.log(err);
-         self.$Progress.fail();
+       //  self.$Progress.fail();
        })
        .finally( () => {
-     
         self.disableSubmit = false;
        });
     },
