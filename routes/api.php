@@ -20,6 +20,26 @@ use Illuminate\Http\Request;
  
 Route::get('print-coupon/{coupon_id}', 'PdfController@printCoupon');
 
+ // Download Route
+Route::get('download/voucher-template', function(){
+ 
+    // Check if file exists in app/storage/file folder
+    $filename = 'voucher_template.xlsx';
+    $file_path = storage_path() .'/app/public/' . $filename;
+    if (file_exists($file_path))
+    {
+        // Send Download
+        return Response::download($file_path, $filename, [
+            'Content-Length: '. filesize($file_path)
+        ]);
+    }
+    else
+    {
+        // Error
+        exit('Requested file does not exist on our server!');
+    }
+});
+
 
 Route::group([
 
@@ -48,15 +68,29 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('coupon/approve/','ApprovalController@approve');
     Route::post('coupon/reject/','ApprovalController@reject');
     Route::post('coupon/update/','CouponController@update');
+    Route::post('coupon/issue/','CouponController@issue');
+    Route::post('coupon/receive/fleet','CouponController@receiveFleet');
+    Route::post('coupon/receive/dealer','CouponController@receiveDealer');
 
     // Documents
-    Route::post('coupon/generate/','CouponDocsController@generate');
+    Route::post('coupon/generate/','VoucherController@generate');
 
     
     Route::get('timeline/show/{couponId}','TimelineController@show');
     Route::get('denomination/show/{couponId}','DenominationController@show');
     
     Route::get('approval/get/','ApprovalController@get');
+
+    
+    // Payment
+    Route::get('voucher/get/{couponId}','VoucherController@show');
+    Route::post('payment-request/submit','PaymentRequestController@store');
+    Route::get('payments/get/{status}','PaymentRequestController@get');
+    Route::get('payment/lines/get/{paymentHeaderId}','PaymentRequestController@getLines');
+    Route::get('payment/header/get/{paymentHeaderId}','PaymentRequestController@getHeader');
+    Route::post('payment/update/status','PaymentRequestController@updateStatus');
+
+   
     
 });
 

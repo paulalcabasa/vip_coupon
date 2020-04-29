@@ -2,6 +2,8 @@
     "badgeColors" : {
         "pending" : "warning",
         "approved" : "success",
-        "rejected" : "danger"
+        "rejected" : "danger",
+        "issued" : "info",
+        "fleet received" : "success"
     }
 }

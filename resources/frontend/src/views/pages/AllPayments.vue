@@ -1,6 +1,6 @@
 <template>
     <div>
-        <KTPortlet v-bind:title="'Coupons'" >
+        <KTPortlet v-bind:title="'Payments'" >
             <template v-slot:toolbar>
                 <b-col lg="12" class="my-1">
                     <b-form-group
@@ -52,9 +52,9 @@
                             <b-button size="sm" @click="info(row.item)" class="mr-1">
                                 <i class="fa fa-search"></i>
                             </b-button>
-                             <b-button v-if="row.item.status.trim() == 'pending'" size="sm" @click="edit(row.item)" class="mr-1">
+                          <!--    <b-button v-if="row.item.status.trim() == 'pending'" size="sm" @click="edit(row.item)" class="mr-1">
                                 <i class="fa fa-edit"></i>
-                            </b-button> 
+                            </b-button>  -->
                         </template>
                     </b-table>
 
@@ -108,29 +108,25 @@ import badge from '@/common/config/status.config.json';
 export default {
     name: "coupons",
     mounted() {
-        this.loadCoupons();
+        this.loadRequests();
+      
     },
     data(){
         return {
             statusColors : badge.badgeColors,
             items: [],
+            currentRoute : '',
             fields: [
                 { 
                     key: 'actions', 
                     label: 'Actions' 
                 },
                 { 
-                    key: 'coupon_id', 
-                    label: 'Coupon No.', 
+                    key: 'id', 
+                    label: 'Payment Ref No.', 
                     sortable: true, 
-                    sortDirection: 'desc' 
                 },
-                { 
-                    key: 'account_name', 
-                    label: 'Account Name', 
-                    sortable: true, 
-                    class: 'text-center' 
-                },
+              
                 { 
                     key: 'created_by', 
                     label: 'Created By', 
@@ -180,15 +176,27 @@ export default {
                 .map(f => {
                 return { text: f.label, value: f.key }
             })
+        },
+        currentRouteName() {
+            return this.$route.name;
         }
     },
     methods: {
         info(item) {
+            var action = "";
+            var self = this;
+            if(self.currentRouteName == "all-payments"){
+                action = "view";
+            }
+            else if(self.currentRouteName == "payments-approval"){
+                action = "approve";
+            }
+         
             this.$router.push({ 
-                name : 'view-coupon', 
+                name : 'view-payment-request', 
                 params : { 
-                    couponId : item.coupon_id,
-                    action : 'view'
+                    paymentHeaderId : item.id,
+                    action : action
                 } 
             });
         },
@@ -206,11 +214,19 @@ export default {
             this.totalRows = filteredItems.length
             this.currentPage = 1
         },
-        loadCoupons(){
+        loadRequests(){
             var self = this;
+            var apiUrl = "";
+            if(self.currentRouteName == "all-payments"){
+                apiUrl ='api/payments/get/all';
+            }
+            else if(self.currentRouteName == "payments-approval"){
+                apiUrl ='api/payments/get/pending';
+            }
+            
             self.$Progress.start();
             return new Promise(resolve => {
-                axios.get('api/coupon/get')
+                axios.get(apiUrl)
                     .then( (res) => {
                         self.items = res.data;
                         self.totalRows = self.items.length;

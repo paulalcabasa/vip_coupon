@@ -217,6 +217,149 @@ class CouponService {
         }
     }
 
+    public function issueCoupon($request){
+        $couponId   = $request->couponId;
+        $userId     = $request->userId;
+        $userSource = $request->userSource;
+        $status     = 7;
+        $action     = 5;
+
+        // approve request
+        DB::beginTransaction();
+
+        try {
+
+            $coupon = new Coupon;
+
+            $coupon->updateStatus([
+                'couponId'   => $couponId,
+                'userId'     => $userId,
+                'userSource' => $userSource,
+                'status'     => $status,
+                'updateDate' => Carbon::now()
+            ]);
+            
+            $timeline = new Timeline;
+
+            $timeline->saveTimeline([
+                'coupon_id'   => $couponId,
+                'action_id'   => $action,
+                'user_id'     => $userId,
+                'created_at'  => Carbon::now(),
+                'user_source' => $userSource
+            ]);
+            
+            DB::commit();
+            return [
+                'message'  => 'Coupon request has been issued.',
+                'error'    => false
+            ];
+        } catch(\Exception $e) {
+            DB::rollBack();
+            return [
+                'message'  => 'Error :' . $e,
+                'error'    => true
+            ];
+
+        }
+      
+
+    }
+
+    public function receiveFleetCoupon($request){
+        $couponId   = $request->couponId;
+        $userId     = $request->userId;
+        $userSource = $request->userSource;
+        $status     = 8;
+        $action     = 3;
+
+        // approve request
+        DB::beginTransaction();
+
+        try {
+
+            $coupon = new Coupon;
+
+            $coupon->updateStatus([
+                'couponId'   => $couponId,
+                'userId'     => $userId,
+                'userSource' => $userSource,
+                'status'     => $status,
+                'updateDate' => Carbon::now()
+            ]);
+            
+            $timeline = new Timeline;
+
+            $timeline->saveTimeline([
+                'coupon_id'   => $couponId,
+                'action_id'   => $action,
+                'user_id'     => $userId,
+                'created_at'  => Carbon::now(),
+                'user_source' => $userSource
+            ]);
+            
+            DB::commit();
+            return [
+                'message'  => 'Coupon request has been issued.',
+                'error'    => false
+            ];
+        } catch(\Exception $e) {
+            DB::rollBack();
+            return [
+                'message'  => 'Error :' . $e,
+                'error'    => true
+            ];
+
+        }
+      
+
+    }
+
+    public function receiveDealerCoupon($request){
+        $couponId   = $request->couponId;
+        $userId     = $request->userId;
+        $userSource = $request->userSource;
+        $status     = 9;
+        $action     = 4;
+
+        // approve request
+        DB::beginTransaction();
+
+        try {
+
+            $coupon = new Coupon;
+
+            $coupon->updateStatus([
+                'couponId'   => $couponId,
+                'userId'     => $userId,
+                'userSource' => $userSource,
+                'status'     => $status,
+                'updateDate' => Carbon::now()
+            ]);
+            
+            $timeline = new Timeline;
+
+            $timeline->saveTimeline([
+                'coupon_id'   => $couponId,
+                'action_id'   => $action,
+                'user_id'     => $userId,
+                'created_at'  => Carbon::now(),
+                'user_source' => $userSource
+            ]);
+            
+            DB::commit();
+            return [
+                'message'  => 'Coupon request has been issued.',
+                'error'    => false
+            ];
+        } catch(\Exception $e) {
+            DB::rollBack();
+            return [
+                'message'  => 'Error :' . $e,
+                'error'    => true
+            ];
+        }
+    }
   
 
 }

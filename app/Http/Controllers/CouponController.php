@@ -31,4 +31,16 @@ class CouponController extends Controller
     public function update(Request $request){
         return response()->json($this->couponService->updateCoupon($request),200);
     }
+
+    public function issue(Request $request){
+        return response()->json($this->couponService->issueCoupon($request),200);
+    }
+
+    public function receiveFleet(Request $request){
+        return response()->json($this->couponService->receiveFleetCoupon($request),200);
+    }
+
+    public function receiveDealer(Request $request){
+        return response()->json($this->couponService->receiveDealerCoupon($request),200);
+    }
 }

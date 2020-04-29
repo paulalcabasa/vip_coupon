@@ -4,23 +4,16 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use PDF;
-use App\Services\CouponService;
-use App\Models\CouponDocs;
-
+use App\Services\VoucherService;
+use App\Models\Voucher;
+use App\Services\CodeService;
 
 class PdfController extends Controller
 {   
 
-    private $couponService;
-
-    public function __construct(){
-        $this->couponService = new CouponService;    
-    }
-
     public function printCoupon(Request $request){
-        $couponDocs = new CouponDocs;
-    
-        $docs = $couponDocs->getByCoupon($request->coupon_id);
+        $voucher = new Voucher;
+        $docs = $voucher->getByCoupon($request->coupon_id);
         $data = [
             'docs' => $docs
         ];

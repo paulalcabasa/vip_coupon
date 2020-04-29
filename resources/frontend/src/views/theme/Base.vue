@@ -27,6 +27,7 @@
             <transition name="fade-in-up">
               <router-view :key="$route.fullPath"></router-view>
             </transition>
+            <vue-progress-bar></vue-progress-bar>
           </div>
         </div>
         <KTFooter></KTFooter>
