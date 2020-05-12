@@ -59,5 +59,43 @@ class Voucher extends Model
         return array_diff($voucherCodes,$isExist);
     }
 
+    public function getByCode($voucherCode){
+        return $this->where('voucher_code', $voucherCode)->get();
+    }
 
+    public function getVoucherStats(){
+        $sql = "SELECT COUNT(CASE WHEN ph.status = 2 THEN 1 ELSE NULL END) CLAIMED,
+                        count(vch.id) printed 
+                FROM ipc.ipc_vpc_vouchers vch
+                LEFT JOIN ipc.ipc_vpc_payment_lines pl
+                    ON pl.voucher_id = vch.id
+                INNER JOIN ipc.ipc_vpc_payment_headers ph
+                    ON ph.id = pl.payment_header_id
+                WHERE 1 = 1";
+        $query = DB::select($sql);
+        return $query[0];
+    }
+
+    public function getRecentClaims(){
+        $sql = "SELECT vch.id,
+                        vch.voucher_code,
+                        ph.creation_date,
+                        vch.amount,
+                        dlr.account_name,
+                        TRIM(TO_CHAR(ph.creation_date, 'Month')) || ' ' ||  TO_CHAR(ph.creation_date,'DD, YYYY') date_claimed
+                FROM ipc.ipc_vpc_vouchers vch
+                INNER JOIN ipc.ipc_vpc_payment_lines pl
+                    ON pl.voucher_id = vch.id
+                INNER JOIN ipc.ipc_vpc_payment_headers ph
+                    ON ph.id = pl.payment_header_id
+                INNER JOIN ipc.ipc_vpc_coupons cp
+                    ON cp.id = vch.coupon_id
+                INNER JOIN ipc_portal.dealers dlr
+                    ON dlr.id = cp.dealer_id
+                WHERE 1 = 1
+                    AND ph.status = 2
+                    AND rownum <= 15";
+        $query = DB::select($sql);
+        return $query;
+    }
 }

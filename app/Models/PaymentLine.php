@@ -17,6 +17,10 @@ class PaymentLine extends Model
         $this->insert($params);
     }
 
+    public function batchInsert($params){
+        $this->insert($params);
+    }
+
     public function getClaimedVouchers($voucherCodes){
         $query = DB::connection('oracle')->table('ipc.ipc_vpc_vouchers vch')
                     ->leftJoin('ipc.ipc_vpc_payment_lines pl', 'pl.voucher_code','=','vch.voucher_code')

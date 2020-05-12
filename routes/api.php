@@ -90,6 +90,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('payment/header/get/{paymentHeaderId}','PaymentRequestController@getHeader');
     Route::post('payment/update/status','PaymentRequestController@updateStatus');
 
+
+    Route::get('dashboard/statistics','DashboardController@getStatistics');
    
     
 });
