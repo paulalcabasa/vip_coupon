@@ -1,5 +1,21 @@
 import Vue from "vue";
 import Router from "vue-router";
+import Base from "@/views/theme/Base";
+import Dashboard from "@/views/pages/Dashboard.vue";
+import Coupon from "@/views/pages/Coupon.vue";
+import ViewCoupon from "@/views/pages/ViewCoupon.vue";
+import AllCoupons from "@/views/pages/AllCoupons.vue";
+import Approval from "@/views/pages/Approval.vue";
+import PaymentRequest from "@/views/pages/PaymentRequest.vue";
+import AllPayments from "@/views/pages/AllPayments.vue";
+import ViewPaymentRequest from "@/views/pages/ViewPaymentRequest.vue";
+
+import Auth from "@/views/pages/auth/Auth";
+import Login from "@/views/pages/auth/Login";
+import Register from "@/views/pages/auth/Register";
+import Error404 from "@/views/pages/error/Error-1.vue";
+
+
 
 Vue.use(Router);
 
@@ -10,13 +26,13 @@ export default new Router({
     {
       path: "/",
       redirect: "/dashboard",
-      component: () => import("@/views/theme/Base"),
+      component: Base,
      
       children: [
         {
           path: "/dashboard",
           name: "dashboard",
-          component: () => import("@/views/pages/Dashboard.vue"),
+          component: Dashboard,
           meta: {
             requiresAuth: true,
             title: 'Dashboard'
@@ -25,7 +41,7 @@ export default new Router({
         {
           path: "/coupon/:action/",
           name: "create-coupon",
-          component: () => import("@/views/pages/Coupon.vue"),
+          component : Coupon,
           meta: {
             requiresAuth: true,
             title: 'Coupon'
@@ -34,7 +50,7 @@ export default new Router({
         {
           path: "/coupon/:action/:couponId",
           name: "edit-coupon",
-          component: () => import("@/views/pages/Coupon.vue"),
+          component: Coupon,
           meta: {
             requiresAuth: true,
             title: 'Coupon'
@@ -43,7 +59,7 @@ export default new Router({
         {
           path: "/view-coupon/:action/:couponId",
           name: "view-coupon",
-          component: () => import("@/views/pages/ViewCoupon.vue"),
+          component: ViewCoupon,
           meta: {
             requiresAuth: true,
             title: 'Coupon'
@@ -52,7 +68,7 @@ export default new Router({
         {
           path: "/coupons",
           name: "all-coupon",
-          component: () => import("@/views/pages/AllCoupons.vue"),
+          component: AllCoupons,
           meta: {
             requiresAuth: true,
             title: 'Coupons'
@@ -61,7 +77,7 @@ export default new Router({
         {
           path: "/approval",
           name: "approval",
-          component: () => import("@/views/pages/Approval.vue"),
+          component: Approval,
           meta: {
             requiresAuth: true,
             title: 'Approval'
@@ -70,7 +86,7 @@ export default new Router({
         {
           path: "/payment/request",
           name: "payment-request",
-          component: () => import("@/views/pages/PaymentRequest.vue"),
+          component: PaymentRequest,
           meta: {
             requiresAuth: true,
             title: 'Approval'
@@ -79,7 +95,7 @@ export default new Router({
         {
           path: "/payments",
           name: "all-payments",
-          component: () => import("@/views/pages/AllPayments.vue"),
+          component: AllPayments,
           meta: {
             requiresAuth: true,
             title: 'Approval'
@@ -88,7 +104,7 @@ export default new Router({
         {
           path: "view-payment-request/:action/:paymentHeaderId",
           name: "view-payment-request",
-          component: () => import("@/views/pages/ViewPaymentRequest.vue"),
+          component: ViewPaymentRequest,
           meta: {
             requiresAuth: true,
             title: 'Approval'
@@ -97,7 +113,7 @@ export default new Router({
         {
           path: "/payments/approval",
           name: "payments-approval",
-          component: () => import("@/views/pages/AllPayments.vue"),
+          component: AllPayments,
           meta: {
             requiresAuth: true,
             title: 'Approval'
@@ -108,17 +124,17 @@ export default new Router({
 
     {
       path: "/",
-      component: () => import("@/views/pages/auth/Auth"),
+      component: Auth,
       children: [
         {
           name: "login",
           path: "/login",
-          component: () => import("@/views/pages/auth/Login")
+          component: Login
         },
         {
           name: "register",
           path: "/register",
-          component: () => import("@/views/pages/auth/Register")
+          component: Register
         }
       ]
     },
@@ -130,7 +146,7 @@ export default new Router({
       // the 404 route, when none of the above matches
       path: "/404",
       name: "404",
-      component: () => import("@/views/pages/error/Error-1.vue")
+      component: Error404
     } 
   ]
 });
