@@ -159,6 +159,11 @@ export default {
       }
     }
   },
+  created(){
+    if(this.$store.getters.isAuthenticated){
+      this.$router.push({ name: "dashboard" });
+    }
+  },
   methods: {
     validateState(name) {
       const { $dirty, $error } = this.$v.form[name];

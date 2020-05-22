@@ -95,7 +95,7 @@ import { mapGetters } from "vuex";
 import Timeline2 from "@/views/partials/widgets/Timeline2.vue";
 import axios from 'axios';
 import badge from '@/common/config/status.config.json';
-
+import axiosRetry from 'axios-retry';
 export default {
   name: "ViewCoupon",
   components: {
@@ -198,6 +198,10 @@ export default {
       var self = this;
 
       self.$Progress.start();
+
+     
+
+      axiosRetry(axios, { retries: 3 });
 
       let couponApi = 'api/coupon/show/' + this.couponId;
       let timelineApi = 'api/timeline/show/' + self.couponId;

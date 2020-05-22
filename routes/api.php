@@ -56,7 +56,10 @@ Route::group([
    
 });
 
-Route::group(['middleware' => 'auth'], function () {
+Route::group(['middleware' => 'jwt'], function () {
+
+    Route::get('approval/get/','ApprovalController@get');
+
     Route::get('posts','DashboardController@posts');
     Route::get('dealers','DealerController@get');
     Route::get('allCSNumbers','CSNumberController@getCSNumbers');
@@ -64,7 +67,7 @@ Route::group(['middleware' => 'auth'], function () {
     // Coupon
     Route::post('coupon/submit','CouponController@store');
     Route::get('coupon/show/{couponId}','CouponController@show');
-    Route::get('coupon/get/','CouponController@get');
+     Route::get('coupon/get/','CouponController@get');
     Route::post('coupon/approve/','ApprovalController@approve');
     Route::post('coupon/reject/','ApprovalController@reject');
     Route::post('coupon/update/','CouponController@update');
@@ -79,7 +82,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('timeline/show/{couponId}','TimelineController@show');
     Route::get('denomination/show/{couponId}','DenominationController@show');
     
-    Route::get('approval/get/','ApprovalController@get');
+    
 
     
     // Payment

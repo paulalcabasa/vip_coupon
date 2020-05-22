@@ -2,11 +2,12 @@
 
 import ApiService from "@/common/api.service";
 import JwtService from "@/common/jwt.service";
-import Axios from "axios";
+import axios from "axios";
 
 // action types
 export const VERIFY_AUTH = "verifyAuth";
 export const LOGIN = "login";
+export const REFRESH_TOKEN = "refreshToken";
 export const LOGOUT = "logout";
 export const REGISTER = "register";
 export const UPDATE_USER = "updateUser";
@@ -17,15 +18,9 @@ export const SET_AUTH = "setUser";
 export const SET_ERROR = "setError";
 export const SET_MESSAGE = "setMessage";
 const state = {
-  errors: null,
+  errors: [],
   message : '',
-  user: {
-    'employee_id' : '',
-    'employee_no' : '',
-    'first_name' : '',
-    'middle_name' : '',
-    'last_name' : ''
-  },
+  user: {},
   isAuthenticated: !!JwtService.getToken()
 };
 
@@ -47,8 +42,6 @@ const actions = {
       ApiService.post('/api/auth/login', credentials)
         .then(res => {
           if(res.status == 200){
-            //console.log("nice login");
-            //console.log(res.data);
             context.commit(SET_AUTH, res.data);
           }
           resolve(res);
@@ -66,6 +59,20 @@ const actions = {
         .catch(({ response }) => {
           context.commit(SET_ERROR, response.data.errors);
         }); */
+    });
+  },
+  [REFRESH_TOKEN] (context) {
+    return new Promise((resolve, reject) => {
+      ApiService
+        .post('api/auth/refresh')
+        .then(response => {
+          console.log(response);
+          context.commit(SET_AUTH, response.data);
+          resolve(response);
+        })
+        .catch(error => {
+          reject(error);
+        });
     });
   },
   [LOGOUT](context) {
@@ -90,21 +97,21 @@ const actions = {
       ApiService.post('/api/auth/me')
         .then(res => {
           var user = {
-            'user' : res.data,
+            'user' : res.data.user,
             'access_token' : JwtService.getToken()
           };
           context.commit(SET_AUTH, user);
         })
         .catch(err => { 
           context.commit(PURGE_AUTH);
-          context.commit(SET_ERROR, ['Your session has expired.']);
-          
+          context.commit(SET_MESSAGE, 'Your session has expired.');
+       //   context.commit(SET_ERROR, ['Your session has expired.']);
         });
     }
     else {
       context.commit(PURGE_AUTH);
       return false;
-    }  
+    }   
     /* if (JwtService.getToken()) {
       ApiService.setHeader();
       ApiService.get("verify")
@@ -147,13 +154,7 @@ const mutations = {
   },
   [PURGE_AUTH](state) {
     state.isAuthenticated = false;
-    state.user = {
-      'employee_id': '',
-      'employee_no': '',
-      'first_name': '',
-      'middle_name': '',
-      'last_name': ''
-    };
+    state.user = {};
     state.errors = {};
     JwtService.destroyToken();
   }

@@ -14,7 +14,7 @@ class AuthController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('jwt', ['except' => ['login']]);
+        $this->middleware('jwt', ['except' => ['login', 'refresh']]);
     }
 
     /**
@@ -27,7 +27,17 @@ class AuthController extends Controller
         $user = User::where([
             ['user_name', $request->employee_no],
             ['user_pass' , $request->password]
-        ])->first();
+        ])
+        ->select(
+            'user_id',
+            'first_name',
+            'middle_name',
+            'last_name',
+            'email_address',
+            'user_type_id',
+            'user_type_name',
+            'user_source_id')
+        ->first();
         
         if(empty($user)){
             return response()->json(['error' => 'Unauthorized'], 401);
@@ -35,7 +45,11 @@ class AuthController extends Controller
   
         $token = JWTAuth::fromUser($user);
         
-        return $this->respondWithToken($token,$user);
+        return response()->json([
+            'access_token' => $token,
+            'user' => $user
+        ]);
+        //return $this->respondWithToken($token);
         
     }
 
@@ -46,7 +60,9 @@ class AuthController extends Controller
      */
     public function me()
     {
-        return response()->json(auth()->user());
+        return response()->json([
+            'user' => auth()->user()
+        ]);
     }
 
     /**
@@ -68,8 +84,20 @@ class AuthController extends Controller
      */
     public function refresh()
     {
-        return $this->respondWithToken(auth()->refresh());
+       
+        $token = auth()->refresh();
+        $user = JWTAuth::setToken($token)->toUser();
+/* 
+        $refreshed = JWTAuth::refresh(JWTAuth::getToken());
+        $user = JWTAuth::setToken($refreshed)->toUser();
+ */
+        return response()->json([
+            'access_token' => $token,
+            'user' => $user
+        ]);
     }
+
+    
 
     /**
      * Get the token array structure.
@@ -78,12 +106,11 @@ class AuthController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    protected function respondWithToken($token,$user)
+    protected function respondWithToken($token)
     {
         return response()->json([
             'access_token' => $token,
             'token_type'   => 'bearer',
-            'user'         => $user,
             'expires_in'   => auth()->factory()->getTTL() * 60
         ]);
     }
