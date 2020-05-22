@@ -98,6 +98,7 @@
 <script>
 import KTPortlet from "@/views/partials/content/Portlet.vue";
 import axios from 'axios';
+import axiosRetry from 'axios-retry';
 export default {
   name: "approval",
   mounted() {
@@ -194,6 +195,7 @@ export default {
         var self = this;
         self.$Progress.start();
         return new Promise(resolve => {
+            axiosRetry(axios, { retries: 3 });
             axios.get('api/approval/get')
                 .then( (res) => {
                     self.items = res.data;

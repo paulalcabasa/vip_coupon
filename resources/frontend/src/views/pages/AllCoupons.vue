@@ -105,6 +105,7 @@
 import KTPortlet from "@/views/partials/content/Portlet.vue";
 import axios from 'axios'; 
 import badge from '@/common/config/status.config.json';
+import axiosRetry from 'axios-retry';
 export default {
     name: "coupons",
     mounted() {
@@ -210,6 +211,9 @@ export default {
             var self = this;
             self.$Progress.start();
             return new Promise(resolve => {
+
+                axiosRetry(axios, { retries: 3 });
+                
                 axios.get('api/coupon/get')
                     .then( (res) => {
                         self.items = res.data;

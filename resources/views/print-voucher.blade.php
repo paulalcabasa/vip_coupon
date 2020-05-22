@@ -13,7 +13,7 @@
                 /** Define now the real margins of every page in the PDF **/
             body {
                 font-family:'Calibri','Sans-serif','Arial';
-                margin-top: 0.63cm;
+                margin-top: 0.65cm;
                 margin-left: 0.95cm;
                 margin-right: 1.0cm;
                 margin-bottom: 0.16cm;
@@ -23,7 +23,8 @@
                 position: relative;
                 text-align: center;
                 color: black;
-                width:458px;
+                width:480px;
+                height:288px;
             }
 
             .qr-code {
@@ -34,7 +35,7 @@
 
             .amount {
                 position: absolute;
-                top: 90px;
+                top: 100px;
                 right: 30px;
                 font-weight:bold;
                 font-size:3.9em;
@@ -43,7 +44,7 @@
 
             .coupon-no {
                 position: absolute;
-                top: 240px;
+                top: 265px;
                 right: 12px;
                 font-weight:bold;
                 font-size:1em;
@@ -87,12 +88,12 @@
         <tr>
             <td style="font-weight:bold;width:10%;">Dealer Name :</td>
          
-            <td style="width:75%;">PASIG</td>
+            <td style="width:75%;">{{ $header->account_name }}</td>
         </tr>
          <tr>
             <td style="font-weight:bold;width:10%;">Date :</td>
            
-            <td style="width:75%;">May 21, 2020</td>
+            <td style="width:75%;">{{ $header->date_created }}</td>
         </tr>
     </table>
     <br/>
@@ -137,7 +138,7 @@
             <td colspan="6"><br/></td>
         </tr>
         <tr>
-            <td style="border-bottom: 1px solid black;"></td>
+            <td style="border-bottom: 1px solid black;">{{ ucwords(substr($header->first_name,0,1)) }}. {{ ucwords($header->last_name)}}</td>
             <td style="border-bottom: 1px solid black;"></td>
             <td style="border-bottom: 1px solid black;">A. Dalida</td>
             <td style="border-bottom: 1px solid black;">H. Nakaguro</td>
@@ -147,9 +148,9 @@
 
     <div style="page-break-before: always"></div>
 
-<!--     @foreach($docs as $row)
+    @foreach($docs as $row)
     <div class="container">
-        <img src="{{ asset('public/images/vip_coupon_template.jpg')}}" style="border:1px solid #000;width:100%;"/>
+        <img src="{{ asset('public/images/vip_coupon_template.jpg')}}" style="border:1px solid #000;width:100%;height:288px;"/>
    
         <div class="qr-code">
             <img  src="data:image/png;base64, {!! base64_encode(QrCode::format('png')
@@ -161,7 +162,7 @@
         <div class="amount">{{ number_format($row->amount,0,'',',') }}</div>
         <div class="coupon-no">{{ sprintf('%06d',$row->id) }}</div>
     </div>
-    @endforeach -->
+    @endforeach
    
     
         

@@ -18,7 +18,9 @@ class Coupon extends Model
         $sql = "SELECT cp.id coupon_id,
                         dlr.account_name,
                         usr.first_name || ' ' || usr.last_name created_by,
-                        TRIM(TO_CHAR(cp.creation_date, 'Month')) || ' ' ||  TO_CHAR(cp.creation_date,'D, YYYY') date_created,
+                        usr.first_name,
+                        usr.last_name,
+                        TRIM(TO_CHAR(cp.creation_date, 'Month')) || ' ' ||  TO_CHAR(cp.creation_date,'DD, YYYY') date_created,
                         st.status,
                         cp.dealer_id
                 FROM ipc.ipc_vpc_coupons cp
@@ -61,7 +63,7 @@ class Coupon extends Model
         $sql = "SELECT cp.id coupon_id,
                     dlr.account_name,
                     usr.first_name || ' ' || usr.last_name created_by,
-                    TRIM(TO_CHAR(cp.creation_date, 'Month')) || ' ' ||  TO_CHAR(cp.creation_date,'D, YYYY') date_created,
+                    TRIM(TO_CHAR(cp.creation_date, 'Month')) || ' ' ||  TO_CHAR(cp.creation_date,'DD, YYYY') date_created,
                     lower(st.status) status,
                     cp.dealer_id
                 FROM ipc.ipc_vpc_coupons cp

@@ -62,7 +62,8 @@
       >
         <div class="kt-header__topbar-user">
           <span class="kt-header__topbar-welcome kt-hidden-mobile">Hi,</span>
-          <span class="kt-header__topbar-username kt-hidden-mobile">{{ this.$store.getters.currentUser.first_name }}</span>
+          <span class="kt-header__topbar-username kt-hidden-mobile" 
+          v-if="this.$store.getters.isAuthenticated">{{ this.$store.getters.currentUser.first_name }}</span>
           <img
          
             alt="Pic"
@@ -70,7 +71,7 @@
           />
           <!--use below badge element instead the user avatar to display username's first letter(remove kt-hidden class to display it) -->
           <span
-        
+            v-if="this.$store.getters.isAuthenticated"
             class="kt-badge kt-badge--username kt-badge--unified-success kt-badge--lg kt-badge--rounded kt-badge--bold"
             >{{ this.$store.getters.currentUser.first_name.charAt(0) }}</span>
         </div>

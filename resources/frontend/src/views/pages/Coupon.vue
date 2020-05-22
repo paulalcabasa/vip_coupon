@@ -92,13 +92,14 @@
 import KTPortlet from "@/views/partials/content/Portlet.vue";
 import axios from 'axios';
 import VueTagsInput from '@johmun/vue-tags-input';
+import axiosRetry from 'axios-retry';
 
 export default {
   name: "coupon",
   mounted() {
     this.action = this.$route.params.action;
     this.couponId = this.$route.params.couponId;
-
+    this.loadDealers();
     if(this.action == "create") {
       this.denominations = [
         {
@@ -159,35 +160,37 @@ export default {
         denominationLoaded : false
     }    
   },
-  created() {
-    var self = this;
-    this.$Progress.start();
-    axios.get('/api/dealers')
-    .then(res => {
-        this.dealers = [
-          {
-            'id' : '',
-            'account_name' : 'SELECT A DEALER'
-          }
-        ];
-        res.data.map( (row) => {
-          this.dealers.push({
-            'id' : row.id,
-            'account_name' : row.account_name
-          });
-        });
-      this.$Progress.finish();
-    })
-    .catch(error => {
-      self.makeToast('danger','Failed loading dealers, please refresh the page to continue.','System message');
-      console.log(error);
-      this.$Progress.fail();
-    })
-    .finally( () => {
-      
-    });
-  },
+ 
   methods: {
+    loadDealers(){
+      var self = this;
+      this.$Progress.start();
+    
+      axiosRetry(axios, { retries: 3 });
+      
+      axios.get('/api/dealers').then(res => {
+          this.dealers = [
+            {
+              'id' : '',
+              'account_name' : 'SELECT A DEALER'
+            }
+          ];
+          res.data.map( (row) => {
+            this.dealers.push({
+              'id' : row.id,
+              'account_name' : row.account_name
+            });
+          });
+        this.$Progress.finish();
+      })
+      .catch(error => {
+        self.makeToast('danger','Failed loading dealers, please refresh the page to continue.','System message');
+        console.log(error);
+        this.$Progress.fail();
+      })
+
+
+    },
     deleteDenomination(index){
       if(this.denominations.length > 1){
         this.denominations.splice(index,1)
@@ -223,10 +226,12 @@ export default {
          this.makeToast('danger','Amount should have a value.','System message');
          return false;
       } 
+
+      axiosRetry(axios, { retries: 3 });
+
          // set spinner to submit button
       self.disableSubmit = true;
-  
-     //  self.$Progress.start();
+      self.$Progress.start();
        axios.post('api/coupon/submit', {
          dealerId    : self.dealer,
          denominations: self.denominations,
@@ -234,7 +239,7 @@ export default {
          userSource   : self.$store.getters.currentUser.user_source_id,
        }).then(res => {
          
-       // self.$Progress.finish();
+        self.$Progress.finish();
         if(res.data.error){
            this.makeToast('danger',res.data.message + " : " + (res.data.invalid_cs_numbers),'System message');
          }
@@ -255,7 +260,7 @@ export default {
        })
        .catch(err => {
          console.log(err);
-       //  self.$Progress.fail();
+         self.$Progress.fail();
        })
        .finally( () => {
         self.disableSubmit = false;
@@ -264,6 +269,8 @@ export default {
     loadCouponHeader(){
       var self = this;
       return new Promise(resolve => {
+
+        axiosRetry(axios, { retries: 3 });
         axios.get('api/coupon/show/' + this.couponId)
         .then( (res) => {
           self.couponDetails = res.data;
@@ -282,6 +289,7 @@ export default {
     loadDenomination(){
       var self = this;
       return new Promise(resolve => {
+        axiosRetry(axios, { retries: 3 });
         axios.get('api/denomination/show/' + self.couponId)
         .then( (res) => {
           var denomination = res.data;
@@ -321,7 +329,8 @@ export default {
     },
     update(){
       var self = this;
-      self.blockui.state = true;
+      self.$Progress.start();
+      axiosRetry(axios, { retries: 3 });
       axios.post('api/coupon/update',{
         couponId     : self.couponId,
         dealerId     : self.dealer,
@@ -330,12 +339,12 @@ export default {
         userSource   : self.$store.getters.currentUser.user_source_id
       }).then(res => {
         self.makeToast('success',res.data.original.message,'System message');
+        self.$Progress.finish();
         console.log(res.data);
       }).catch(err => {
+        self.$Progress.fail();
         self.makeToast('danger',err,'System message')
         console.log(err);
-      }).finally( () => {
-        self.blockui.state = false;
       });
     },
      
