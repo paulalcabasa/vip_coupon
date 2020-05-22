@@ -1,6 +1,11 @@
 <template>
   <div>
     
+    <b-alert variant="success" show v-show="submitFlag">
+      <span class="mr-2">Coupon No. <strong>{{ couponDetails.coupon_id }}</strong> has been created!</span> 
+      <b-link href="#" style="color:#fff;" @click.prevent="viewCoupon"><u>Click here to view</u></b-link>
+    </b-alert>
+
     <KTPortlet v-bind:title="title" >
       <template v-slot:toolbar>
         <b-button 
@@ -157,7 +162,8 @@ export default {
           status : '',
           coupon_id : ''
         },
-        denominationLoaded : false
+        denominationLoaded : false,
+        submitFlag : false
     }    
   },
  
@@ -244,7 +250,9 @@ export default {
            this.makeToast('danger',res.data.message + " : " + (res.data.invalid_cs_numbers),'System message');
          }
          else {
-           this.makeToast('success', res.data.message ,'System message');
+           self.couponDetails.coupon_id = res.data.couponId;
+          self.submitFlag = true;
+          /*  this.makeToast('success', res.data.message ,'System message');
            setTimeout( () => {
             this.$router.push(
               { 
@@ -255,7 +263,7 @@ export default {
                 } 
               }
             );
-           },1000)
+           },1000) */
          }
        })
        .catch(err => {
@@ -347,6 +355,17 @@ export default {
         console.log(err);
       });
     },
+    viewCoupon(){
+      this.$router.push(
+        { 
+          name : 'view-coupon', 
+          params : { 
+            couponId : this.couponDetails.coupon_id,
+            action : 'view'
+          } 
+        }
+      );
+    }
      
 
   },
