@@ -301,6 +301,7 @@ class CouponService {
             DB::commit();
             return [
                 'message'  => 'Coupon request has been issued.',
+                'status'   => 'fleet received',
                 'error'    => false
             ];
         } catch(\Exception $e) {
@@ -350,6 +351,7 @@ class CouponService {
             DB::commit();
             return [
                 'message'  => 'Coupon request has been issued.',
+                'status'   => 'dealer received',
                 'error'    => false
             ];
         } catch(\Exception $e) {

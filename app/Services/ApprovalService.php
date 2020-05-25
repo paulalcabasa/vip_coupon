@@ -50,6 +50,7 @@ class ApprovalService {
             DB::commit();
             return [
                 'message'  => 'Coupon request has been approved.',
+                'status'   => 'approved',
                 'error'    => false
             ];
         } catch(\Exception $e) {
@@ -98,6 +99,7 @@ class ApprovalService {
             DB::commit();
             return [
                 'message'  => 'Coupon request has been rejected.',
+                'status'   => 'rejected',
                 'error'    => false
             ];
         } catch(\Exception $e) {

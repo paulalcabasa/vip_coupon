@@ -67,7 +67,7 @@ Route::group(['middleware' => 'jwt'], function () {
     // Coupon
     Route::post('coupon/submit','CouponController@store');
     Route::get('coupon/show/{couponId}','CouponController@show');
-     Route::get('coupon/get/','CouponController@get');
+    Route::get('coupon/get/','CouponController@get');
     Route::post('coupon/approve/','ApprovalController@approve');
     Route::post('coupon/reject/','ApprovalController@reject');
     Route::post('coupon/update/','CouponController@update');

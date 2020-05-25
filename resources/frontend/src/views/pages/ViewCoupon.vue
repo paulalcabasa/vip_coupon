@@ -4,13 +4,13 @@
       <b-col sm="6">
         <KTPortlet v-bind:title="'Coupon'" >
           <template v-slot:toolbar>
-            <b-button :disabled="disableActions" v-if="isAbleToApprove" @click="approve" size="sm" variant="success"><i class="flaticon2-check-mark"></i></b-button>
-            <b-button :disabled="disableActions" v-if="isAbleToApprove" @click="reject" size="sm" variant="danger" class="ml-2"><i class="flaticon2-cross"></i></b-button>
-            <b-button :disabled="disableActions" v-if="isAbleToPrint" @click="print" size="sm" variant="primary" class="ml-2"><i class="flaticon2-print"></i></b-button>
-            <b-button :disabled="disableActions" v-if="isAbletoEdit" @click="edit" size="sm" variant="primary" class="ml-2"><i class="flaticon2-edit"></i></b-button>
-            <b-button :disabled="disableActions" v-if="isAbleToIssue" @click="issue" size="sm" variant="success" class="ml-2"><i class="flaticon-paper-plane"></i></b-button>
-            <b-button :disabled="disableActions" v-if="isAbleToReceiveByFleet" @click="receiveFleet" size="sm" variant="primary" class="ml-2"><i class="flaticon-like"></i></b-button>
-            <b-button :disabled="disableActions" v-if="isAbleToReceiveByDealer" @click="receiveDealer" size="sm" variant="success" class="ml-2"><i class="la la-truck"></i></b-button>
+            <b-button :disabled="disableActions" v-show="approveFlag" @click="approve" size="sm" variant="success"><i class="flaticon2-check-mark"></i></b-button>
+            <b-button :disabled="disableActions" v-show="approveFlag" @click="reject" size="sm" variant="danger" class="ml-2"><i class="flaticon2-cross"></i></b-button>
+            <b-button :disabled="disableActions" v-show="printFlag" @click="print" size="sm" variant="primary" class="ml-2"><i class="flaticon2-print"></i></b-button>
+            <b-button :disabled="disableActions" v-show="isAbletoEdit" @click="edit" size="sm" variant="primary" class="ml-2"><i class="flaticon2-edit"></i></b-button>
+<!--             <b-button :disabled="disableActions" v-show="isAbleToIssue" @click="issue" size="sm" variant="success" class="ml-2"><i class="flaticon-paper-plane"></i></b-button> -->
+            <b-button :disabled="disableActions" v-show="receiveFleetFlag" @click="receiveFleet" size="sm" variant="primary" class="ml-2"><i class="flaticon-like"></i> Received by Fleet</b-button>
+            <b-button :disabled="disableActions" v-show="receiveDealerFlag" @click="receiveDealer" size="sm" variant="success" class="ml-2"><i class="la la-truck"></i> Received by Dealer</b-button>
           </template> 
           <template v-slot:body>
             <b-container fluid>
@@ -299,34 +299,30 @@ export default {
             userId    : self.$store.getters.currentUser.user_id,
             userSource: self.$store.getters.currentUser.user_source_id
           }).then(res => {
-          
+            // update status
+            self.couponDetails.status = res.data.status;
+            self.disableActions = false;
             if(action != "print"){
+              self.action = "view";
               swalWithBootstrapButtons.fire(
                 title,
                 res.data.message,
                 messageState
-              ).then(() => {
-                //self.loadData();
-                 self.$router.push({ 
-                  name : 'view-coupon',
-                  params : {
-                    'action' : 'view',
-                    'couponId' : self.couponId
-                  } 
-                });
-              });
+              );
             }
-
+           
             if(action == "print"){
               self.makeToast('success',res.data.message,'System message');
               window.open(process.env.VUE_APP_API_URL + '/api/print-coupon/' + res.data.couponId);
-              self.$router.push({ 
+              self.couponDetails.status = "printed";
+              
+          /*     self.$router.push({ 
                 name : 'view-coupon',
                 params : {
                   'action' : 'view',
                   'couponId' : self.couponId
                 } 
-              });
+              }); */
             }
 
         
@@ -349,7 +345,7 @@ export default {
       this.doAction('api/coupon/approve', 'Approved!','success', 'approve', 'Are you sure to approve?');
     },
     reject(){
-      this.doAction('api/coupon/approve', 'Rejected!','error', 'reject', 'Are you sure to reject?');
+      this.doAction('api/coupon/reject', 'Rejected!','error', 'reject', 'Are you sure to reject?');
     }, 
     print(){
       this.doAction('api/coupon/generate', 'Printed!','success', 'print', 'Are you sure to print?');
@@ -369,6 +365,35 @@ export default {
       return maskedCode;
     }
   },
+
+  computed : {
+    approveFlag: function(){
+      if (this.couponDetails.status.trim().toLowerCase() == "pending" && this.action == "approve") {
+        return true;
+      }
+      return false;
+    },
+    printFlag: function(){
+      if (this.couponDetails.status.trim().toLowerCase() == "approved" && this.action == "view") {
+        return true;
+      }
+      return false;
+    },
+    receiveFleetFlag: function(){
+      if (this.couponDetails.status.trim().toLowerCase() == "printed" && this.action == "view") {
+        return true;
+      }
+      return false;
+    },
+    receiveDealerFlag: function(){
+      if (this.couponDetails.status.trim().toLowerCase() == "fleet received" && this.action == "view") {
+        return true;
+      }
+      return false;
+    }
+  }
+
+  
   
   
 };

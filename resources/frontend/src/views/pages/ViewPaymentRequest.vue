@@ -82,6 +82,12 @@ export default {
             paymentLineItems : [],
             paymentLineFields : [
                 { 
+                    key: 'coupon_no', 
+                    label: 'Coupon No', 
+                    sortable: true, 
+                    sortDirection: 'desc' 
+                },
+                { 
                     key: 'voucher_code', 
                     label: 'Code', 
                     sortable: true, 

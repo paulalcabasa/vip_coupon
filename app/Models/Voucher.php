@@ -25,13 +25,15 @@ class Voucher extends Model
         //return $this->where('coupon_id', $couponId)->get();
         $sql = "SELECT cd.id,
                     cd.amount,
-                    cd.cs_number,
+                    nvl(pl.cs_number,cd.cs_number) cs_number,
                     st.status,
                     lpad(cd.id,6,0) voucher_no,
                     cd.voucher_code
                 FROM ipc.ipc_vpc_vouchers cd
                     LEFT JOIN ipc.ipc_vpc_status st
-                    ON cd.status = st.id
+                        ON cd.status = st.id
+                    LEFT JOIN ipc.ipc_vpc_payment_lines pl
+                        ON pl.voucher_id = cd.id
                 WHERE cd.coupon_id = :coupon_id";
         $query = DB::select($sql,['coupon_id' => $couponId]);
         return $query;
