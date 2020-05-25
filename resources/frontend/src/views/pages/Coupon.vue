@@ -100,9 +100,11 @@ import VueTagsInput from '@johmun/vue-tags-input';
 import axiosRetry from 'axios-retry';
 
 export default {
-  name: "coupon",
+  name: "coupon",  
+  props : ['action'],                                                                                                                          
   mounted() {
     this.action = this.$route.params.action;
+  
     this.couponId = this.$route.params.couponId;
     this.loadDealers();
     if(this.action == "create") {

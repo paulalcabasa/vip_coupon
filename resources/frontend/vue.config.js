@@ -52,14 +52,14 @@ module.exports = {
           path: __dirname
         }
       },
-      sass: {
+   /*    sass: {
         prependData: `@import "@/assets/sass/global/integration/frameworks/vue/vuetify/variables.scss"`
       },
       scss: {
         prependData: `@import "@/assets/sass/global/integration/frameworks/vue/vuetify/variables.scss";`
-      },
+      }, */
       
     }
   },
-  transpileDependencies: ["vuetify"]
+ // transpileDependencies: ["vuetify"]
 };
