@@ -42,6 +42,7 @@ export default new Router({
           path: "/coupon/:action/",
           name: "create-coupon",
           component : Coupon,
+          props : true,
           meta: {
             requiresAuth: true,
             title: 'Coupon'
@@ -51,6 +52,7 @@ export default new Router({
           path: "/coupon/:action/:couponId",
           name: "edit-coupon",
           component: Coupon,
+          props: true,
           meta: {
             requiresAuth: true,
             title: 'Coupon'
@@ -59,6 +61,7 @@ export default new Router({
         {
           path: "/view-coupon/:action/:couponId",
           name: "view-coupon",
+          props: true,
           component: ViewCoupon,
           meta: {
             requiresAuth: true,
@@ -105,6 +108,7 @@ export default new Router({
           path: "view-payment-request/:action/:paymentHeaderId",
           name: "view-payment-request",
           component: ViewPaymentRequest,
+          props: true,
           meta: {
             requiresAuth: true,
             title: 'Approval'

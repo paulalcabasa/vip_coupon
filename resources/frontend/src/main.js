@@ -25,6 +25,7 @@ import "@mdi/font/css/materialdesignicons.css";
 import BlockUI from 'vue-blockui';
 import VueSweetalert2 from 'vue-sweetalert2';
 import VueProgressBar from 'vue-progressbar';
+import 'sweetalert2/dist/sweetalert2.min.css';
 import axios from 'axios';
 Vue.use(BlockUI);
 Vue.use(VueSweetalert2);
@@ -92,6 +93,8 @@ router.beforeEach((to, from, next) => {
     window.scrollTo(0, 0);
   }, 100);
 });
+
+
 
 new Vue({
   router,
