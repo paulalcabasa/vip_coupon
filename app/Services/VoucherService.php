@@ -112,7 +112,6 @@ class VoucherService {
         }
     }
 
-
     public function getVouchers($couponId){
         $voucher = new Voucher;
         return response()->json($voucher->getByCoupon($couponId),200);

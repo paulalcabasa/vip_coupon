@@ -36,12 +36,13 @@ class PaymentLine extends Model
     public function get($paymentHeaderId){
         $sql = "SELECT pl.id,
                         pl.voucher_code,
-                        vch.cs_number,
+                        nvl(vch.cs_number,pl.cs_number) cs_number,
                         vch.amount,
                         vch.coupon_id coupon_no
                 FROM ipc.ipc_vpc_payment_lines pl
                     LEFT JOIN ipc.ipc_vpc_vouchers vch
                         ON pl.voucher_code = vch.voucher_code
+                    
                 WHERE pl.payment_header_id = :payment_header_id";
         $query = DB::select($sql, ['payment_header_id' => $paymentHeaderId]);
         return $query;

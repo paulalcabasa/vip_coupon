@@ -8,6 +8,7 @@ use Excel;
 use App\Models\Voucher;
 use App\Models\PaymentHeader;
 use App\Models\PaymentLine;
+use App\Models\SerialNumber;
 
 class PaymentRequestService {
 
@@ -22,7 +23,7 @@ class PaymentRequestService {
 
         $excelHeaders = $data->first()->keys()->toArray();
 
-        $requiredHeaders = array('voucher_code');
+        $requiredHeaders = array('voucher_code','amount','cs_number');
         
         if($excelHeaders !== $requiredHeaders) {
             return [
@@ -36,20 +37,63 @@ class PaymentRequestService {
       
         $invalidVoucherCodes = $voucher->getInvalidVouchers($voucherCodes);
         $claimedVoucherCodes = $paymentLine->getClaimedVouchers($voucherCodes);
+        
+        $csNumbers = [];
+         /* check validity of cs numbers */
+        foreach($data as $row){
+            if($row->cs_number != ""){
+                array_push($csNumbers, $row->cs_number);
+            }
+        }
+        $invalidCSNumbers = [];
 
-        if(!empty($invalidVoucherCodes) || !empty($claimedVoucherCodes)) {
+        if(count($csNumbers) > 0){
+            $serialNumber = new SerialNumber;
+            $invalidCSNumbers = $serialNumber->getInvalidCsNumbers($csNumbers);
+        }
+
+        if(!empty($invalidVoucherCodes) || !empty($claimedVoucherCodes) || !empty($invalidCSNumbers)) {
             return [
                 'message'             => 'Payment request fail to upload.',
                 'invalidVoucherCodes' => implode(", ", $invalidVoucherCodes),
                 'claimedVoucherCodes' => implode("," , $claimedVoucherCodes),
-                'error'               => true
+                'invalidCSNumbers' => implode("," , $invalidCSNumbers),
+                'error'               => true,
+                'errors' => []
             ];
         }
 
+    
+
+        /* Validate voucher codes per amount and cs number validity */
+        $errors = [];
+        
+        foreach($data as $row){
+            // voucher details
+            $voucherDetails = $voucher->getByCode($row->voucher_code);
+            
+            if($voucherDetails[0]->voucher_code != $row->voucher_code || $voucherDetails[0]->amount != $row->amount){
+                array_push($errors,[
+                    'voucher_code' => $row->voucher_code,
+                    'message' => 'Invalid amount specified.'
+                ]);
+            }
+         
+        }
+
+        if(count($errors) > 0){
+            return [
+                'message'             => 'Payment request fail to upload.',
+                'invalidVoucherCodes' => implode(", ", $invalidVoucherCodes),
+                'claimedVoucherCodes' => implode("," , $claimedVoucherCodes),
+                'error'               => true,
+                'errors'              => $errors
+            ];
+        }
+        
+
         DB::beginTransaction();
         try {
-
-            
 
             $paymentHeaderId = $paymentHeader->insertHeader([
                 'status'             => 1,
@@ -66,6 +110,7 @@ class PaymentRequestService {
                     'payment_header_id'  => $paymentHeaderId,
                     'voucher_code'       => $row->voucher_code,
                     'voucher_id'         => $voucherDetails[0]->id,
+                    'cs_number'          => $row->cs_number,
                     'created_by'         => $user,
                     'create_user_source' => $userSource,
                     'creation_date'      => Carbon::now()

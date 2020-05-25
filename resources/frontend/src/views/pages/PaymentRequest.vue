@@ -1,13 +1,25 @@
 <template>
   <div>
 
-  
+    <b-alert variant="success" show v-show="submitFlag">
+      <span class="mr-2">Payment Request No. <strong>{{ paymentRequestNo}}</strong> has been created!</span> 
+      <b-link href="#" style="color:#fff;" @click.prevent="viewRequest"><u>Click here to view</u></b-link>
+    </b-alert>
+
     <b-card v-show="isError" bg-variant="danger" text-variant="white"  class="mb-3">
     <b-card-text>
       <h6>{{ title}}</h6>
       <p>{{ message }} </p>
       <p class="mb-0" v-if="invalidVoucherCodes != ''"><strong>Not existing</strong> : {{ invalidVoucherCodes }}</p>
-      <p class="mb-0"><strong>Already claimed</strong> : {{ claimedVoucherCodes }}</p>
+      <p class="mb-0" v-if="claimedVoucherCodes != ''"><strong>Already claimed</strong> : {{ claimedVoucherCodes }}</p>
+      <p class="mb-0" v-if="invalidCSNumbers != ''"><strong>Invalid CS Numbers</strong> : {{ invalidCSNumbers }}</p>
+      <p class="mb-0" v-show="errors.length > 0">
+        <strong>Errors : </strong>
+        <ol>
+          <li v-for="(row,index) in errors" :key="index">{{ row.voucher_code + " : " + row.message }}</li>
+        </ol>
+      </p>
+      
     </b-card-text>
     </b-card>
      
@@ -56,9 +68,13 @@ export default {
       isError : false,
       invalidVoucherCodes : [],
       claimedVoucherCodes : [],
+      invalidCSNumbers : [],
       message : '',
       title : '',
-      uploadReady: true
+      uploadReady: true,
+      errors :  [],
+      paymentRequestNo : '',
+      submitFlag : false
     }
   },
   methods: {
@@ -108,6 +124,8 @@ export default {
         if(res.data.error){
           self.invalidVoucherCodes = res.data.invalidVoucherCodes;
           self.claimedVoucherCodes = res.data.claimedVoucherCodes;
+          self.invalidCSNumbers = res.data.invalidCSNumbers;
+          self.errors = res.data.errors;
           self.message = res.data.message;
           self.isError = true;
           self.title = "Transaction failed!";
@@ -116,10 +134,14 @@ export default {
         }
         else {
           self.isError = false;
-          self.makeToast('success',res.data.message,'System message');
+         // self.makeToast('success',res.data.message,'System message');
           self.clear();
+          self.submitFlag = true;
+
+          self.paymentRequestNo =  res.data.paymentHeaderId;
           self.$Progress.finish();
-          setTimeout(() => {
+         /*  setTimeout(() => {
+            
             this.$router.push({
               name : 'view-payment-request',
               params : {
@@ -127,7 +149,7 @@ export default {
                 'paymentHeaderId' : res.data.paymentHeaderId
               }
             });
-          },1500);
+          },1500); */
         }
    
       
@@ -141,6 +163,15 @@ export default {
           self.formBusy = false;
       });
     },
+    viewRequest(){
+      this.$router.push({
+        name : 'view-payment-request',
+        params : {
+          'action' : 'view',
+          'paymentHeaderId' : this.paymentRequestNo
+        }
+      });
+    }
     
     
   },
