@@ -34,6 +34,21 @@
                   ></b-form-select>
               </b-col>
           </b-row>
+          <b-row class="my-3">
+              <b-col sm="3">
+                  <label>Coupon Type</label>
+              </b-col>
+              <b-col sm="9">
+                  <b-form-select 
+                      disabled
+                      v-model="coupon_type" 
+                      :options="coupon_types"
+                      value-field="id"
+                      text-field="name"
+                  ></b-form-select>
+              </b-col>
+          </b-row>
+
           <b-row>
               <b-col sm="3">
                   Denomination
@@ -98,13 +113,14 @@ import KTPortlet from "@/views/partials/content/Portlet.vue";
 import axios from 'axios';
 import VueTagsInput from '@johmun/vue-tags-input';
 import axiosRetry from 'axios-retry';
-
+import jwtService from '@/common/jwt.service.js'
 export default {
   name: "coupon",  
-  props : ['action'],                                                                                                                          
+ // props : ['action'],                                                                                                                          
   mounted() {
     this.action = this.$route.params.action;
-  
+    this.loadCouponTypes();
+    
     this.couponId = this.$route.params.couponId;
     this.loadDealers();
     if(this.action == "create") {
@@ -151,6 +167,8 @@ export default {
         dealers : [],
         denominations : [],
         couponId : '',
+        coupon_type : 1,
+        coupon_types : [],
         blockui : {
           msg : 'Please wait',
           html : '<i class="fa fa-cog fa-spin fa-3x fa-fw"></i>',
@@ -165,7 +183,8 @@ export default {
           coupon_id : ''
         },
         denominationLoaded : false,
-        submitFlag : false
+        submitFlag : false,
+        user : JSON.parse(jwtService.getUser())
     }    
   },
  
@@ -196,8 +215,29 @@ export default {
         console.log(error);
         this.$Progress.fail();
       })
+    },
+    loadCouponTypes(){
+      var self = this;
+     
+      axiosRetry(axios, { retries: 3 });
+      
+      axios.get('/api/coupon-types/get').then(res => {
 
-
+          res.data.map( (row) => {
+            this.coupon_types.push({
+              'id' : row.id,
+              'name' : row.name,
+              'user_type_id' : row.user_type_id
+            });
+          });
+        this.$Progress.finish();
+      })
+      .then( () => {
+        this.setDefaultCouponType();
+      })
+      .catch(error => {
+        this.$Progress.fail();
+      })
     },
     deleteDenomination(index){
       if(this.denominations.length > 1){
@@ -245,6 +285,7 @@ export default {
          denominations: self.denominations,
          createdBy   : self.$store.getters.currentUser.user_id,
          userSource   : self.$store.getters.currentUser.user_source_id,
+         couponType : self.coupon_type
        }).then(res => {
          
         self.$Progress.finish();
@@ -367,6 +408,15 @@ export default {
           } 
         }
       );
+    },
+    setDefaultCouponType(){
+      this.coupon_types.map((type) => {
+    
+        if(type.user_type_id == this.user.user_type_id){
+          this.coupon_type = type.id;
+          
+        }
+      });
     }
      
 

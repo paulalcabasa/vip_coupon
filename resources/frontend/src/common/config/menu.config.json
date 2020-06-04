@@ -18,49 +18,97 @@
         "icon": "flaticon2-architecture-and-city",
         "page": "dashboard",
         "translate": "MENU.DASHBOARD",
-        "bullet": "dot"
+        "bullet": "dot",
+        "users" : [
+          "Administrator",
+          "Service",
+          "Sales",
+          "Accounting"
+        ]
       },
       {
-        "section": "COUPON"
+        "section": "COUPON",
+        "users": [
+          "Administrator",
+          "Service",
+          "Sales",
+          "Accounting"
+        ]
       },
       {
         "title": "New Coupon",
         "root": true,
         "icon": "flaticon-add",
-        "page": "coupon/create"
+        "page": "coupon/create",
+        "users": [
+          "Administrator",
+          "Service",
+          "Sales"
+        ]
       },
       {
         "title": "Coupons",
         "root": true,
         "icon": "flaticon2-tag",
-        "page": "coupons"
+        "page": "coupons",
+        "users": [
+          "Administrator",
+          "Service",
+          "Sales",
+          "Accounting"
+        ]
       },
       {
         "title": "Approval",
         "root": true,
         "icon": "flaticon2-check-mark",
-        "page": "approval"
+        "page": "approval",
+        "users": [
+          "Administrator",
+          "Accounting"
+        ]
       },
       {
-        "section": "PAYMENT"
+        "section": "PAYMENT",
+        "users": [
+          "Administrator",
+          "Service",
+          "Sales",
+          "Accounting"
+        ]
       },
       {
         "title": "Payment Request",
         "root": true,
         "icon": "flaticon-coins",
-        "page": "payment/request"
+        "page": "payment/request",
+        "users": [
+          "Administrator",
+          "Service",
+          "Sales"
+        ]
       },
       {
         "title": "All Requests",
         "root": true,
         "icon": "flaticon-file-2",
-        "page": "payments"
+        "page": "payments",
+        "users": [
+          "Administrator",
+          "Service",
+          "Sales",
+          "Accounting"
+        ]
       },
       {
         "title": "Approval",
         "root": true,
         "icon": "flaticon2-check-mark",
-        "page": "payments/approval"
+        "page": "payments/approval",
+        "users": [
+          "Administrator",
+          "Accounting"
+        ]
       }
     ]
   }

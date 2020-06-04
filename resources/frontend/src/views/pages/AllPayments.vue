@@ -105,6 +105,8 @@
 import KTPortlet from "@/views/partials/content/Portlet.vue";
 import axios from 'axios'; 
 import badge from '@/common/config/status.config.json';
+import jwtService from '@/common/jwt.service.js';
+
 export default {
     name: "coupons",
     mounted() {
@@ -217,23 +219,33 @@ export default {
         loadRequests(){
             var self = this;
             var apiUrl = "";
+            let status = "";
+            let user = JSON.parse(jwtService.getUser());
+
             if(self.currentRouteName == "all-payments"){
-                apiUrl ='api/payments/get/all';
+                apiUrl ='api/payments/get';
+                status = "all";
             }
             else if(self.currentRouteName == "payments-approval"){
-                apiUrl ='api/payments/get/pending';
+                apiUrl ='api/payments/get';
+                status = "pending";
             }
             
             self.$Progress.start();
             return new Promise(resolve => {
-                axios.get(apiUrl)
-                    .then( (res) => {
+                axios.get(apiUrl, {
+                    params : {
+                        userId : user.user_id,
+                        sourceId : user.user_source_id,
+                        userType : user.user_type_id,
+                        status : status
+                    }
+                }).then( (res) => {
                         self.items = res.data;
                         self.totalRows = self.items.length;
                         self.$Progress.finish();
                         resolve(res);
-                    })
-                    .catch( err => {
+                    }).catch( err => {
                         self.$bvToast.toast('Failed loading resources, please refresh the page.', {
                             title: 'System message',
                             variant: 'danger',
@@ -241,8 +253,7 @@ export default {
                         });
                         self.$Progress.fail();
                         resolve(err);
-                    })
-                    .finally( () => {
+                    }).finally( () => {
                         
                     });
             });

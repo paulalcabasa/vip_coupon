@@ -24,8 +24,13 @@ class CouponController extends Controller
         return response()->json($this->couponService->getDetails($couponId),200);
     }
 
-    public function get(){
-        return response()->json($this->couponService->getCoupons(),200);
+    public function get(Request $request){
+        $params = [
+            'userId' => $request->userId,
+            'sourceId' => $request->sourceId,
+            'userType' => $request->userType
+        ];
+        return response()->json($this->couponService->getCoupons($params),200);
     }
 
     public function update(Request $request){

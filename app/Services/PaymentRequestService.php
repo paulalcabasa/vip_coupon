@@ -23,7 +23,7 @@ class PaymentRequestService {
 
         $excelHeaders = $data->first()->keys()->toArray();
 
-        $requiredHeaders = array('voucher_code','amount','cs_number');
+        $requiredHeaders = array('voucher_code','amount','cs_number','service_invoice_no','service_date','customer_name','dealer_code');
         
         if($excelHeaders !== $requiredHeaders) {
             return [
@@ -111,6 +111,10 @@ class PaymentRequestService {
                     'voucher_code'       => $row->voucher_code,
                     'voucher_id'         => $voucherDetails[0]->id,
                     'cs_number'          => $row->cs_number,
+                    'service_invoice_no' => $row->service_invoice_no,
+                    'service_date'       => $row->service_date,
+                    'dealer_code'        => $row->dealer_code,
+                    'customer_name'      => $row->customer_name,
                     'created_by'         => $user,
                     'create_user_source' => $userSource,
                     'creation_date'      => Carbon::now()
@@ -137,7 +141,19 @@ class PaymentRequestService {
     public function getPayments($request){
         $paymentHeader = new PaymentHeader();
         $status = $request->status;
-        return $paymentHeader->getHeaders($status);
+
+        if($request->userType == 49 || $request->userType == 44){ // administrator
+            return $paymentHeader->getHeaders($status);
+        }
+        else {
+            $params = [
+                'userId' => $request->userId,
+                'sourceId' => $request->sourceId,
+            ];
+            return $paymentHeader->getByUser($status, $params);
+        }
+        
+        
     }
 
     public function getLines($request){

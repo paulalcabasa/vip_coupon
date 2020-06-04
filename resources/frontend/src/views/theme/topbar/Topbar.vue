@@ -63,7 +63,7 @@
         <div class="kt-header__topbar-user">
           <span class="kt-header__topbar-welcome kt-hidden-mobile">Hi,</span>
           <span class="kt-header__topbar-username kt-hidden-mobile" 
-          v-if="this.$store.getters.isAuthenticated">{{ this.$store.getters.currentUser.first_name }}</span>
+          v-if="this.$store.getters.isAuthenticated">{{ user.first_name }}</span>
           <img
          
             alt="Pic"
@@ -73,7 +73,7 @@
           <span
             v-if="this.$store.getters.isAuthenticated"
             class="kt-badge kt-badge--username kt-badge--unified-success kt-badge--lg kt-badge--rounded kt-badge--bold"
-            >{{ this.$store.getters.currentUser.first_name.charAt(0) }}</span>
+            >{{ user.first_name.charAt(0) }}</span>
         </div>
       </div>
       <div
@@ -96,7 +96,7 @@ import KTDropdownQuickAction from "@/views/theme/topbar/DropdownQuickAction.vue"
 //import KTDropdownLanguage from "@/views/theme/topbar/DropdownLanguage.vue";
 import KTDropdownUser from "@/views/theme/topbar/DropdownUser.vue";
 //import i18nService from "@/common/i18n.service.js";
-
+import jwtService from '@/common/jwt.service.js'
 export default {
   name: "KTTopbar",
   data() {
@@ -104,6 +104,7 @@ export default {
       //languageFlag: "",
       //languages: i18nService.languages
      // user_first_name : ''
+     user : JSON.parse(jwtService.getUser())
     };
   },
   mounted() {

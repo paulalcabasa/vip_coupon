@@ -1,33 +1,9 @@
 <template>
     <div>
         <b-row>
-            <b-col sm="4">
+            <b-col sm="12">
                 <KTPortlet v-bind:title="'Payment Request'" >
-                    <template v-slot:body>
-                        <div class="mb-3">
-                            <span >Payment Reference No.</span>
-                            <span class="kt-font-bold kt-font-info display-value">{{ paymentHeader.id }}</span>
-                        </div>
-                        <div class="mb-3">
-                            <span>Submitted by</span>
-                            <span class="kt-font-bold display-value">{{ paymentHeader.created_by }}</span>
-                        </div>
-                        <div class="mb-3">
-                            <span>Date submitted</span>
-                            <span class="kt-font-bold display-value">{{ paymentHeader.date_created }}</span>
-                        </div>
-                        <div class="mb-3">
-                            <span class="text-bold">Status</span>
-                            <span class="display-value">
-                                <b-badge class="mr-1" :variant="statusColors[paymentHeader.status.trim().toLowerCase()]">{{ paymentHeader.status.toLowerCase() }}</b-badge>
-                            </span>
-                        </div>
-                    </template>
-                </KTPortlet>
-            </b-col>
 
-            <b-col sm="8">
-                <KTPortlet v-bind:title="'Voucher Codes'" >
                     <template v-slot:toolbar>
                         <b-button v-if="action == 'view' && paymentHeader.status.trim() == 'pending'" size="sm" variant="danger" @click.prevent="cancel()" :disabled="formBusy">Cancel</b-button>
                         <b-button v-if="action == 'approve' && paymentHeader.status.trim() == 'pending'" class="mr-2" size="sm" variant="success" @click.prevent="approve()" :disabled="formBusy">Approve</b-button>
@@ -35,8 +11,45 @@
                     </template> 
 
                     <template v-slot:body>
+                        <b-row>
+                            <b-col sm="3">
+                                <div class="mb-3">
+                                    <span >Payment Reference No.</span>
+                                    <span class="kt-font-bold kt-font-info display-value">{{ paymentHeader.id }}</span>
+                                </div>
+                            </b-col>
+                            <b-col sm="3">
+                                <div class="mb-3">
+                                    <span>Submitted by</span>
+                                    <span class="kt-font-bold display-value">{{ paymentHeader.created_by }}</span>
+                                </div>
+                            </b-col>
+                            <b-col sm="3">
+                                <div class="mb-3">
+                                    <span>Date submitted</span>
+                                    <span class="kt-font-bold display-value">{{ paymentHeader.date_created }}</span>
+                                </div>
+                            </b-col>
+                            <b-col sm="3">
+                                <div class="mb-3">
+                                    <span class="text-bold">Status</span>
+                                    <span class="display-value">
+                                        <b-badge class="mr-1" :variant="statusColors[paymentHeader.status.trim().toLowerCase()]">{{ paymentHeader.status.toLowerCase() }}</b-badge>
+                                    </span>
+                                </div>
+                            </b-col>
+                        </b-row>
+                    </template>
+                </KTPortlet>
+            </b-col>
+
+            <b-col sm="12">
+                <KTPortlet v-bind:title="'Voucher Codes'" >
+                  
+
+                    <template v-slot:body>
                     
-                        <b-table striped hover :items="paymentLineItems" :fields="paymentLineFields"></b-table>
+                        <b-table style="overflow-x:scroll;" striped hover :items="paymentLineItems" :fields="paymentLineFields"></b-table>
                         
                     </template>
 
@@ -103,6 +116,34 @@ export default {
                 { 
                     key: 'cs_number', 
                     label: 'CS Number', 
+                    sortable: true, 
+                    sortDirection: 'desc' 
+                },
+
+                { 
+                    key: 'service_invoice_no', 
+                    label: 'Service Invoice No', 
+                    sortable: true, 
+                    sortDirection: 'desc' 
+                },
+
+                { 
+                    key: 'service_date', 
+                    label: 'Service Date', 
+                    sortable: true, 
+                    sortDirection: 'desc' 
+                },
+
+                { 
+                    key: 'dealer_code', 
+                    label: 'Dealer Code', 
+                    sortable: true, 
+                    sortDirection: 'desc' 
+                },
+
+                 { 
+                    key: 'customer_name', 
+                    label: 'Customer', 
                     sortable: true, 
                     sortDirection: 'desc' 
                 },

@@ -9,6 +9,7 @@ use App\Models\CSNumber;
 use App\Models\Timeline;
 use App\Models\Voucher;
 use App\Services\CodeService;
+use App\Models\CouponType;
 
 class VoucherService {
 
@@ -18,8 +19,10 @@ class VoucherService {
         $couponId   = $request->couponId;
         $user       = $request->userId;
         $userSource = $request->userSource;
-
+        
         $voucher = new Voucher;
+        $coupon = new Coupon;
+
       
         if(count($voucher->getByCoupon($couponId)) > 0){
             return response()->json([
@@ -38,7 +41,10 @@ class VoucherService {
             $denomination = new Denomination;
             $denominations = $denomination->getByCoupon($couponId);
             $docs = [];
-
+            
+            $couponDetails = $coupon->getDetails($couponId);
+            $couponType = CouponType::where('id', $couponDetails->coupon_type_id)->first();
+      
             foreach($denominations as $row){
                 $csNumber = new CSNumber;
                 
@@ -57,6 +63,7 @@ class VoucherService {
                         ]); 
                     } while($voucher->isExist($voucherCode));
 
+                    $control_number = $voucher->generateControlNumber($couponType->sequence_object_name);
                     $voucher->insert([
                         'coupon_id'          => $couponId,
                         'denomination_id'    => $row['id'],
@@ -67,7 +74,8 @@ class VoucherService {
                         'create_user_source' => $userSource,
                         'creation_date'      => Carbon::now(),
                         'print_date'         => Carbon::now(),
-                        'voucher_code'       => $voucherCode
+                        'voucher_code'       => $voucherCode,
+                        'control_number'     => $control_number
                     ]);
                 }
             }
@@ -76,7 +84,7 @@ class VoucherService {
            
 
             // update status of coupon
-            $coupon = new Coupon;
+            
 
             $coupon->updateStatus([
                 'couponId'   => $couponId,

@@ -14,10 +14,10 @@
         <!--use below badge element instead the user avatar to display username's first letter(remove kt-hidden class to display it) -->
         <span
           class="kt-badge kt-badge--lg kt-badge--rounded kt-badge--bold kt-font-success"
-          >{{ this.$store.getters.currentUser.first_name.charAt(0) }}</span
+          >{{ user.first_name.charAt(0) }}</span
         >
       </div>
-      <div class="kt-user-card__name">{{ this.$store.getters.currentUser.first_name + " " + this.$store.getters.currentUser.last_name}}</div>
+      <div class="kt-user-card__name">{{ user.first_name + " " + user.last_name}}</div>
       
     </div>
     <!--end: Head -->
@@ -54,9 +54,14 @@
 
 <script>
 import { LOGOUT } from "@/store/auth.module";
-
+import jwtService from '@/common/jwt.service.js'
 export default {
   name: "KTDropdownUser",
+  data (){
+    return { 
+      user : JSON.parse(jwtService.getUser())
+    }
+  },
   methods: {
     onLogout() {
       this.$store
