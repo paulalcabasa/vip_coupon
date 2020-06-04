@@ -20,7 +20,7 @@ export const SET_MESSAGE = "setMessage";
 const state = {
   errors: [],
   message : '',
-  user: {},
+  user: JwtService.getUser(),
   isAuthenticated: !!JwtService.getToken()
 };
 
@@ -42,6 +42,7 @@ const actions = {
       ApiService.post('/api/auth/login', credentials)
         .then(res => {
           if(res.status == 200){
+            console.log(res.data.user);
             context.commit(SET_AUTH, res.data);
           }
           resolve(res);
@@ -151,12 +152,14 @@ const mutations = {
     state.user = user.user;
     state.errors = {};
     JwtService.saveToken(user.access_token);
+    JwtService.saveUser(JSON.stringify(user.user));
   },
   [PURGE_AUTH](state) {
     state.isAuthenticated = false;
     state.user = {};
     state.errors = {};
     JwtService.destroyToken();
+    JwtService.destroyUser();
   }
 };
 

@@ -38,7 +38,11 @@ class PaymentLine extends Model
                         pl.voucher_code,
                         nvl(vch.cs_number,pl.cs_number) cs_number,
                         vch.amount,
-                        vch.coupon_id coupon_no
+                        vch.coupon_id coupon_no,
+                        pl.service_invoice_no,
+                        to_char(pl.service_date,'mm/dd/yyyy') service_date,
+                        pl.dealer_code,
+                        pl.customer_name
                 FROM ipc.ipc_vpc_payment_lines pl
                     LEFT JOIN ipc.ipc_vpc_vouchers vch
                         ON pl.voucher_code = vch.voucher_code

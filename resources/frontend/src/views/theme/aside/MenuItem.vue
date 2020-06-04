@@ -20,7 +20,7 @@
 <script>
 import KTMenuItemText from "@/views/theme/aside/MenuItemText.vue";
 import KTMenuSubmenu from "@/views/theme/aside/MenuSubmenu.vue";
-
+import { mapState } from 'vuex';
 export default {
   name: "KTMenuItem",
   components: {
@@ -54,6 +54,12 @@ export default {
       }
       return "hover";
     }
-  }
+  },
+/*   computed: mapState(['user']),
+  watch: {
+    user(newValue, oldValue){
+      console.log(newValue);
+    }
+  } */
 };
 </script>

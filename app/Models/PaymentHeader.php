@@ -44,6 +44,35 @@ class PaymentHeader extends Model
         return $query;
     }
 
+    public function getByUser($status, $params){
+
+        $where = "";
+
+        if($status == "pending"){
+            $where .= 'AND ph.status = 1';
+        }
+
+        $sql = "SELECT ph.id,
+                    st.status,
+                    ph.creation_date,
+                    usr.first_name || ' ' || usr.last_name created_by,
+                    TRIM(TO_CHAR(ph.creation_date, 'Month')) || ' ' ||  TO_CHAR(ph.creation_date,'DD, YYYY') date_created,
+                    lower(st.status) status
+                FROM ipc.ipc_vpc_payment_headers ph
+                LEFT JOIN ipc.ipc_vpc_status st
+                    ON ph.status = st.id
+                LEFT JOIN apps.ipc_vpc_users_v usr
+                    ON usr.user_id = ph.created_by
+                    AND usr.user_source_id = ph.create_user_source
+                WHERE 1 = 1
+                    AND usr.user_id = :userId
+                    AND usr.user_source_id = :sourceId";
+        
+        $sql .= $where;
+        $query = DB::select($sql, $params);
+        return $query;
+    }
+
     public function get($paymentHeaderId){
         $sql = "SELECT ph.id,
                     st.status,

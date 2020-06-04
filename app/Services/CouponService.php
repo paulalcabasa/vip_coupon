@@ -16,6 +16,7 @@ class CouponService {
         $denominations = $request->denominations;
         $createdBy = $request->createdBy;
         $userSource = $request->userSource;
+        $couponType = $request->couponType;
         $csNumbers = [];
 
         $serialNumber = new SerialNumber;
@@ -43,6 +44,7 @@ class CouponService {
             $coupon->dealer_id = $dealer;
             $coupon->created_by = $createdBy;
             $coupon->create_user_source = $userSource;
+            $coupon->coupon_type_id = $couponType;
             $coupon->save();
             $couponId = $coupon->id;
 
@@ -88,9 +90,17 @@ class CouponService {
         return $couponDetails;
     }
 
-    public function getCoupons(){
+    public function getCoupons($params){
         $coupon = new Coupon();
-        $coupons = $coupon->getCoupons();
+
+        if($params['userType'] == 49 || $params['userType'] == 44){ // administrator
+            $coupons = $coupon->getCoupons();
+        }
+        else {
+            unset($params['userType']);
+            $coupons = $coupon->getByUser($params);
+        }
+    
         return $coupons;
     }
 

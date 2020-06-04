@@ -88,7 +88,7 @@ Route::group(['middleware' => 'jwt'], function () {
     // Payment
     Route::get('voucher/get/{couponId}','VoucherController@show');
     Route::post('payment-request/submit','PaymentRequestController@store');
-    Route::get('payments/get/{status}','PaymentRequestController@get');
+    Route::get('payments/get','PaymentRequestController@get');
     Route::get('payment/lines/get/{paymentHeaderId}','PaymentRequestController@getLines');
     Route::get('payment/header/get/{paymentHeaderId}','PaymentRequestController@getHeader');
     Route::post('payment/update/status','PaymentRequestController@updateStatus');
@@ -96,6 +96,7 @@ Route::group(['middleware' => 'jwt'], function () {
 
     Route::get('dashboard/statistics','DashboardController@getStatistics');
    
+    Route::get('coupon-types/get', 'CouponTypeController@index');
     
 });
 

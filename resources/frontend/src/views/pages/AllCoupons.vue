@@ -106,10 +106,12 @@ import KTPortlet from "@/views/partials/content/Portlet.vue";
 import axios from 'axios'; 
 import badge from '@/common/config/status.config.json';
 import axiosRetry from 'axios-retry';
+import jwtService from '@/common/jwt.service.js';
 export default {
     name: "coupons",
     mounted() {
         this.loadCoupons();
+        
     },
     data(){
         return {
@@ -214,25 +216,32 @@ export default {
 
                 axiosRetry(axios, { retries: 3 });
                 
-                axios.get('api/coupon/get')
-                    .then( (res) => {
-                        self.items = res.data;
-                        self.totalRows = self.items.length;
-                        self.$Progress.finish();
-                        resolve(res);
-                    })
-                    .catch( err => {
-                        self.$bvToast.toast('Failed loading resources, please refresh the page.', {
-                            title: 'System message',
-                            variant: 'danger',
-                            solid: true
-                        });
-                        self.$Progress.fail();
-                        resolve(err);
-                    })
-                    .finally( () => {
-                        
+                let user = JSON.parse(jwtService.getUser());
+
+                //console.log(user);
+                axios.get('api/coupon/get', {
+                    params : {
+                        userId : user.user_id,
+                        sourceId : user.user_source_id,
+                        userType : user.user_type_id
+                    }
+                }).then( (res) => {
+                    self.items = res.data;
+                    self.totalRows = self.items.length;
+                    self.$Progress.finish();
+                    resolve(res);
+                }).catch( err => {
+                    self.$bvToast.toast('Failed loading resources, please refresh the page.', {
+                        title: 'System message',
+                        variant: 'danger',
+                        solid: true
                     });
+                    self.$Progress.fail();
+                    resolve(err);
+                })
+                .finally( () => {
+                    
+                });
             });
         }
     }

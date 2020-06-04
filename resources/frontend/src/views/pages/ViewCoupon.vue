@@ -1,5 +1,11 @@
 <template>
   <div>
+
+    <b-alert variant="success" show v-show="submitFlag">
+      <span class="mr-2">Voucher for Coupon No. <strong>{{ couponId }}</strong> has been generated!</span> 
+      <b-link href="#" style="color:#fff;" @click.prevent="printCoupon"><u>Click here to print</u></b-link>
+    </b-alert>
+
     <b-row>
       <b-col sm="6">
         <KTPortlet v-bind:title="'Coupon'" >
@@ -9,7 +15,7 @@
             <b-button :disabled="disableActions" v-show="printFlag" @click="print" size="sm" variant="primary" class="ml-2"><i class="flaticon2-print"></i></b-button>
             <b-button :disabled="disableActions" v-show="isAbletoEdit" @click="edit" size="sm" variant="primary" class="ml-2"><i class="flaticon2-edit"></i></b-button>
 <!--             <b-button :disabled="disableActions" v-show="isAbleToIssue" @click="issue" size="sm" variant="success" class="ml-2"><i class="flaticon-paper-plane"></i></b-button> -->
-            <b-button :disabled="disableActions" v-show="receiveFleetFlag" @click="receiveFleet" size="sm" variant="primary" class="ml-2"><i class="flaticon-like"></i> Received by Fleet</b-button>
+          <!--   <b-button :disabled="disableActions" v-show="receiveFleetFlag" @click="receiveFleet" size="sm" variant="primary" class="ml-2"><i class="flaticon-like"></i> Received by Fleet</b-button> -->
             <b-button :disabled="disableActions" v-show="receiveDealerFlag" @click="receiveDealer" size="sm" variant="success" class="ml-2"><i class="la la-truck"></i> Received by Dealer</b-button>
           </template> 
           <template v-slot:body>
@@ -29,6 +35,12 @@
                 <b-col sm="8">
                   <span class="kt-font-bold kt-font-info">{{ couponDetails.account_name }}</span>
                 </b-col>
+              </b-row>
+              <b-row>
+                <b-col sm="4">
+                  <label class="text-bold">Coupon Type</label>
+                </b-col>
+                <b-col sm="8">{{ couponDetails.coupon_type }}</b-col>
               </b-row>
               <b-row>
                 <b-col sm="4">
@@ -175,7 +187,8 @@ export default {
       isAbleToReceiveByDealer : false,
       denomination: [],
       timelines: [],
-      disableActions : false
+      disableActions : false,
+      submitFlag : false
     }
   },
   mounted() {
@@ -312,10 +325,11 @@ export default {
             }
            
             if(action == "print"){
-              self.makeToast('success',res.data.message,'System message');
-              window.open(process.env.VUE_APP_API_URL + '/api/print-coupon/' + res.data.couponId);
+              //self.makeToast('success',res.data.message,'System message');
+              self.couponId = res.data.couponId
+           //   window.open(process.env.VUE_APP_API_URL + '/api/print-coupon/' + res.data.couponId);
               self.couponDetails.status = "printed";
-              
+              self.submitFlag = true;
           /*     self.$router.push({ 
                 name : 'view-coupon',
                 params : {
@@ -363,6 +377,9 @@ export default {
       let endStr = voucherCode.substr(5,voucherCode.length);
       let maskedCode = 'XXXXX' + endStr;
       return maskedCode;
+    },
+    printCoupon(){
+      window.open(process.env.VUE_APP_API_URL + '/api/print-coupon/' + this.couponId);
     }
   },
 
@@ -379,14 +396,14 @@ export default {
       }
       return false;
     },
-    receiveFleetFlag: function(){
+    /* receiveFleetFlag: function(){
       if (this.couponDetails.status.trim().toLowerCase() == "printed" && this.action == "view") {
         return true;
       }
       return false;
-    },
+    }, */
     receiveDealerFlag: function(){
-      if (this.couponDetails.status.trim().toLowerCase() == "fleet received" && this.action == "view") {
+      if (this.couponDetails.status.trim().toLowerCase() == "printed" && this.action == "view") {
         return true;
       }
       return false;

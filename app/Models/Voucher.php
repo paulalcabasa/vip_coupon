@@ -27,14 +27,15 @@ class Voucher extends Model
                     cd.amount,
                     nvl(pl.cs_number,cd.cs_number) cs_number,
                     st.status,
-                    lpad(cd.id,6,0) voucher_no,
+                    lpad(cd.control_number,6,0) voucher_no,
                     cd.voucher_code
                 FROM ipc.ipc_vpc_vouchers cd
                     LEFT JOIN ipc.ipc_vpc_status st
                         ON cd.status = st.id
                     LEFT JOIN ipc.ipc_vpc_payment_lines pl
                         ON pl.voucher_id = cd.id
-                WHERE cd.coupon_id = :coupon_id";
+                WHERE cd.coupon_id = :coupon_id
+                ORDER BY cd.control_number";
         $query = DB::select($sql,['coupon_id' => $couponId]);
         return $query;
     }
@@ -99,5 +100,11 @@ class Voucher extends Model
                     AND rownum <= 15";
         $query = DB::select($sql);
         return $query;
+    }
+
+    public function generateControlNumber($sequence_name){
+        $sql = "SELECT ".$sequence_name.".nextval control_number FROM dual";
+        $query = DB::select($sql);
+        return $query[0]->control_number;
     }
 }

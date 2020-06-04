@@ -11,6 +11,7 @@
 import KTMenuItem from "@/views/theme/aside/MenuItem.vue";
 import KTMenuSection from "@/views/theme/aside/MenuSection.vue";
 import menuConfig from "@/common/config/menu.config.json";
+import jwtService from "@/common/jwt.service.js";
 
 export default {
   name: "KTAsideMenu",
@@ -18,10 +19,26 @@ export default {
     KTMenuItem,
     KTMenuSection
   },
+  data : {
+    user : ''
+  },
+  mounted(){
+   
+  },
   computed: {
     menuItems: () => {
-      return menuConfig.aside.items;
-    }
+      let allMenu = menuConfig.aside.items;
+      let filteredMenu = [];
+      var user = JSON.parse(jwtService.getUser());
+
+      allMenu.map(function(menu){
+        if(menu.users.includes(user.user_type_name)){
+          filteredMenu.push(menu);
+        }
+        
+      });
+      return filteredMenu;
+    },
   }
 };
 </script>
