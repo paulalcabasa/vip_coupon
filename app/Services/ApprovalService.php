@@ -30,11 +30,13 @@ class ApprovalService {
             $coupon = new Coupon;
 
             $coupon->updateStatus([
-                'couponId'   => $couponId,
-                'userId'     => $userId,
-                'userSource' => $userSource,
-                'status'     => $status,
-                'updateDate' => Carbon::now()
+                'couponId'       => $couponId,
+                'userId'         => $userId,
+                'userSource'     => $userSource,
+                'status'         => $status,
+                'approvedBy'     => $userId,
+                'approverSource' => $userSource,
+                'updateDate'     => Carbon::now()
             ]);
             
             $timeline = new Timeline;

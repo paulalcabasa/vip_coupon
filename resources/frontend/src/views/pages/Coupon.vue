@@ -31,7 +31,13 @@
                       :options="dealers"
                       value-field="id"
                       text-field="account_name"
+                      v-show="user.user_type_id != 51"
                   ></b-form-select>
+                  <b-form-input
+                      :value="user.account_name"
+                      disabled
+                      v-show="user.user_type_id == 51"
+                  ></b-form-input>
               </b-col>
           </b-row>
           <b-row class="my-3">
@@ -49,12 +55,79 @@
               </b-col>
           </b-row>
 
-          <b-row>
+          <b-row class="my-3">
+              <b-col sm="3">
+                  <label>Promo</label>
+              </b-col>
+              <b-col sm="9">
+                  <b-form-select 
+                      v-model="promo_id" 
+                      :options="promos"
+                      value-field="id"
+                      text-field="promo_name"
+                  ></b-form-select>
+              </b-col>
+          </b-row>
+
+          <b-row class="my-3">
+              <b-col sm="3">
+                  <label>Description</label>
+              </b-col>
+              <b-col sm="9">
+                 <b-form-textarea
+                  v-model="description"
+                  placeholder="Enter description..."
+                  rows="3"
+                  max-rows="6"
+                ></b-form-textarea>
+              </b-col>
+          </b-row>
+
+
+           <b-row class="my-3">
+              <b-col sm="3">
+                  <label>Purpose</label>
+              </b-col>
+              <b-col sm="9">
+                  <b-form-select 
+                      v-model="purpose" 
+                      :options="purposes"
+                    
+                  ></b-form-select>
+              </b-col>
+          </b-row>
+
+          <b-row class="my-3">
+              <b-col sm="3">
+                  <label>Email</label>
+              </b-col>
+              <b-col sm="9">
+                  <vue-tags-input
+                      placeholder="add email"
+                      v-model="emailRecipient"
+                      :validation="emailValidation"
+                      :tags="emailRecipients"
+                      @tags-changed="newTags => emailRecipients = newTags"
+                  />
+              </b-col>
+          </b-row>
+
+          <b-row class="my-3">
+              <b-col sm="3">
+                  <label>Attachment</label>
+              </b-col>
+              <b-col sm="9">
+                  <input type="file"  v-if="uploadReady"  id="file" ref="file" v-on:change="handleFileUpload()"/>
+              </b-col>
+          </b-row>
+         
+         
+          <b-row v-if="denominationLoaded && purpose != null">
               <b-col sm="3">
                   Denomination
               </b-col>
               <b-col sm="9">
-                  <table class="table" v-if="denominationLoaded">
+                  <table class="table" >
                       <thead>
                           <tr>
                               <th width="150">Amount</th>    
@@ -81,6 +154,7 @@
                                       placeholder="add vehicle"
                                       v-model="row.csNumber"
                                       :tags="row.csNumbers"
+                                       :validation="csNumValidation"
                                       @tags-changed="newTags => row.csNumbers = newTags"
                                   />
                               </td>
@@ -107,43 +181,54 @@
     </KTPortlet>
   </div>
 </template>
+<style scoped>
+/* form-control {
+    display: block;
+    width: 100%;
+    height: calc(1.5em + 1.3rem + 2px);
+    padding: 0.65rem 1rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #e2e5ec;
+    border-radius: 4px; */
+  .vue-tags-input {
+    max-width:100%;
+  }
 
+
+
+ 
+</style>
 <script>  
 import KTPortlet from "@/views/partials/content/Portlet.vue";
 import axios from 'axios';
 import VueTagsInput from '@johmun/vue-tags-input';
 import axiosRetry from 'axios-retry';
 import jwtService from '@/common/jwt.service.js'
+import objectToFormData from 'object-to-formdata';
 export default {
-  name: "coupon",  
- // props : ['action'],                                                                                                                          
+  name: "coupon",                                                                                                                           
   mounted() {
     this.action = this.$route.params.action;
-    this.loadCouponTypes();
+    this.dealer = this.user.dealer_id;
+   
+    this.loadDropdowns();
     
     this.couponId = this.$route.params.couponId;
-    this.loadDealers();
+    
+    if(this.user.user_type_id != 51){
+      this.loadDealers();
+      this.dealer = '';
+    }
+
+   
+    
     if(this.action == "create") {
-      this.denominations = [
-        {
-            amount : 100,
-            quantity : 0,
-            csNumbers : [],
-            csNumber : ''
-        },
-        {
-            amount : 500,
-            quantity : 0,
-            csNumbers : [],
-            csNumber : ''
-        },
-        {
-            amount : 1000,
-            quantity : 0,
-            csNumbers : [],
-            csNumber : ''
-        }
-      ];
+      this.setDefaultDenomination();
       this.denominationLoaded = true;
       this.title = "New Coupon";
     }
@@ -164,16 +249,43 @@ export default {
     return {
         disableSubmit : false, 
         dealer: '',
+        file : null,
+        uploadReady: true,
         dealers : [],
+        description : '',
         denominations : [],
         couponId : '',
+        emailRecipient : '',
+        emailRecipients : [],
         coupon_type : 1,
         coupon_types : [],
+        promo_id : '',
+        purpose : null,
         blockui : {
           msg : 'Please wait',
           html : '<i class="fa fa-cog fa-spin fa-3x fa-fw"></i>',
           state : false
         },
+        defaultDenominations : [
+          {
+              amount : 100,
+              quantity : 0,
+              csNumbers : [],
+              csNumber : ''
+          },
+          {
+              amount : 500,
+              quantity : 0,
+              csNumbers : [],
+              csNumber : ''
+          },
+          {
+              amount : 1000,
+              quantity : 0,
+              csNumbers : [],
+              csNumber : ''
+          }
+        ],
         action : '',
         title : '',
         couponDetails : {
@@ -182,9 +294,22 @@ export default {
           status : '',
           coupon_id : ''
         },
+        purposes:[],
+        promos:[],
         denominationLoaded : false,
         submitFlag : false,
-        user : JSON.parse(jwtService.getUser())
+        user : JSON.parse(jwtService.getUser()),
+        emailValidation: [{
+          classes: 'min-length',
+          rule: tag => this.isEmailValid(tag.text),
+          disableAdd: true,
+        }],
+        csNumValidation: [{
+          classes: 'min-length',
+          rule: tag => tag.text.length == 6 ? false : true,
+          disableAdd: true,
+        }],
+        reg: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,24}))$/
     }    
   },
  
@@ -239,6 +364,64 @@ export default {
         this.$Progress.fail();
       })
     },
+    loadDropdowns(){
+      axiosRetry(axios, { retries: 3 });
+      var self = this;
+      let promoUrl = 'api/promos/active';
+      let purposeUrl = 'api/purpose/active';
+      let couponTypeUrl = 'api/coupon-types/get';
+     
+      const promoReq = axios.get(promoUrl);
+      const purposeReq = axios.get(purposeUrl);
+      const couponTypeReq = axios.get(couponTypeUrl);
+ 
+      this.$Progress.start();
+      axios.all([promoReq, purposeReq, couponTypeReq]).then(axios.spread((...responses) => {
+        const promoRes = responses[0];
+        const purposeRes = responses[1];
+        const couponTypeRes = responses[2];
+     
+        
+        couponTypeRes.data.map( (row) => {
+          self.coupon_types.push({
+            'id' : row.id,
+            'name' : row.name,
+            'user_type_id' : row.user_type_id
+          });
+        });
+
+        self.promos.push({
+          id : '',
+          promo_name : 'Please select a promo'
+        });
+
+        promoRes.data.map( (row) => {
+          self.promos.push({
+            'id' : row.id,
+            'promo_name' : row.promo_name
+          });
+        });
+
+        self.purposes.push({
+          value : null,
+          text : 'Please select a purpose'
+        });
+
+        purposeRes.data.map( (row) => {
+          self.purposes.push({
+            value : row,
+            text : row.purpose
+          });
+        });
+
+        self.$Progress.finish();
+      })).catch(errors => {
+        self.makeToast('error',"Failed to load resources, please refresh the page.",'System message');
+    
+        self.$Progress.fail();
+        // react on errors.
+      });
+    },
     deleteDenomination(index){
       if(this.denominations.length > 1){
         this.denominations.splice(index,1)
@@ -255,6 +438,26 @@ export default {
         csNumber : ''
       });
     },
+    clearForm(){
+      this.clearFile();
+      this.description = '';
+      this.setDefaultDenomination();
+      this.purpose = null;
+      this.promo_id = '';
+      this.emailRecipients = [];
+      this.emailRecipient = '';
+    },
+    setDefaultDenomination(){
+      this.denominations = [];
+      this.defaultDenominations.map(data => {
+        this.denominations.push({
+          'amount' : data.amount,
+          'quantity' : 0,
+          'csNumbers' : [],
+          'csNumber' : ''
+        });
+      });
+    },
     makeToast(variant = null,body,title) {
        this.$bvToast.toast(body, {
          title: `${title}`,
@@ -262,51 +465,85 @@ export default {
          solid: true
        })
     },
+    validateCSNumbers(){
+      var err = 0;
+      this.denominations.map(data => {
+        if(parseInt(data.quantity) != parseInt(data.csNumbers.length)) {
+          err++;
+        } 
+      });
+      return err > 0 ? true : false;
+    },
     submit(){
        var self = this;
       
-       if(self.dealer == ''){
+       if(this.dealer == ''){
          this.makeToast('danger','Select the dealer','System message');
          return false;
        }
 
-       if(this.total <= 0){
-         this.makeToast('danger','Amount should have a value.','System message');
-         return false;
-      } 
+        if(this.promo_id == ''){
+          this.makeToast('danger','Please select the promo','System message');
+          return false;
+        } 
 
+       
+        if(this.purpose == null){
+          this.makeToast('danger','Please select the purpose','System message');
+          return false;
+        } 
+
+        if(this.emailRecipients.length == 0){
+          this.makeToast('danger','Please add email recipients.','System message');
+          return false;
+        } 
+
+    
+        if(this.purpose.require_cs_no_flag == 'Y' && this.validateCSNumbers()){
+          this.makeToast('danger','Coupon quantity should match with the quantity of CS Numbers.','System message');
+          return false; 
+        }
+
+        if(this.total <= 0){
+            this.makeToast('danger','Amount should have a value.','System message');
+            return false;
+          } 
+      
+      let formData = new FormData();
+      formData.append('attachment', this.file);
+      formData.append('dealerId', self.dealer);
+      formData.append('denominations', JSON.stringify(self.denominations));
+      formData.append('createdBy', self.$store.getters.currentUser.user_id);
+      formData.append('userSource', self.$store.getters.currentUser.user_source_id);
+      formData.append('couponType', self.coupon_type);
+      formData.append('description', self.description);
+      formData.append('purpose', self.purpose.id);
+      formData.append('promo', self.promo_id);
+      formData.append('email', JSON.stringify(self.emailRecipients));
+      
       axiosRetry(axios, { retries: 3 });
 
          // set spinner to submit button
       self.disableSubmit = true;
       self.$Progress.start();
-       axios.post('api/coupon/submit', {
-         dealerId    : self.dealer,
-         denominations: self.denominations,
-         createdBy   : self.$store.getters.currentUser.user_id,
-         userSource   : self.$store.getters.currentUser.user_source_id,
-         couponType : self.coupon_type
-       }).then(res => {
-         
+
+       axios.post('api/coupon/submit',
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          }
+        }
+      ).then(res => {
+     
         self.$Progress.finish();
         if(res.data.error){
            this.makeToast('danger',res.data.message + " : " + (res.data.invalid_cs_numbers),'System message');
          }
          else {
-           self.couponDetails.coupon_id = res.data.couponId;
+          self.couponDetails.coupon_id = res.data.couponId;
           self.submitFlag = true;
-          /*  this.makeToast('success', res.data.message ,'System message');
-           setTimeout( () => {
-            this.$router.push(
-              { 
-                name : 'view-coupon', 
-                params : { 
-                  couponId : res.data.couponId,
-                  action : 'view'
-                } 
-              }
-            );
-           },1000) */
+          self.clearForm();
          }
        })
        .catch(err => {
@@ -316,6 +553,16 @@ export default {
        .finally( () => {
         self.disableSubmit = false;
        });
+       
+    },
+    handleFileUpload(){
+      this.file = this.$refs.file.files[0];
+    },
+    clearFile () {
+      this.uploadReady = false
+      this.$nextTick(() => {
+        this.uploadReady = true
+      })
     },
     loadCouponHeader(){
       var self = this;
@@ -417,8 +664,11 @@ export default {
           
         }
       });
+    },
+    isEmailValid(email) {
+   
+      return (email== "")? "" : (this.reg.test(email)) ? false : true;
     }
-     
 
   },
 

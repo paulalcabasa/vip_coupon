@@ -52,7 +52,7 @@
                             <b-button size="sm" @click="info(row.item)" class="mr-1">
                                 <i class="fa fa-search"></i>
                             </b-button>
-                             <b-button v-if="row.item.status.trim() == 'pending'" size="sm" @click="edit(row.item)" class="mr-1">
+                             <b-button v-if="row.item.status.trim() == 'pending' && user.user_type_id != 44" size="sm" @click="edit(row.item)" class="mr-1">
                                 <i class="fa fa-edit"></i>
                             </b-button> 
                         </template>
@@ -111,16 +111,23 @@ export default {
     name: "coupons",
     mounted() {
         this.loadCoupons();
-        
+        this.user = JSON.parse(jwtService.getUser());
     },
     data(){
         return {
             statusColors : badge.badgeColors,
             items: [],
+            user : [],
             fields: [
                 { 
                     key: 'actions', 
                     label: 'Actions' 
+                },
+                { 
+                    key: 'coupon_type', 
+                    label: 'Type', 
+                    sortable: true, 
+                    class: 'text-center' 
                 },
                 { 
                     key: 'coupon_id', 

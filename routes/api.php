@@ -97,6 +97,10 @@ Route::group(['middleware' => 'jwt'], function () {
     Route::get('dashboard/statistics','DashboardController@getStatistics');
    
     Route::get('coupon-types/get', 'CouponTypeController@index');
+
+    Route::get('promos/active', 'PromoController@getActive');
+    Route::get('purpose/active', 'PurposeController@getActive');
+
     
 });
 

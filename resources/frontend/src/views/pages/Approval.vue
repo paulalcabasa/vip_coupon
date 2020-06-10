@@ -113,6 +113,12 @@ export default {
                     label: 'Actions' 
                 },
                 { 
+                    key: 'coupon_type', 
+                    label: 'Type', 
+                    sortable: true, 
+                    class: 'text-center' 
+                },
+                { 
                     key: 'coupon_id', 
                     label: 'Coupon No.', 
                     sortable: true, 
