@@ -5,6 +5,8 @@ namespace App\Services;
 use DB;
 use App\Models\Coupon;
 use App\Models\Timeline;
+use App\Models\Approver;
+use App\Models\Approval;
 use Carbon\Carbon;
 
 class ApprovalService {
@@ -114,5 +116,12 @@ class ApprovalService {
         }
       
     }
+
+    public function getByCoupon($couponId){
+        $approval = new Approval;
+        $data = $approval->getByCoupon($couponId);
+        return $data;
+    }
+   
 
 }

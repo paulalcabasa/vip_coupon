@@ -13,9 +13,8 @@ class Coupon extends Model
     const CREATED_AT = 'creation_date';
     const UPDATED_AT = 'update_date';
 
-
     public function getDetails($couponId){
-        $sql = "SELECT cp.id coupon_id,
+        $sql = "SELECT  cp.id coupon_id,
                         dlr.account_name,
                         usr.first_name || ' ' || usr.last_name created_by,
                         usr.first_name,
@@ -26,7 +25,19 @@ class Coupon extends Model
                         usr.user_id,
                         usr.user_source_id,
                         ct.name coupon_type,
-                        cp.coupon_type_id
+                        cp.coupon_type_id,
+                        cp.description,
+                        prm.promo_name,
+                        prs.id purpose_id,
+                        prs.purpose,
+                        prs.require_cs_no_flag,
+                        cp.filename,
+                        cp.attachment,
+                        cp.email,
+                        cp.purpose_id,
+                        cp.promo_id,
+                        cp.new_filename
+
                 FROM ipc.ipc_vpc_coupons cp
                     INNER JOIN ipc_portal.dealers dlr
                         ON dlr.id = cp.dealer_id
@@ -37,12 +48,14 @@ class Coupon extends Model
                         ON st.id = cp.status
                     INNER JOIN ipc.ipc_vpc_coupon_types ct
                         ON ct.id = cp.coupon_type_id
+                    INNER JOIN ipc.ipc_vpc_promos prm
+                        ON prm.id = cp.promo_id
+                    INNER JOIN ipc.ipc_vpc_purposes prs
+                        ON prs.id = cp.purpose_id
                 WHERE cp.id = :coupon_id";
         $query = DB::select($sql, [
             'coupon_id' => $couponId
         ]);
-
-
         return !empty($query) ? $query[0] : $query;
     }
 

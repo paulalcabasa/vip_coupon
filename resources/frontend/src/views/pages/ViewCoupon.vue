@@ -6,80 +6,99 @@
       <b-link href="#" style="color:#fff;" @click.prevent="printCoupon"><u>Click here to print</u></b-link>
     </b-alert>
 
-    <b-row>
-      <b-col sm="6">
-        <KTPortlet v-bind:title="'Coupon'" >
-          <template v-slot:toolbar>
-            <b-button :disabled="disableActions" v-show="approveFlag" @click="approve" size="sm" variant="success"><i class="flaticon2-check-mark"></i></b-button>
-            <b-button :disabled="disableActions" v-show="approveFlag" @click="reject" size="sm" variant="danger" class="ml-2"><i class="flaticon2-cross"></i></b-button>
-            <b-button :disabled="disableActions" v-show="printFlag" @click="print" size="sm" variant="primary" class="ml-2"><i class="flaticon2-print"></i></b-button>
-            <b-button :disabled="disableActions" v-show="isAbletoEdit" @click="edit" size="sm" variant="primary" class="ml-2"><i class="flaticon2-edit"></i></b-button>
+  
+
+    <KTPortlet v-bind:title="'Coupon'">
+      <template v-slot:toolbar>
+        <b-button :disabled="disableActions" v-show="approveFlag" @click="approve" size="sm" variant="success"><i class="flaticon2-check-mark"></i></b-button>
+        <b-button :disabled="disableActions" v-show="approveFlag" @click="reject" size="sm" variant="danger" class="ml-2"><i class="flaticon2-cross"></i></b-button>
+        <b-button :disabled="disableActions" v-show="printFlag" @click="print" size="sm" variant="primary" class="ml-2"><i class="flaticon2-print"></i></b-button>
+        <b-button :disabled="disableActions" v-show="isAbletoEdit" @click="edit" size="sm" variant="primary" class="ml-2"><i class="flaticon2-edit"></i></b-button>
 <!--             <b-button :disabled="disableActions" v-show="isAbleToIssue" @click="issue" size="sm" variant="success" class="ml-2"><i class="flaticon-paper-plane"></i></b-button> -->
-          <!--   <b-button :disabled="disableActions" v-show="receiveFleetFlag" @click="receiveFleet" size="sm" variant="primary" class="ml-2"><i class="flaticon-like"></i> Received by Fleet</b-button> -->
-            <b-button :disabled="disableActions" v-show="receiveDealerFlag" @click="receiveDealer" size="sm" variant="success" class="ml-2"><i class="la la-truck"></i> Received by Dealer</b-button>
-          </template> 
-          <template v-slot:body>
+      <!--   <b-button :disabled="disableActions" v-show="receiveFleetFlag" @click="receiveFleet" size="sm" variant="primary" class="ml-2"><i class="flaticon-like"></i> Received by Fleet</b-button> -->
+        <b-button :disabled="disableActions" v-show="receiveDealerFlag" @click="receiveDealer" size="sm" variant="success" class="ml-2"><i class="la la-truck"></i> Received by Dealer</b-button>
+      </template> 
+      <template v-slot:body>
+        <b-tabs content-class="mt-3">
+          <b-tab title="Details" active>
             <b-container fluid>
               <b-row>
-                <b-col sm="4">
-                  <label>Coupon No.</label>
+                <b-col sm="2">
+                  <label class="kt-font-bold">Coupon No.</label>
                 </b-col>
-                <b-col sm="8">
+                <b-col sm="4">
                   <span class="kt-font-bold kt-font-info">{{ couponDetails.coupon_id }}</span>
                 </b-col>
-              </b-row>
-              <b-row>
-                <b-col sm="4">
-                  <label>Dealer</label>
+                <b-col sm="2">
+                  <label class="kt-font-bold">Dealer</label>
                 </b-col>
-                <b-col sm="8">
+                <b-col sm="4">
                   <span class="kt-font-bold kt-font-info">{{ couponDetails.account_name }}</span>
                 </b-col>
               </b-row>
+              
               <b-row>
-                <b-col sm="4">
-                  <label class="text-bold">Coupon Type</label>
+                <b-col sm="2">
+                  <label class="kt-font-bold">Coupon Type</label>
                 </b-col>
-                <b-col sm="8">{{ couponDetails.coupon_type }}</b-col>
+                <b-col sm="4">{{ couponDetails.coupon_type }}</b-col>
+                <b-col sm="2">
+                  <label class="kt-font-bold">Promo</label>
+                </b-col>
+                <b-col sm="4">{{ couponDetails.promo_name }}</b-col>
               </b-row>
+             
               <b-row>
-                <b-col sm="4">
-                  <label class="text-bold">Created by</label>
+                <b-col sm="2">
+                  <label class="kt-font-bold">Description</label>
                 </b-col>
-                <b-col sm="8">{{ couponDetails.created_by }}</b-col>
+                <b-col sm="4">{{ couponDetails.description }}</b-col>
+                <b-col sm="2">
+                  <label class="kt-font-bold">Purpose</label>
+                </b-col>
+                <b-col sm="4">{{ couponDetails.purpose }}</b-col>
               </b-row>
+             
+            
               <b-row>
-                <b-col sm="4">
-                  <label class="text-bold">Date Created</label>
+                <b-col sm="2">
+                  <label class="kt-font-bold">Created by</label>
                 </b-col>
-                <b-col sm="8">{{ couponDetails.date_created }}</b-col>
+                <b-col sm="4">{{ couponDetails.created_by }}</b-col>
+                <b-col sm="2">
+                  <label class="kt-font-bold">Date Created</label>
+                </b-col>
+                <b-col sm="4">{{ couponDetails.date_created }}</b-col>
               </b-row>
-              <b-row>
-                <b-col sm="4">
-                  <label class="text-bold">Status</label>
+
+                <b-row>
+                <b-col sm="2">
+                  <label class="kt-font-bold">Status</label>
                 </b-col>
-                <b-col sm="8">
+                <b-col sm="4">
                   <b-badge class="mr-1" :variant="statusColors[couponDetails.status.trim().toLowerCase()]">{{ couponDetails.status.toLowerCase() }}</b-badge>
                 </b-col>
+                   <b-col sm="2">
+                  <label class="kt-font-bold">Attachment</label>
+                </b-col>
+                <b-col sm="4"><b-link variant="primary" target="_blank" :href="downloadUrl()">{{ couponDetails.filename }}</b-link></b-col>
               </b-row>
+             
+
+              <b-row>
+               
+             
+                <b-col sm="2">
+                  <label class="kt-font-bold">Email</label>
+                </b-col>
+                <b-col sm="4">
+                  <b-badge class="mr-1 mb-1" variant="info" :key="index" v-for="(email,index) in couponDetails.email">{{ email }}</b-badge>
+                </b-col>
+              </b-row>
+              
             </b-container>
-          </template>
-        </KTPortlet>
-      </b-col>
-
-      <b-col sm="6">
-        <KTPortlet v-bind:title="'Timeline'" >
-          <template v-slot:body>
-            <Timeline2 v-bind:datasrc="timelines"></Timeline2>
-          </template>
-        </KTPortlet>
-      </b-col>
-    </b-row>
-
-    <KTPortlet v-bind:title="'Denomination'">
-      <template v-slot:body>
-        <b-tabs content-class="mt-3">
-          <b-tab title="Amount" active>
+          </b-tab>
+          <b-tab title="Denomination" >
             <b-table striped hover :items="denomination" :fields="fields">
               <template v-slot:cell(cs_number)="data">
                 <span v-html="data.value"></span>
@@ -92,9 +111,17 @@
               <template v-slot:cell(voucher_code)="data">
                 <span v-html="maskVoucher(data.value)"></span>
               </template>
-       
             </b-table>
           </b-tab>
+          <b-tab title="Timeline">
+            <Timeline2 v-bind:datasrc="timelines"></Timeline2>
+          </b-tab>
+
+          <b-tab title="Approval">
+            <b-table striped hover :items="approvalItems" :fields="approvalFields"></b-table>
+          </b-tab>
+          
+          
         </b-tabs>
       </template>
     </KTPortlet>
@@ -177,7 +204,58 @@ export default {
               sortDirection: 'desc' 
         },
       ],
-
+      approvalItems : [],
+      approvalFields : [
+        {
+          key: 'hierarchy', 
+          label: 'Hierarchy', 
+          sortable: false, 
+          sortDirection: 'desc' 
+        },
+        {
+          key: 'approver_name', 
+          label: 'Approver Name', 
+          sortable: false, 
+          sortDirection: 'desc' 
+        },
+        {
+          key: 'email_address', 
+          label: 'Email', 
+          sortable: false, 
+          sortDirection: 'desc' 
+        },
+        {
+          key: 'mail_sent_flag', 
+          label: 'Is Notified', 
+          sortable: false, 
+          sortDirection: 'desc' 
+        },
+        {
+          key: 'date_sent', 
+          label: 'Date Sent', 
+          sortable: false, 
+          sortDirection: 'desc' 
+        },
+        {
+          key: 'status', 
+          label: 'Status', 
+          sortable: false, 
+          sortDirection: 'desc' 
+        },
+        {
+          key: 'date_approved', 
+          label: 'Date Approved', 
+          sortable: false, 
+          sortDirection: 'desc' 
+        },
+        {
+          key: 'remarks', 
+          label: 'Remarks', 
+          sortable: false, 
+          sortDirection: 'desc' 
+        },
+        
+      ],
       statusColors : badge.badgeColors,
       isAbleToApprove : false,
       isAbleToPrint : false,
@@ -220,20 +298,24 @@ export default {
       let timelineApi = 'api/timeline/show/' + self.couponId;
       let denominationApi = 'api/denomination/show/' + self.couponId;
       let voucherApi = 'api/voucher/get/' + self.couponId;
+      let approvalApi = 'api/approval/coupon/get/' + self.couponId;
 
       const couponReq = axios.get(couponApi);
       const timelineReq = axios.get(timelineApi);
       const denominationReq = axios.get(denominationApi);
       const voucherReq = axios.get(voucherApi);
+      const approvalReq = axios.get(approvalApi);
 
-      axios.all([couponReq, timelineReq, denominationReq, voucherReq]).then(axios.spread((...responses) => {
+      axios.all([couponReq, timelineReq, denominationReq, voucherReq, approvalReq]).then(axios.spread((...responses) => {
         const couponRes = responses[0];
         const timelineRes = responses[1];
         const denominationRes = responses[2];
         const voucherRes = responses[3];
+        const approvalRes = responses[4];
      
         // use/access the results 
         self.couponDetails = couponRes.data;
+        self.couponDetails.email = couponRes.data.email.split(";");
         if(couponRes.data.status.trim() == "PENDING" && self.action == "approve"){
           self.isAbleToApprove = true;
         }
@@ -256,6 +338,7 @@ export default {
         self.timelines = timelineRes.data;
         self.denomination = denominationRes.data;
         self.voucherItems = voucherRes.data;
+        self.approvalItems = approvalRes.data;
 
         self.$Progress.finish();
       })).catch(errors => {
@@ -286,6 +369,7 @@ export default {
           } 
       });
     },
+   
     doAction(apiUrl, title, messageState, action, confirmMessage){
       var self = this;
       const swalWithBootstrapButtons = this.$swal.mixin({
@@ -380,6 +464,9 @@ export default {
     },
     printCoupon(){
       window.open(process.env.VUE_APP_API_URL + '/api/print-coupon/' + this.couponId);
+    },
+    downloadUrl(){
+      return process.env.VUE_APP_API_URL + '/' + this.couponDetails.attachment;
     }
   },
 

@@ -15,6 +15,7 @@
           :disabled="disableSubmit"
           id="submit"
         >Submit</b-button>
+        <b-button v-if="action == 'edit'" class="mr-3" variant="info" @click.prevent="viewCoupon()">View</b-button>
         <b-button v-if="action == 'edit'" variant="success" @click.prevent="update()">Save</b-button>
       </template> 
   
@@ -92,7 +93,6 @@
                   <b-form-select 
                       v-model="purpose" 
                       :options="purposes"
-                    
                   ></b-form-select>
               </b-col>
           </b-row>
@@ -118,6 +118,8 @@
               </b-col>
               <b-col sm="9">
                   <input type="file"  v-if="uploadReady"  id="file" ref="file" v-on:change="handleFileUpload()"/>
+                  <b-link variant="primary" target="_blank" :href="downloadUrl()" v-show="couponDetails.filename">{{ couponDetails.filename }}</b-link>
+                  <b-form-text>Allowable max file size is 5mb.</b-form-text>
               </b-col>
           </b-row>
          
@@ -224,9 +226,7 @@ export default {
       this.loadDealers();
       this.dealer = '';
     }
-
-   
-    
+        
     if(this.action == "create") {
       this.setDefaultDenomination();
       this.denominationLoaded = true;
@@ -314,6 +314,9 @@ export default {
   },
  
   methods: {
+    downloadUrl(){
+      return process.env.VUE_APP_API_URL + '/' + this.couponDetails.attachment;
+    },
     loadDealers(){
       var self = this;
       this.$Progress.start();
@@ -474,41 +477,50 @@ export default {
       });
       return err > 0 ? true : false;
     },
-    submit(){
-       var self = this;
+    validateForm(){
+      if(this.dealer == ''){
+        this.makeToast('danger','Select the dealer','System message');
+        return true;
+      }
+
+      if(this.promo_id == ''){
+        this.makeToast('danger','Please select the promo','System message');
+        return true;
+      } 
       
-       if(this.dealer == ''){
-         this.makeToast('danger','Select the dealer','System message');
-         return false;
-       }
+      if(this.purpose == null){
+        this.makeToast('danger','Please select the purpose','System message');
+        return true;
+      } 
 
-        if(this.promo_id == ''){
-          this.makeToast('danger','Please select the promo','System message');
-          return false;
-        } 
+      if(this.emailRecipients.length == 0){
+        this.makeToast('danger','Please add email recipients.','System message');
+        return true;
+      } 
 
-       
-        if(this.purpose == null){
-          this.makeToast('danger','Please select the purpose','System message');
-          return false;
-        } 
-
-        if(this.emailRecipients.length == 0){
-          this.makeToast('danger','Please add email recipients.','System message');
-          return false;
-        } 
-
+      if(this.validateFileSize()){
+        this.makeToast('danger','Attachment file size must be less than 5mb.','System message');
+        return true;
+      }
     
-        if(this.purpose.require_cs_no_flag == 'Y' && this.validateCSNumbers()){
-          this.makeToast('danger','Coupon quantity should match with the quantity of CS Numbers.','System message');
-          return false; 
-        }
+      if(this.purpose.require_cs_no_flag == 'Y' && this.validateCSNumbers()){
+        this.makeToast('danger','Coupon quantity should match with the quantity of CS Numbers.','System message');
+        return true; 
+      }
 
-        if(this.total <= 0){
-            this.makeToast('danger','Amount should have a value.','System message');
-            return false;
-          } 
+      if(this.total <= 0){
+          this.makeToast('danger','Amount should have a value.','System message');
+          return true;
+      } 
+
+    },
+    submit(){
+      var self = this;
       
+      if(this.validateForm()){
+        return false;
+      }
+
       let formData = new FormData();
       formData.append('attachment', this.file);
       formData.append('dealerId', self.dealer);
@@ -567,12 +579,24 @@ export default {
     loadCouponHeader(){
       var self = this;
       return new Promise(resolve => {
-
         axiosRetry(axios, { retries: 3 });
         axios.get('api/coupon/show/' + this.couponId)
         .then( (res) => {
           self.couponDetails = res.data;
           self.dealer = res.data.dealer_id;
+          self.promo_id = res.data.promo_id;
+          self.description = res.data.description;
+          self.purpose = {
+            id : res.data.purpose_id,
+            purpose : res.data.purpose,
+            require_cs_no_flag : res.data.require_cs_no_flag
+          };
+          res.data.email.split(';').map(email => {
+            self.emailRecipients.push({
+              text : email,
+              tiClasses : ['ti-valid']
+            });
+          });
           resolve(res);
         })
         .catch( err => {
@@ -627,23 +651,56 @@ export default {
     },
     update(){
       var self = this;
+      if(this.validateForm()){
+        return false;
+      }
+
+      // set spinner to submit button
+      self.disableSubmit = true;
       self.$Progress.start();
+
+      
+      let formData = new FormData();
+      formData.append('attachment', this.file);
+      formData.append('dealerId', self.dealer);
+      formData.append('denominations', JSON.stringify(self.denominations));
+      formData.append('createdBy', self.$store.getters.currentUser.user_id);
+      formData.append('userSource', self.$store.getters.currentUser.user_source_id);
+      formData.append('couponType', self.coupon_type);
+      formData.append('description', self.description);
+      formData.append('purpose', self.purpose.id);
+      formData.append('promo', self.promo_id);
+      formData.append('couponId', self.couponId);
+      formData.append('email', JSON.stringify(self.emailRecipients));
+      
       axiosRetry(axios, { retries: 3 });
-      axios.post('api/coupon/update',{
-        couponId     : self.couponId,
-        dealerId     : self.dealer,
-        denominations: self.denominations,
-        createdBy    : self.$store.getters.currentUser.user_id,
-        userSource   : self.$store.getters.currentUser.user_source_id
-      }).then(res => {
-        self.makeToast('success',res.data.original.message,'System message');
+
+       axios.post('api/coupon/update',
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          }
+        }
+      ).then(res => {
+     
         self.$Progress.finish();
-        console.log(res.data);
-      }).catch(err => {
-        self.$Progress.fail();
-        self.makeToast('danger',err,'System message')
-        console.log(err);
-      });
+        if(res.data.error){
+           this.makeToast('danger',res.data.message + " : " + (res.data.invalid_cs_numbers),'System message');
+         }
+         else {
+          self.makeToast('success',res.data.message,'System message');
+  
+         }
+       })
+       .catch(err => {
+         console.log(err);
+         self.$Progress.fail();
+       })
+       .finally( () => {
+        self.disableSubmit = false;
+       });
+
     },
     viewCoupon(){
       this.$router.push(
@@ -666,9 +723,17 @@ export default {
       });
     },
     isEmailValid(email) {
-   
       return (email== "")? "" : (this.reg.test(email)) ? false : true;
-    }
+    },
+    validateFileSize(){
+      if(this.file != null){
+        var size_mb = this.file.size / 1024 / 1024;
+        if(size_mb > 5){
+          return true;
+        }
+      }
+      return false;
+    },
 
   },
 
