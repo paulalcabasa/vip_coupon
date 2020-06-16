@@ -72,7 +72,7 @@ class Voucher extends Model
                 FROM ipc.ipc_vpc_vouchers vch
                 LEFT JOIN ipc.ipc_vpc_payment_lines pl
                     ON pl.voucher_id = vch.id
-                INNER JOIN ipc.ipc_vpc_payment_headers ph
+                LEFT JOIN ipc.ipc_vpc_payment_headers ph
                     ON ph.id = pl.payment_header_id
                 WHERE 1 = 1";
         $query = DB::select($sql);

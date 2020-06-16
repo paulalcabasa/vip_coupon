@@ -23,7 +23,8 @@
           "Administrator",
           "Service",
           "Sales",
-          "Accounting"
+          "Accounting",
+          "Dealer"
         ]
       },
       {
@@ -32,7 +33,8 @@
           "Administrator",
           "Service",
           "Sales",
-          "Accounting"
+          "Accounting",
+          "Dealer"
         ]
       },
       {
@@ -43,7 +45,8 @@
         "users": [
           "Administrator",
           "Service",
-          "Sales"
+          "Sales",
+          "Dealer"
         ]
       },
       {
@@ -55,7 +58,8 @@
           "Administrator",
           "Service",
           "Sales",
-          "Accounting"
+          "Accounting",
+          "Dealer"
         ]
       },
       {
@@ -74,7 +78,8 @@
           "Administrator",
           "Service",
           "Sales",
-          "Accounting"
+          "Accounting",
+          "Dealer"
         ]
       },
       {
@@ -85,7 +90,8 @@
         "users": [
           "Administrator",
           "Service",
-          "Sales"
+          "Sales",
+          "Dealer"
         ]
       },
       {
@@ -97,7 +103,8 @@
           "Administrator",
           "Service",
           "Sales",
-          "Accounting"
+          "Accounting",
+          "Dealer"
         ]
       },
       {
@@ -108,6 +115,37 @@
         "users": [
           "Administrator",
           "Accounting"
+        ]
+      },
+      {
+        "section": "Settings",
+        "users": [
+          "Administrator",
+          "Service",
+          "Sales",
+          "Accounting"
+        ]
+      },
+      {
+        "title": "Promo",
+        "root": true,
+        "icon": "flaticon2-check-mark",
+        "page": "payments/approval",
+        "users": [
+          "Administrator",
+          "Accounting"
+        ]
+      },
+      {
+        "title": "Purpose",
+        "root": true,
+        "icon": "flaticon2-check-mark",
+        "page": "payments/approval",
+        "users": [
+          "Administrator",
+          "Accounting",
+          "Sales",
+          "Service"
         ]
       }
     ]

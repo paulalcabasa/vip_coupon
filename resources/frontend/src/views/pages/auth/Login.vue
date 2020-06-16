@@ -40,14 +40,14 @@
             <b-form-input
               id="example-input-1"
               name="example-input-1"
-              placeholder="Employee No."
+              placeholder="Username"
               v-model="$v.form.employee_no.$model"
               :state="validateState('employee_no')"
               aria-describedby="input-1-live-feedback"
             ></b-form-input>
 
             <b-form-invalid-feedback id="input-1-live-feedback">
-              Employee number is required.
+              Username is required.
             </b-form-invalid-feedback>
           </b-form-group>
 

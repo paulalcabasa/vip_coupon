@@ -13,7 +13,7 @@
       <div class="col-lg-4 col-xl-4 order-lg-1 order-xl-1">
         <KTPortlet solidClass="kt-portlet--solid-info">
           <template v-slot:body>
-            <Statistics :title="totalPrinted" desc="Printed" icon="flaticon2-printer" />
+            <Statistics :title="totalPrinted" desc="Released" icon="flaticon2-printer" />
           </template>
         </KTPortlet>
       </div>

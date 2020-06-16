@@ -90,6 +90,8 @@ class VoucherService {
                 'couponId'   => $couponId,
                 'userId'     => $user,
                 'userSource' => $userSource,
+                'approvedBy' => $user,
+                'approverSource' => $userSource,
                 'status'     => 3, // printed state
                 'updateDate' => Carbon::now()
             ]);

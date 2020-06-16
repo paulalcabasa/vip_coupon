@@ -32,6 +32,9 @@
 		},
 		{
 			"path": "storage"
+		},
+		{
+			"path": "app\\Console"
 		}
 	],
 	"settings": {}

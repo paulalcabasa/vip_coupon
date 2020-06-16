@@ -8,25 +8,53 @@ use App\Models\Denomination;
 use App\Models\CSNumber;
 use App\Models\SerialNumber;
 use App\Models\Timeline;
+use App\Services\ApprovalService;
+use Illuminate\Support\Facades\Storage;
+use File;
+use App\Models\Approver;
+use App\Models\Approval;
 
 class CouponService {
 
     public function saveCoupon($request){
         $dealer = $request->dealerId;
-        $denominations = $request->denominations;
+        $denominations = json_decode($request->denominations);
         $createdBy = $request->createdBy;
         $userSource = $request->userSource;
         $couponType = $request->couponType;
+        $description = $request->description;
+        $purpose = $request->purpose;
+        $promo = $request->promo;
+        $emails = json_decode($request->email);
+        $attachment = $request->attachment;
+        $email_recipients = "";
         $csNumbers = [];
-
+        $filename = "";
+        $attachment_path = "";
+        $origFilename = "";
         $serialNumber = new SerialNumber;
-
+        $symlink_dir = "";
         foreach($denominations as $amount) {
-            foreach($amount['csNumbers'] as $csNumber) {
-                array_push($csNumbers, $csNumber['text']);
+            foreach($amount->csNumbers as $csNumber) {
+                array_push($csNumbers, $csNumber->text);
             }
         }
 
+        foreach($emails as $email) {
+            $email_recipients .= $email->text . ';';
+        }
+
+        $email_recipients = substr($email_recipients, 0, -1);
+        
+        if(!empty($_FILES)){
+            $filename = Carbon::now()->timestamp . '.' . $attachment->getClientOriginalExtension();
+            $origFilename = $attachment->getClientOriginalName();
+            $symlink_dir = 'public/storage/uploads/';
+            $attachment_path = Storage::putFileAs(
+                'public/uploads', $attachment, $filename
+            );
+        }
+   
         $invalidCsNumbers = $serialNumber->getInvalidCsNumbers($csNumbers);
         
         if(!empty($invalidCsNumbers)){
@@ -40,11 +68,18 @@ class CouponService {
         DB::beginTransaction();
 
         try {
-            $coupon = new Coupon;
-            $coupon->dealer_id = $dealer;
-            $coupon->created_by = $createdBy;
+            $coupon                     = new Coupon;
+            $coupon->dealer_id          = $dealer;
+            $coupon->created_by         = $createdBy;
             $coupon->create_user_source = $userSource;
-            $coupon->coupon_type_id = $couponType;
+            $coupon->coupon_type_id     = $couponType;
+            $coupon->promo_id           = $promo;
+            $coupon->purpose_id         = $purpose;
+            $coupon->description        = $description;
+            $coupon->email              = $email_recipients;
+            $coupon->attachment         = $symlink_dir . $filename;
+            $coupon->filename           = $origFilename;
+            $coupon->new_filename       = $filename;
             $coupon->save();
             $couponId = $coupon->id;
 
@@ -63,6 +98,27 @@ class CouponService {
             $timeline->created_at  = Carbon::now();
             $timeline->save();
 
+
+
+            $approvers = Approver::where([
+                ['coupon_type_id', $couponType], 
+                ['module_id' , 1]
+            ])->get();
+              
+            $approval = new Approval;
+            $params = [];
+            foreach($approvers as $approver){
+                array_push($params, [
+                    'approver_id'         => $approver->id,
+                    'module_reference_id' => $couponId,
+                    'module_id'           => 1,
+                    'status'              => 1,
+                    'created_at'          => Carbon::now()
+                ]);
+            }
+            $approval->batchInsert($params);
+    
+    
             DB::commit();
 
             return response()->json([
@@ -107,20 +163,41 @@ class CouponService {
     public function transformCsNumber($denominations){
         $csNumbers = [];
         foreach($denominations as $amount) {
-            foreach($amount['csNumbers'] as $csNumber) {
-                array_push($csNumbers, $csNumber['text']);
+            foreach($amount->csNumbers as $csNumber) {
+                array_push($csNumbers, $csNumber->text);
             }
         }
         return $csNumbers;
     }
 
     public function updateCoupon($request){
-        $dealer        = $request->dealerId;
-        $denominations = $request->denominations;
-        $createdBy     = $request->createdBy;
-        $userSource    = $request->userSource;
         $couponId      = $request->couponId;
+       
+        $denominations = json_decode($request->denominations);
         $csNumbers     = $this->transformCsNumber($denominations);
+        $dealer = $request->dealerId;
+        $createdBy = $request->createdBy;
+        $userSource = $request->userSource;
+        $couponType = $request->couponType;
+        $description = $request->description;
+        $purpose = $request->purpose;
+        $promo = $request->promo;
+        $emails = json_decode($request->email);
+        $attachment = $request->attachment;
+        $email_recipients = "";
+        $csNumbers = [];
+        $filename = "";
+        $attachment_path = "";
+        $origFilename = "";
+        $serialNumber = new SerialNumber;
+        $symlink_dir = "";
+
+        foreach($emails as $email) {
+            $email_recipients .= $email->text . ';';
+        }
+
+        $email_recipients = substr($email_recipients, 0, -1);
+
 
         $serialNumber = new SerialNumber;
         $invalidCsNumbers = $serialNumber->getInvalidCsNumbers($csNumbers);
@@ -133,6 +210,23 @@ class CouponService {
             ],200);
         }
 
+
+        if(!empty($_FILES)){
+            $couponC = new Coupon;
+            $couponDetails = $couponC->getDetails($couponId); 
+            if($couponDetails->attachment != ""){
+                $destinationPath = 'public/storage/uploads/';
+                File::delete($destinationPath. $couponDetails->new_filename);
+            }
+            $filename = Carbon::now()->timestamp . '.' . $attachment->getClientOriginalExtension();
+            $origFilename = $attachment->getClientOriginalName();
+            $symlink_dir = 'public/storage/uploads/';
+            $attachment_path = Storage::putFileAs(
+                'public/uploads', $attachment, $filename
+            );
+        }
+
+
         DB::beginTransaction();
 
         try {
@@ -141,6 +235,17 @@ class CouponService {
             $coupon->dealer_id          = $dealer;
             $coupon->updated_by         = $createdBy;
             $coupon->update_user_source = $userSource;
+            $coupon->promo_id           = $promo;
+            $coupon->purpose_id         = $purpose;
+            $coupon->description        = $description;
+            $coupon->email              = $email_recipients;
+
+            if(!empty($_FILES)){
+                $coupon->attachment   = $symlink_dir . $filename;
+                $coupon->filename     = $origFilename;
+                $coupon->new_filename = $filename;
+            }
+            
             $coupon->save();
 
             // delete previous data
@@ -154,22 +259,21 @@ class CouponService {
                 $userSource
             );
 
-
             $timeline              = new Timeline;
             $timeline->coupon_id   = $couponId;
             $timeline->action_id   = 10;              // updated
             $timeline->user_id     = $createdBy;
-            $timeline->user_source = $userSource;
+            $timeline->user_source = $userSource; 
             $timeline->created_at  = Carbon::now();
             $timeline->save();
 
             DB::commit();
 
-            return response()->json([
+            return [
                 'message'  => 'Coupon request has been updated.',
                 'couponId' => $couponId,
                 'error'    => false
-            ],200);
+            ];
 
         } catch(\Exception $e) {
             DB::rollBack();
@@ -198,31 +302,34 @@ class CouponService {
 
     public function insertDenomination($denominations,$couponId,$createdBy,$userSource){
         foreach($denominations as $amount) {
-            $denomination                     = new Denomination;
-            $denomination->coupon_id          = $couponId;
-            $denomination->amount             = $amount['amount'];
-            $denomination->quantity           = $amount['quantity'];
-            $denomination->created_by         = $createdBy;
-            $denomination->create_user_source = $userSource;
-            $denomination->save();
-            $denominationId = $denomination->id;
 
-            $csNumberParams = [];
+            if($amount->quantity > 0){
+                $denomination                     = new Denomination;
+                $denomination->coupon_id          = $couponId;
+                $denomination->amount             = $amount->amount;
+                $denomination->quantity           = $amount->quantity;
+                $denomination->created_by         = $createdBy;
+                $denomination->create_user_source = $userSource;
+                $denomination->save();
+                $denominationId = $denomination->id;
 
-            foreach($amount['csNumbers'] as $csNumber) {
-                array_push($csNumberParams,
-                    [
-                        'denomination_id'    => $denominationId,
-                        'cs_number'          => $csNumber['text'],
-                        'created_by'         => $createdBy,
-                        'creation_date'      => Carbon::now(),
-                        'create_user_source' => $userSource
-                    ]
-                );
+                $csNumberParams = [];
+
+                foreach($amount->csNumbers as $csNumber) {
+                    array_push($csNumberParams,
+                        [
+                            'denomination_id'    => $denominationId,
+                            'cs_number'          => $csNumber->text,
+                            'created_by'         => $createdBy,
+                            'creation_date'      => Carbon::now(),
+                            'create_user_source' => $userSource
+                        ]
+                    );
+                }
+
+                $csNum = new CSNumber;
+                $csNum->batchInsert($csNumberParams);
             }
-
-            $csNum = new CSNumber;
-            $csNum->batchInsert($csNumberParams);
             
         }
     }
