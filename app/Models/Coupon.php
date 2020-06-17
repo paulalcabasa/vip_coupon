@@ -15,6 +15,7 @@ class Coupon extends Model
 
     public function getDetails($couponId){
         $sql = "SELECT  cp.id coupon_id,
+                        cp.status status_id,
                         dlr.account_name,
                         usr.first_name || ' ' || usr.last_name created_by,
                         usr.first_name,
@@ -36,8 +37,10 @@ class Coupon extends Model
                         cp.email,
                         cp.purpose_id,
                         cp.promo_id,
-                        cp.new_filename
-
+                        cp.new_filename,
+                        cp.current_approval_hierarchy,
+                        count(vpa.id) approve_ctr
+  
                 FROM ipc.ipc_vpc_coupons cp
                     INNER JOIN ipc_portal.dealers dlr
                         ON dlr.id = cp.dealer_id
@@ -52,7 +55,36 @@ class Coupon extends Model
                         ON prm.id = cp.promo_id
                     INNER JOIN ipc.ipc_vpc_purposes prs
                         ON prs.id = cp.purpose_id
-                WHERE cp.id = :coupon_id";
+                    LEFT JOIN ipc.ipc_vpc_approval vpa
+                        ON vpa.module_reference_id = cp.id
+                        AND vpa.module_id = 1
+                        AND vpa.status IN (2,6)
+                WHERE cp.id = :coupon_id
+                GROUP BY 
+                        cp.id ,
+                        cp.status ,
+                        dlr.account_name,
+                        usr.first_name,
+                        usr.last_name,
+                        cp.creation_date,
+                        st.status,
+                        cp.dealer_id,
+                        usr.user_id,
+                        usr.user_source_id,
+                        ct.name ,
+                        cp.coupon_type_id,
+                        cp.description,
+                        prm.promo_name,
+                        prs.id ,
+                        prs.purpose,
+                        prs.require_cs_no_flag,
+                        cp.filename,
+                        cp.attachment,
+                        cp.email,
+                        cp.purpose_id,
+                        cp.promo_id,
+                        cp.new_filename,
+                        cp.current_approval_hierarchy";
         $query = DB::select($sql, [
             'coupon_id' => $couponId
         ]);
@@ -137,11 +169,17 @@ class Coupon extends Model
             ])
             ->update([
                 'status'             => $params['status'],
-                'updated_by'         => $params['userId'],
-                'update_user_source' => $params['userSource'],
-                'update_date'        => $params['updateDate'],
-                'approved_by'        => $params['approvedBy'],
-                'approver_source'    => $params['approverSource'],
+                 'update_date'        => $params['updateDate'],
+            ]);
+    }
+
+    public function updateCurrentApprovalHierarchy($params){
+        $this
+            ->where([
+                [ 'id', '=' , $params['couponId'] ],
+            ])
+            ->update([
+                'current_approval_hierarchy'             => $params['next_hierarchy']
             ]);
     }
 }

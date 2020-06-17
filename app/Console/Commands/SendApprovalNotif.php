@@ -39,16 +39,8 @@ class SendApprovalNotif extends Command
     public function handle()
     {
         $mailService = new EmailService;
-
         \Log::info("Sending email to approvers");
-        /*
-
-           Write your database logic we bellow:
-
-           Item::create(['name'=>'hello new']);
-
-        */
         $mailService->sendCouponApproval();
-        $this->info('Mail has been sent');
+       
     }
 }

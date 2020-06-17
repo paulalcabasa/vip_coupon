@@ -42,4 +42,46 @@ class Approval extends Model
         return $query;
     }
 
+    public function updateStatus($params){
+        $this->where([
+            ['id', $params['approval_id']]
+        ])->update([
+            'status'     => $params['status'],
+            'updated_at' => $params['date_approved'],
+            'remarks'    => $params['remarks']
+        ]);
+    }
+
+    public function checkCoupon($params){
+        $sql = "SELECT vpa.hierarchy
+                FROM ipc.ipc_vpc_approval vpa
+                WHERE vpa.module_reference_id = :module_reference_id
+                        AND vpa.module_id = :module_id
+                        AND vpa.hierarchy = :hierarchy
+                        AND vpa.status IN(2,6)
+                GROUP by vpa.hierarchy";
+        $query = DB::select($sql, $params);
+        return $query;        
+    }
+
+    public function getMaxApproval($params){
+        $sql = "SELECT max(vpa.hierarchy) hierarchy
+                FROM ipc.ipc_vpc_approval vpa
+                WHERE vpa.module_reference_id = :module_reference_id
+                    AND vpa.module_id = :module_id";
+        $query = DB::select($sql,$params);
+        return !empty($query) ? $query[0] : $query;
+    }
+
+    public function resetApproval($couponId,$moduleId){
+        $this->where([
+            'module_reference_id' => $couponId,
+            'module_id' => $moduleId
+        ])->update([
+            'status' => 1,
+            'mail_sent_flag' => 'N',
+            'date_mail_sent' => '',
+            'updated_at' => ''
+        ]);
+    }
 }

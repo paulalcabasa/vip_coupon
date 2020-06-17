@@ -95,6 +95,7 @@ class CouponService {
             $timeline->action_id   = 8;              // created
             $timeline->user_id     = $createdBy;
             $timeline->user_source = $userSource;
+            $timeline->message     = 'Coupon has been created';
             $timeline->created_at  = Carbon::now();
             $timeline->save();
 
@@ -111,6 +112,7 @@ class CouponService {
                 array_push($params, [
                     'approver_id'         => $approver->id,
                     'module_reference_id' => $couponId,
+                    'hierarchy'           => $approver->hierarchy,
                     'module_id'           => 1,
                     'status'              => 1,
                     'created_at'          => Carbon::now()
@@ -180,6 +182,7 @@ class CouponService {
         $userSource = $request->userSource;
         $couponType = $request->couponType;
         $description = $request->description;
+        $status = $request->status;
         $purpose = $request->purpose;
         $promo = $request->promo;
         $emails = json_decode($request->email);
@@ -245,6 +248,17 @@ class CouponService {
                 $coupon->filename     = $origFilename;
                 $coupon->new_filename = $filename;
             }
+
+            if($status == 6){  // if current status is rejected, revert to pending
+                $coupon->status = 1;
+                // also revert approval statuses and emails
+                $approval = new Approval;
+                $approval->resetApproval($couponId, 1);
+
+                // revert current approver
+                $coupon->current_approval_hierarchy = 1;
+            }
+
             
             $coupon->save();
 
@@ -264,6 +278,7 @@ class CouponService {
             $timeline->action_id   = 10;              // updated
             $timeline->user_id     = $createdBy;
             $timeline->user_source = $userSource; 
+            $timeline->message     = "Coupon request has been updated";
             $timeline->created_at  = Carbon::now();
             $timeline->save();
 

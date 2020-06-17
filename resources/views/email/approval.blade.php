@@ -203,7 +203,7 @@
 					<tr>
 						<td align="center" style="color: #343434; font-size: 24px; font-family: Quicksand, Calibri, sans-serif; font-weight:700;letter-spacing: 3px; line-height: 35px;"
 							class="main-header">
-                            <div style="line-height: 35px">NOTICE OF TRAINING REQUEST</div>
+                            <div style="line-height: 35px">Coupon Request</div>
 						</td>
 					</tr>
 
@@ -227,7 +227,7 @@
                     
                     <tr>
                         <td style="color: #343434; font-size: 16px; font-family: 'Work Sans', Calibri, sans-serif; line-height: 24px;">
-                            IPC Fleet Training Section received a training request with the following details:
+                            Hi <strong><?php echo $approval_details->approver_name; ?></strong>!  this coupon request awaits for your approval.
                         </td>
                     </tr>
 
@@ -239,15 +239,61 @@
                         <td style="width:100%;">	 
 							<table style="width:100%;color:#343434;">
 								<tr>
-                                    <td width="200" style="font-weight:bold;">Company Name:</td>
-                                    <td>1</td>
+                                    <td width="200" style="font-weight:bold;">Coupon No:</td>
+                                    <td><?php echo $couponDetails->coupon_id; ?></td>
 								</tr>
-							
-                           
-                              
+							    <tr>
+                                    <td width="200" style="font-weight:bold;">Coupon Type:</td>
+                                    <td><?php echo $couponDetails->coupon_type; ?></td>
+                                </tr>
                                 <tr>
-                                    <td width="200" style="font-weight:bold;">Training Venue :</td>
-                                    <td>1</td>
+                                    <td width="200" style="font-weight:bold;">Description:</td>
+                                    <td><?php echo $couponDetails->description; ?></td>
+                                </tr>
+                                <tr>
+                                    <td width="200" style="font-weight:bold;">Requestor :</td>
+                                    <td><?php echo $couponDetails->created_by; ?></td>
+                                </tr>
+                                <tr>
+                                    <td width="200" style="font-weight:bold;">Dealer :</td>
+                                    <td><?php echo $couponDetails->account_name; ?></td>
+                                </tr>
+                                <tr>
+                                    <td width="200" style="font-weight:bold;">Promo :</td>
+                                    <td><?php echo $couponDetails->promo_name; ?></td>
+                                </tr>
+                                <tr>
+                                    <td width="200" style="font-weight:bold;">Purpose :</td>
+                                    <td><?php echo $couponDetails->purpose; ?></td>
+                                </tr>
+                                <tr>
+                                    <td width="200" style="font-weight:bold;">Date Requested :</td>
+                                    <td><?php echo $couponDetails->date_created; ?></td>
+                                </tr>
+
+                                <tr>
+                                   <td width="200" style="font-weight:bold;" valign="top">Denomination:</td>
+                                    <td>
+                                        <?php $total = 0; ?>
+                                        <table border="1" style="border-collapse:collapse;" cellpadding="10" cellspacing="10">
+                                            <tr>
+                                                <th>Amount</th>
+                                                <th>Quantity</th>
+                                            </tr>
+                                            <?php foreach($denomination as $row) { ?>
+                                            <tr>
+                                                <td align="right"><?php echo $row->amount; ?></td>
+                                                <td align="right"><?php echo $row->quantity; ?></td>
+                                            </tr>
+                                            <?php $total += $row->amount * $row->quantity; ?>
+                                            </tr>
+                                            <?php } ?>
+                                            <tr>
+                                                <th>Total</th>
+                                                <th align="right"><?php echo $total; ?></th>
+                                            </tr>
+                                        </table>
+                                    </td>
                                 </tr>
 								
                               
@@ -276,10 +322,8 @@
 												<td height="10" style="font-size: 10px; line-height: 10px;">&nbsp;</td>
 											</tr>
 											<tr>
-												<td align="center" style="color: #00A65A; font-size: 14px; font-family: 'Work Sans', Calibri, sans-serif; line-height: 26px;">
-													<div style="line-height: 26px;">
-														<a href="#" style="color: #ffffff; text-decoration: none;">Approve</a>
-													</div>
+												<td align="center" style="color: #00A65A; font-size: 14px; font-family: 'Work Sans', Calibri, sans-serif; ">
+		                                            <a href="<?php echo $approve_link;?>" style="color: #ffffff; text-decoration: none;">Approve</a>
 												</td>
 											</tr>
 											<tr>
@@ -294,10 +338,8 @@
 												<td height="10" style="font-size: 10px; line-height: 10px;">&nbsp;</td>
 											</tr>
 											<tr>
-												<td align="center" style="color: #00A65A; font-size: 14px; font-family: 'Work Sans', Calibri, sans-serif; line-height: 26px;">
-													<div style="line-height: 26px;">
-														<a href="#" style="color: #ffffff; text-decoration: none;">Reject</a>
-													</div>
+												<td align="center" style="color: #00A65A; font-size: 14px; font-family: 'Work Sans', Calibri, sans-serif;">
+												    <a href="<?php echo $reject_link;?>" style="color: #ffffff; text-decoration: none;">Reject</a>
 												</td>
 											</tr>
 											<tr>

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use DB;
+use Carbon\Carbon;
 
 class Email extends Model
 {
@@ -49,5 +50,17 @@ class Email extends Model
                 WHERE st.system = 'VIP Coupon'";
         $query = DB::connection('ipc_central')->select($sql);
         return !empty($query)  ? $query[0] : $query;
+    }
+
+    public function updateStatus($approvalId){
+ 
+        DB::table('ipc.ipc_vpc_approval')
+            ->where([
+                ['id', $approvalId]
+            ])
+            ->update([
+                'mail_sent_flag' => 'Y',
+                'date_mail_sent' => Carbon::now()
+            ]);
     }
 }

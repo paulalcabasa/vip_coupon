@@ -6,7 +6,13 @@
       <b-link href="#" style="color:#fff;" @click.prevent="viewCoupon"><u>Click here to view</u></b-link>
     </b-alert>
 
-    <KTPortlet v-bind:title="title" >
+    <b-alert variant="danger" show v-show="disableEditFlag">
+      <span class="mr-2">Coupon No. <strong>{{ couponDetails.coupon_id }}</strong> cannot be updated because it has an ongoing approval.</span> 
+      <b-link href="#" style="color:#fff;" @click.prevent="viewCoupon"><u>Click here to view</u></b-link>
+    </b-alert>
+
+
+    <KTPortlet v-bind:title="title" v-if="enableEdit">
       <template v-slot:toolbar>
         <b-button 
           v-if="action == 'create'" 
@@ -15,8 +21,9 @@
           :disabled="disableSubmit"
           id="submit"
         >Submit</b-button>
-        <b-button v-if="action == 'edit'" class="mr-3" variant="info" @click.prevent="viewCoupon()">View</b-button>
+        <b-button v-if="action == 'edit'" class="mr-2" variant="info" @click.prevent="viewCoupon()">View</b-button>
         <b-button v-if="action == 'edit'" variant="success" @click.prevent="update()">Save</b-button>
+      
       </template> 
   
       <template v-slot:body>
@@ -261,6 +268,8 @@ export default {
         coupon_types : [],
         promo_id : '',
         purpose : null,
+        enableEdit : true,
+        disableEditFlag : false,
         blockui : {
           msg : 'Please wait',
           html : '<i class="fa fa-cog fa-spin fa-3x fa-fw"></i>',
@@ -583,6 +592,10 @@ export default {
         axios.get('api/coupon/show/' + this.couponId)
         .then( (res) => {
           self.couponDetails = res.data;
+          if(self.couponDetails.approve_ctr > 0 && self.couponDetails.status == 1){
+            self.disableEditFlag = true;
+            self.enableEdit = false;
+          }
           self.dealer = res.data.dealer_id;
           self.promo_id = res.data.promo_id;
           self.description = res.data.description;
@@ -672,6 +685,7 @@ export default {
       formData.append('promo', self.promo_id);
       formData.append('couponId', self.couponId);
       formData.append('email', JSON.stringify(self.emailRecipients));
+      formData.append('status', self.couponDetails.status_id);
       
       axiosRetry(axios, { retries: 3 });
 

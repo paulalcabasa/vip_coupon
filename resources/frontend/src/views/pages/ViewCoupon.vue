@@ -13,7 +13,7 @@
         <b-button :disabled="disableActions" v-show="approveFlag" @click="approve" size="sm" variant="success"><i class="flaticon2-check-mark"></i></b-button>
         <b-button :disabled="disableActions" v-show="approveFlag" @click="reject" size="sm" variant="danger" class="ml-2"><i class="flaticon2-cross"></i></b-button>
         <b-button :disabled="disableActions" v-show="printFlag" @click="print" size="sm" variant="primary" class="ml-2"><i class="flaticon2-print"></i></b-button>
-        <b-button :disabled="disableActions" v-show="isAbletoEdit" @click="edit" size="sm" variant="primary" class="ml-2"><i class="flaticon2-edit"></i></b-button>
+        <b-button :disabled="disableActions" v-show="isAbletoEdit" @click="edit" size="sm" variant="primary" class="ml-2">Update</b-button>
 <!--             <b-button :disabled="disableActions" v-show="isAbleToIssue" @click="issue" size="sm" variant="success" class="ml-2"><i class="flaticon-paper-plane"></i></b-button> -->
       <!--   <b-button :disabled="disableActions" v-show="receiveFleetFlag" @click="receiveFleet" size="sm" variant="primary" class="ml-2"><i class="flaticon-like"></i> Received by Fleet</b-button> -->
         <b-button :disabled="disableActions" v-show="receiveDealerFlag" @click="receiveDealer" size="sm" variant="success" class="ml-2"><i class="la la-truck"></i> Received by Dealer</b-button>
@@ -322,7 +322,10 @@ export default {
         if(couponRes.data.status.trim() == "APPROVED" && self.action == "view"){
           self.isAbleToPrint = true;
         }
-        if(couponRes.data.status.trim() == "PENDING" && self.action == "view"){
+        if( (couponRes.data.status.trim() == "PENDING") && self.action == "view" && couponRes.data.approve_ctr == 0){
+          self.isAbletoEdit = true;
+        }
+        if( (couponRes.data.status.trim() == "REJECTED") && self.action == "view"){
           self.isAbletoEdit = true;
         }
         if(couponRes.data.status.trim() == "PRINTED" && self.action == "view"){
@@ -331,9 +334,10 @@ export default {
         if(couponRes.data.status.trim() == "ISSUED" && self.action == "view"){
           self.isAbleToReceiveByFleet = true;
         }
-        if(couponRes.data.status.trim() == "FLEET RECEIVED" && self.action == "view"){
+        if(couponRes.data.status.trim() == "FLEET RECEIVED" && self.action == "view" && couponRes.data.coupon_type_id == 2){
           self.isAbleToReceiveByDealer = true;
         }
+        
 
         self.timelines = timelineRes.data;
         self.denomination = denominationRes.data;
@@ -490,7 +494,7 @@ export default {
       return false;
     }, */
     receiveDealerFlag: function(){
-      if (this.couponDetails.status.trim().toLowerCase() == "printed" && this.action == "view") {
+      if (this.couponDetails.status.trim().toLowerCase() == "printed" && this.action == "view" && this.couponDetails.coupon_type_id == 2) {
         return true;
       }
       return false;

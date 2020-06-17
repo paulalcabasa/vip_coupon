@@ -4,6 +4,9 @@ namespace App\Services;
 use DB;
 use Carbon\Carbon;
 use App\Models\Email;
+use App\Models\Coupon;
+use App\Models\Approval;
+use App\Models\Denomination;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
@@ -11,22 +14,27 @@ class EmailService {
 
     public function sendCouponApproval(){
       $email = new Email;
-
+      $denomination = new Denomination;
       $mailCredentials = $email->getMailCredentials();
-
       $approval = $email->getCouponApprovalMail();
     
       foreach($approval as $row){
-        
+    
         $mail = new PHPMailer();                            // Passing `true` enables exceptions
-
+        $coupon = new Coupon;
+        $couponDetails = $coupon->getDetails($row->module_reference_id);
+        $denominations = $denomination->getByCoupon($row->module_reference_id);
+        
         try {
           
           $data = [
-            'coupon_no' => 1
+            'couponDetails' => $couponDetails,
+            'denomination' => $denominations,
+            'approval_details' => $row,
+            'approve_link' => url('/') . '/api/approve/' . $row->id,
+            'reject_link' => url('/') . '/api/reject/' . $row->id
           ];
-
-
+       
           // Server settings
           $mail->SMTPDebug = 0;                                	// Enable verbose debug output
           $mail->isSMTP();       
@@ -43,15 +51,18 @@ class EmailService {
           $mail->addAddress($row->email_address, $row->approver_name);	// Add a recipient, Name is optional
           $mail->addBCC('paul-alcabasa@isuzuphil.com');
           $mail->addBCC('paulalcabasa@gmail.com');
-          $mail->AddEmbeddedImage(config('app.pub_url') . '/public/images/isuzu-logo-compressor.png', 'isuzu_logo');
-           //Content
+          //Content
           $mail->isHTML(true); 																	// Set email format to HTML
           $mail->Subject = 'System Notification : VIP Coupon Approval';
-          $mail->Body    =  view('email/approval', $data); // . $row->email_address;
-
-          $mail->send();
+          $mail->Body    = view('email/approval', $data); // . $row->email_address;
+          $mail->AddEmbeddedImage(config('app.project_root') . 'public/images/isuzu-logo.png', 'isuzu_logo');
+          
+          if($mail->send()){
+            $email->updateStatus($row->id);
+            \Log::info("Mail sent");
+          }
         
-          \Log::info("Mail sent");
+          
         } catch (Exception $e) {
           \Log::info("Mail not sent" . $e);
         }

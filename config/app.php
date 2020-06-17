@@ -28,6 +28,7 @@ return [
 
     'env' => env('APP_ENV', 'production'),
     'pub_url' => env('PUB_URL'),
+    'project_root' => env('PROJECT_ROOT'),
     /*
     |--------------------------------------------------------------------------
     | Application Debug Mode
