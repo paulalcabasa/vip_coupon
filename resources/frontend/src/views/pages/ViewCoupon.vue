@@ -2,21 +2,25 @@
   <div>
 
     <b-alert variant="success" show v-show="submitFlag">
-      <span class="mr-2">Voucher for Coupon No. <strong>{{ couponId }}</strong> has been generated!</span> 
-      <b-link href="#" style="color:#fff;" @click.prevent="printCoupon"><u>Click here to print</u></b-link>
+      <span class="mr-2">Voucher for Coupon No. <strong>{{ couponId }}</strong> has been generated!</span>
+      <span>System will send an email to :
+        <b-badge class="mr-1 mb-1" variant="info" :key="index" v-for="(email,index) in couponDetails.email">{{ email }}</b-badge>
+        to print the voucher.
+      </span>
+      <!-- <b-link href="#" style="color:#fff;" @click.prevent="printCoupon"><u>Click here to print</u></b-link> -->
     </b-alert>
 
   
 
     <KTPortlet v-bind:title="'Coupon'">
       <template v-slot:toolbar>
-        <b-button :disabled="disableActions" v-show="approveFlag" @click="approve" size="sm" variant="success"><i class="flaticon2-check-mark"></i></b-button>
-        <b-button :disabled="disableActions" v-show="approveFlag" @click="reject" size="sm" variant="danger" class="ml-2"><i class="flaticon2-cross"></i></b-button>
-        <b-button :disabled="disableActions" v-show="printFlag" @click="print" size="sm" variant="primary" class="ml-2"><i class="flaticon2-print"></i></b-button>
+        <b-button :disabled="disableActions" v-show="approveFlag" @click="approve" size="sm" variant="success">Approve</b-button>
+        <b-button :disabled="disableActions" v-show="approveFlag" @click="reject" size="sm" variant="danger" class="ml-2">Reject</b-button>
+        <b-button :disabled="disableActions" v-show="printFlag" @click="print" size="sm" variant="primary" class="ml-2">Generate</b-button>
         <b-button :disabled="disableActions" v-show="isAbletoEdit" @click="edit" size="sm" variant="primary" class="ml-2">Update</b-button>
 <!--             <b-button :disabled="disableActions" v-show="isAbleToIssue" @click="issue" size="sm" variant="success" class="ml-2"><i class="flaticon-paper-plane"></i></b-button> -->
       <!--   <b-button :disabled="disableActions" v-show="receiveFleetFlag" @click="receiveFleet" size="sm" variant="primary" class="ml-2"><i class="flaticon-like"></i> Received by Fleet</b-button> -->
-        <b-button :disabled="disableActions" v-show="receiveDealerFlag" @click="receiveDealer" size="sm" variant="success" class="ml-2"><i class="la la-truck"></i> Received by Dealer</b-button>
+       <!--  <b-button :disabled="disableActions" v-show="receiveDealerFlag" @click="receiveDealer" size="sm" variant="success" class="ml-2"><i class="la la-truck"></i> Received by Dealer</b-button> -->
       </template> 
       <template v-slot:body>
         <b-tabs content-class="mt-3">
@@ -338,7 +342,6 @@ export default {
           self.isAbleToReceiveByDealer = true;
         }
         
-
         self.timelines = timelineRes.data;
         self.denomination = denominationRes.data;
         self.voucherItems = voucherRes.data;
@@ -403,7 +406,7 @@ export default {
             // update status
             self.couponDetails.status = res.data.status;
             self.disableActions = false;
-            if(action != "print"){
+            if(action != "generate"){
               self.action = "view";
               swalWithBootstrapButtons.fire(
                 title,
@@ -412,11 +415,11 @@ export default {
               );
             }
            
-            if(action == "print"){
+            if(action == "generate"){
               //self.makeToast('success',res.data.message,'System message');
               self.couponId = res.data.couponId
            //   window.open(process.env.VUE_APP_API_URL + '/api/print-coupon/' + res.data.couponId);
-              self.couponDetails.status = "printed";
+              self.couponDetails.status = "generated";
               self.submitFlag = true;
           /*     self.$router.push({ 
                 name : 'view-coupon',
@@ -450,7 +453,7 @@ export default {
       this.doAction('api/coupon/reject', 'Rejected!','error', 'reject', 'Are you sure to reject?');
     }, 
     print(){
-      this.doAction('api/coupon/generate', 'Printed!','success', 'print', 'Are you sure to print?');
+      this.doAction('api/coupon/generate', 'Generated!','success', 'generate', 'Are you sure to generate?');
     },
     issue(){
       this.doAction('api/coupon/issue', 'Issued','success', 'issue', 'Are you sure to issue?');

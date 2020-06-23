@@ -5,14 +5,14 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use App\Services\EmailService;
 
-class SendApprovalNotif extends Command
+class Notification extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'approval:send';
+    protected $signature = 'notification:send';
 
     /**
      * The console command description.
@@ -41,6 +41,7 @@ class SendApprovalNotif extends Command
         $mailService = new EmailService;
         \Log::info("Sending email to approvers");
         $mailService->sendCouponApproval();
+        $mailService->sendGeneratedCoupons();
        
     }
 }

@@ -19,6 +19,7 @@ use Illuminate\Http\Request;
  */
  
 Route::get('print-coupon/{coupon_id}', 'PdfController@printCoupon');
+Route::get('print-coupon/{coupon_id}/{email}', 'PdfController@printCoupon');
 Route::get('approve/{approval_id}', 'ApprovalController@approve');
 Route::get('reject/{approval_id}', 'ApprovalController@reject');
 Route::post('reject', 'ApprovalController@rejectCoupon');

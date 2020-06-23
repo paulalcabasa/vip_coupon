@@ -353,29 +353,7 @@ export default {
         this.$Progress.fail();
       })
     },
-    loadCouponTypes(){
-      var self = this;
-     
-      axiosRetry(axios, { retries: 3 });
-      
-      axios.get('/api/coupon-types/get').then(res => {
-
-          res.data.map( (row) => {
-            this.coupon_types.push({
-              'id' : row.id,
-              'name' : row.name,
-              'user_type_id' : row.user_type_id
-            });
-          });
-        this.$Progress.finish();
-      })
-      .then( () => {
-        this.setDefaultCouponType();
-      })
-      .catch(error => {
-        this.$Progress.fail();
-      })
-    },
+  
     loadDropdowns(){
       axiosRetry(axios, { retries: 3 });
       var self = this;
@@ -427,7 +405,10 @@ export default {
         });
 
         self.$Progress.finish();
-      })).catch(errors => {
+      })).then( () => {
+        this.setDefaultCouponType();
+      })
+      .catch(errors => {
         self.makeToast('error',"Failed to load resources, please refresh the page.",'System message');
     
         self.$Progress.fail();

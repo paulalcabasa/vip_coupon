@@ -63,4 +63,6 @@ class Email extends Model
                 'date_mail_sent' => Carbon::now()
             ]);
     }
+
+  
 }

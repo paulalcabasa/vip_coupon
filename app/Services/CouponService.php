@@ -282,6 +282,9 @@ class CouponService {
             $timeline->created_at  = Carbon::now();
             $timeline->save();
 
+            $approval = new Approval;
+            $approval->resetApproval($couponId, 1);
+
             DB::commit();
 
             return [
