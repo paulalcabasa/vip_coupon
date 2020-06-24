@@ -47,5 +47,8 @@ class ApprovalController extends Controller
         return response()->json($approvalService->getByCoupon($request->coupon_id),200);
     }
 
+    public function resend(Request $request, ApprovalService $approvalService){
+        return response()->json($approvalService->resend($request),200);
+    }
     
 }

@@ -209,11 +209,11 @@ class VoucherService {
 
             DB::commit();
 
-            return [
+         /*    return [
                 'message'  => 'Voucher has been generated and ready for printing',
                 'couponId' => $couponId,
                 'error'    => false
-            ];
+            ]; */
 
         } catch(\Exception $e) {
             DB::rollBack();

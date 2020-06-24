@@ -497,6 +497,47 @@ class CouponService {
             ];
         }
     }
+
+    public function resend($request){
+
+        $coupon_id = $request->coupon_id;
+        $user = $request->user;
+        DB::beginTransaction();
+        
+        try {
+            // update approval status
+          
+            $coupon = Coupon::find($coupon_id);
+            $coupon->is_sent = 'N';
+            $coupon->date_sent = NULL;
+            $coupon->save();
+            // add to timeline
+            $timeline = new Timeline;
+            $params = [
+                'coupon_id'  => $coupon_id,
+                'action_id'  => 12,
+                'created_at' => Carbon::now(),
+                'message'    => 'Email has been to resent to <strong>' . $coupon->email . '</strong> by ' . $user['first_name'] . ' ' . $user['last_name']
+            ];
+            $timeline->saveTimeline($params); 
+
+            DB::commit();
+            return [
+                'message' => 'Email to requestor has been resent!'
+            ];
+        } catch(\Exception $e) {
+            DB::rollBack();
+            return [
+                'message'  => 'Error :' . $e,
+                'error'    => true
+            ];
+
+        }
+      
+        
+        
+      
+    }
   
 
 }

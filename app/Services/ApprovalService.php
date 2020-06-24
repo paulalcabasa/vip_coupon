@@ -202,5 +202,62 @@ class ApprovalService {
         ];
     }
 
+    public function resend($request){
+
+        $coupon_id = $request->coupon_id;
+        $user = $request->user;
+        DB::beginTransaction();
+        
+        try {
+            // update approval status
+            $approval = new Approval;
+            $approvers = $approval->getByCouponHierarchy([
+                'module_reference_id' => $coupon_id,
+                'module_id' => 1 // coupon module
+            ]);
+            
+   
+            
+            $approver_emails = "";
+            foreach($approvers as $row){
+              
+                $approver =  Approval::find($row->approval_id);
+                $approver->mail_sent_flag = 'N';
+                $approver->date_mail_sent = NULL;
+                $approver->updated_at = NULL;
+                $approver->save();
+
+                $approver_emails .= $row->email_address . ';';
+            }
+         
+            // add to timeline
+            $timeline = new Timeline;
+            $params = [
+                'coupon_id'  => $coupon_id,
+                'action_id'  => 12,
+                'created_at' => Carbon::now(),
+                'message'    => 'Email has been to resent to <strong>' . $approver_emails . '</strong> by ' . $user['first_name'] . ' ' . $user['last_name']
+            ];
+
+            $timeline->saveTimeline($params); 
+
+            DB::commit();
+            return [
+                'message' => 'Email to approver has been resent!'
+            ];
+        } catch(\Exception $e) {
+            DB::rollBack();
+            return [
+                'message'  => 'Error :' . $e,
+                'error'    => true
+            ];
+
+        }
+      
+        
+        
+      
+    }
+
 
 }

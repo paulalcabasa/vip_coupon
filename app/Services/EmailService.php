@@ -100,7 +100,7 @@ class EmailService {
               $data = [
                 'couponDetails' => $couponDetails,
                 'denomination' => $denominations,
-                'message' => 'Your request for Coupon No. ' . $row->coupon_id . ' has been generated.',
+                'message' => 'Your request for Coupon No. <strong>' . $row->coupon_id . '</strong> has been approved.',
                 'print_link' => url('/') . '/api/print-coupon/' . $row->coupon_id . '/'  . $email
               ];
              // Server settings

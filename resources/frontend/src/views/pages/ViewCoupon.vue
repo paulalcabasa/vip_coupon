@@ -18,10 +18,9 @@
         <b-button :disabled="disableActions" v-show="approveFlag" @click="reject" size="sm" variant="danger" class="ml-2">Reject</b-button>
         <b-button :disabled="disableActions" v-show="printFlag" @click="print" size="sm" variant="primary" class="ml-2">Generate</b-button>
         <b-button :disabled="disableActions" v-show="isAbletoEdit" @click="edit" size="sm" variant="primary" class="ml-2">Update</b-button>
-<!--             <b-button :disabled="disableActions" v-show="isAbleToIssue" @click="issue" size="sm" variant="success" class="ml-2"><i class="flaticon-paper-plane"></i></b-button> -->
-      <!--   <b-button :disabled="disableActions" v-show="receiveFleetFlag" @click="receiveFleet" size="sm" variant="primary" class="ml-2"><i class="flaticon-like"></i> Received by Fleet</b-button> -->
-       <!--  <b-button :disabled="disableActions" v-show="receiveDealerFlag" @click="receiveDealer" size="sm" variant="success" class="ml-2"><i class="la la-truck"></i> Received by Dealer</b-button> -->
-      </template> 
+        <b-button  :disabled="disableActions" @click="resendRequestor" v-if="couponDetails.status_id == 12" size="sm" variant="primary" class="ml-2">Resend</b-button>
+      
+     </template> 
       <template v-slot:body>
         <b-tabs content-class="mt-3">
           <b-tab title="Details" active>
@@ -75,7 +74,7 @@
                 <b-col sm="4">{{ couponDetails.date_created }}</b-col>
               </b-row>
 
-                <b-row>
+              <b-row>
                 <b-col sm="2">
                   <label class="kt-font-bold">Status</label>
                 </b-col>
@@ -90,16 +89,21 @@
              
 
               <b-row>
-               
-             
-                <b-col sm="2">
+               <b-col sm="2">
                   <label class="kt-font-bold">Email</label>
                 </b-col>
                 <b-col sm="4">
                   <b-badge class="mr-1 mb-1" variant="info" :key="index" v-for="(email,index) in couponDetails.email">{{ email }}</b-badge>
                 </b-col>
               </b-row>
-              
+
+              <b-row>
+               <b-col sm="2">
+                  <label class="kt-font-bold">Date sent</label>
+                </b-col>
+                <b-col sm="4">{{ couponDetails.date_sent}}</b-col>
+              </b-row>
+
             </b-container>
           </b-tab>
           <b-tab title="Denomination" >
@@ -123,8 +127,8 @@
 
           <b-tab title="Approval">
             <b-table striped hover :items="approvalItems" :fields="approvalFields"></b-table>
+            <b-button @click="resendApproval" v-if="couponDetails.status_id == 1" size="sm" variant="primary" class="ml-2">Resend</b-button>
           </b-tab>
-          
           
         </b-tabs>
       </template>
@@ -474,6 +478,95 @@ export default {
     },
     downloadUrl(){
       return process.env.VUE_APP_API_URL + '/' + this.couponDetails.attachment;
+    },
+    resendApproval(){
+      var self = this;
+      const swalWithBootstrapButtons = this.$swal.mixin({
+        customClass: {
+          confirmButton: 'btn btn-success',
+          cancelButton: 'btn btn-danger'
+        },
+        buttonsStyling: false
+      })
+      
+      swalWithBootstrapButtons.fire({
+        title: 'Are you sure to resend the approval?',
+        icon: 'info',
+        showCancelButton: true,
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'Cancel',
+ 
+      }).then((result) => {
+        if (result.value) {
+          self.$Progress.start();
+     
+          axios.post('api/approval/resend', {
+            coupon_id : self.couponDetails.coupon_id,
+            current_approval_hierarchy : self.couponDetails.current_approval_hierarchy,
+            user    : self.$store.getters.currentUser
+          }).then(res => {
+            swalWithBootstrapButtons.fire(
+              'System message',
+              res.data.message,
+              'success'
+            );
+          }).catch(err => {
+            swalWithBootstrapButtons.fire(
+              'System message',
+              res.data.message,
+              'error'
+            );
+            self.$Progress.fail();
+          }).finally( () => {
+            self.$Progress.finish();
+          });
+          
+        } 
+      });
+    },
+    resendRequestor(){
+      var self = this;
+      const swalWithBootstrapButtons = this.$swal.mixin({
+        customClass: {
+          confirmButton: 'btn btn-success',
+          cancelButton: 'btn btn-danger'
+        },
+        buttonsStyling: false
+      })
+      
+      swalWithBootstrapButtons.fire({
+        title: 'Are you sure to resend to requestor?',
+        icon: 'info',
+        showCancelButton: true,
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'Cancel',
+ 
+      }).then((result) => {
+        if (result.value) {
+          self.$Progress.start();
+     
+          axios.post('api/coupon/resend', {
+            coupon_id : self.couponDetails.coupon_id,
+            user    : self.$store.getters.currentUser
+          }).then(res => {
+            swalWithBootstrapButtons.fire(
+              'System message',
+              res.data.message,
+              'success'
+            );
+          }).catch(err => {
+            swalWithBootstrapButtons.fire(
+              'System message',
+              res.data.message,
+              'error'
+            );
+            self.$Progress.fail();
+          }).finally( () => {
+            self.$Progress.finish();
+          });
+          
+        } 
+      });
     }
   },
 
@@ -501,7 +594,7 @@ export default {
         return true;
       }
       return false;
-    }
+    },
   }
 
   
