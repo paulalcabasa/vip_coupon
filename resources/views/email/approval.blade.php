@@ -227,7 +227,7 @@
                     
                     <tr>
                         <td style="color: #343434; font-size: 16px; font-family: 'Work Sans', Calibri, sans-serif; line-height: 24px;">
-                            Hi <strong><?php echo $approval_details->approver_name; ?></strong>!  this coupon request awaits for your approval.
+                            Hi <strong><?php echo utf8_decode($approval_details->approver_name); ?></strong>!  this coupon request awaits for your approval.
                         </td>
                     </tr>
 

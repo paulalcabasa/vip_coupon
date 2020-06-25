@@ -510,6 +510,7 @@ class CouponService {
             $coupon = Coupon::find($coupon_id);
             $coupon->is_sent = 'N';
             $coupon->date_sent = NULL;
+            $coupon->status = 12; // bring back to generated to re print
             $coupon->save();
             // add to timeline
             $timeline = new Timeline;

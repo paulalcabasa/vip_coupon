@@ -89,7 +89,8 @@ class Approval extends Model
         $sql = "SELECT apl.id approval_id,
                         apl.mail_sent_flag,
                         usr.email_address email_address,
-                        usr.first_name || ' ' || usr.last_name approver_name
+                        usr.first_name || ' ' || usr.last_name approver_name,
+                        apl.status
                 FROM ipc.ipc_vpc_approval apl
                     INNER join ipc.ipc_vpc_approvers apr
                         ON apr.id = apl.approver_id
@@ -98,7 +99,7 @@ class Approval extends Model
                         AND usr.user_source_id = apr.approver_source_id
                 WHERE apl.module_reference_id = :module_reference_id
                         and apl.module_id = :module_id
-                    AND apl.hierarchy = 1";
+                    AND apl.hierarchy = :hierarchy";
         $query = DB::select($sql,$params);
         return $query;
     }

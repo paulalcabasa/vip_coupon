@@ -9,6 +9,8 @@ import Approval from "@/views/pages/Approval.vue";
 import PaymentRequest from "@/views/pages/PaymentRequest.vue";
 import AllPayments from "@/views/pages/AllPayments.vue";
 import ViewPaymentRequest from "@/views/pages/ViewPaymentRequest.vue";
+import AllPromo from "@/views/pages/AllPromos.vue";
+import AllPurpose from "@/views/pages/AllPurpose.vue";
 
 import Auth from "@/views/pages/auth/Auth";
 import Login from "@/views/pages/auth/Login";
@@ -121,6 +123,24 @@ export default new Router({
           meta: {
             requiresAuth: true,
             title: 'Approval'
+          }
+        },
+        {
+          path: "promo",
+          name: "promo",
+          component: AllPromo,
+          meta: {
+            requiresAuth: true,
+            title: 'Promo'
+          }
+        },
+        {
+          path: "purpose",
+          name: "purpose",
+          component: AllPurpose,
+          meta: {
+            requiresAuth: true,
+            title: 'Purpose'
           }
         },
       ]

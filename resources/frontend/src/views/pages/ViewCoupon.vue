@@ -18,7 +18,7 @@
         <b-button :disabled="disableActions" v-show="approveFlag" @click="reject" size="sm" variant="danger" class="ml-2">Reject</b-button>
         <b-button :disabled="disableActions" v-show="printFlag" @click="print" size="sm" variant="primary" class="ml-2">Generate</b-button>
         <b-button :disabled="disableActions" v-show="isAbletoEdit" @click="edit" size="sm" variant="primary" class="ml-2">Update</b-button>
-        <b-button  :disabled="disableActions" @click="resendRequestor" v-if="couponDetails.status_id == 12" size="sm" variant="primary" class="ml-2">Resend</b-button>
+        <b-button  :disabled="disableActions" @click="resendRequestor" v-if="couponDetails.status_id == 12 || couponDetails.status_id == 3" size="sm" variant="primary" class="ml-2">Resend</b-button>
       
      </template> 
       <template v-slot:body>

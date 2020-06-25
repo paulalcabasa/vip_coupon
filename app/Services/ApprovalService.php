@@ -206,6 +206,17 @@ class ApprovalService {
 
         $coupon_id = $request->coupon_id;
         $user = $request->user;
+
+        $coupon = new Coupon;
+
+        $couponDetails = $coupon->getDetails($coupon_id);
+
+        if($couponDetails->status_id == 12){
+            return [
+                'message' => 'Coupon is already approved, email has not been resent.'
+            ];
+        }
+
         DB::beginTransaction();
         
         try {
@@ -213,21 +224,22 @@ class ApprovalService {
             $approval = new Approval;
             $approvers = $approval->getByCouponHierarchy([
                 'module_reference_id' => $coupon_id,
-                'module_id' => 1 // coupon module
+                'module_id' => 1, // coupon module
+                'hierarchy' => $couponDetails->current_approval_hierarchy
             ]);
             
    
             
             $approver_emails = "";
             foreach($approvers as $row){
-              
+            
                 $approver =  Approval::find($row->approval_id);
                 $approver->mail_sent_flag = 'N';
                 $approver->date_mail_sent = NULL;
                 $approver->updated_at = NULL;
                 $approver->save();
-
                 $approver_emails .= $row->email_address . ';';
+               
             }
          
             // add to timeline

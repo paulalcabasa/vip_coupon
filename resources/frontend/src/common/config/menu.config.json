@@ -62,16 +62,7 @@
           "Dealer"
         ]
       },
-      {
-        "title": "Approval",
-        "root": true,
-        "icon": "flaticon2-check-mark",
-        "page": "approval",
-        "users": [
-          "Administrator",
-          "Accounting"
-        ]
-      },
+    
       {
         "section": "PAYMENT",
         "users": [
@@ -107,16 +98,7 @@
           "Dealer"
         ]
       },
-      {
-        "title": "Approval",
-        "root": true,
-        "icon": "flaticon2-check-mark",
-        "page": "payments/approval",
-        "users": [
-          "Administrator",
-          "Accounting"
-        ]
-      },
+      
       {
         "section": "Settings",
         "users": [
@@ -129,8 +111,8 @@
       {
         "title": "Promo",
         "root": true,
-        "icon": "flaticon2-check-mark",
-        "page": "payments/approval",
+        "icon": "flaticon-price-tag",
+        "page": "promo",
         "users": [
           "Administrator",
           "Accounting"
@@ -139,8 +121,8 @@
       {
         "title": "Purpose",
         "root": true,
-        "icon": "flaticon2-check-mark",
-        "page": "payments/approval",
+        "icon": "flaticon-list",
+        "page": "purpose",
         "users": [
           "Administrator",
           "Accounting",
