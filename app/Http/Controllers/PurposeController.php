@@ -24,6 +24,10 @@ class PurposeController extends Controller
     }
 
     public function store(Request $request){
-         return response()->json($this->purposeService->createPurpose($request));
+        return response()->json($this->purposeService->createPurpose($request));
+    }
+
+    public function update(Request $request){
+        return response()->json($this->purposeService->updatePurpose($request));
     }
 }

@@ -25,7 +25,7 @@ class Purpose extends Model
     public function get(){
         $sql = "SELECT pr.id,
                         pr.purpose,
-                        st.status,
+                        lower(st.status) status,
                         st.id status_id,
                         pr.require_cs_no_flag
                 FROM ipc.ipc_vpc_purposes pr

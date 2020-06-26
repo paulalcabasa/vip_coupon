@@ -105,6 +105,7 @@ Route::group(['middleware' => 'jwt'], function () {
     Route::get('purpose/active', 'PurposeController@getActive');
     Route::get('purpose', 'PurposeController@get');
     Route::post('purpose/create', 'PurposeController@store');
+    Route::post('purpose/update', 'PurposeController@update');
 
     Route::get('approval/coupon/get/{coupon_id}', 'ApprovalController@getByCoupon');
     Route::post('approval/resend', 'ApprovalController@resend');

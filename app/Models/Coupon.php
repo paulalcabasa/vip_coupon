@@ -42,8 +42,10 @@ class Coupon extends Model
                         count(vpa.id) approve_ctr,
                         to_char(cp.date_sent, 'MM/DD/YYYY HH24:MI:SS AM') date_sent,
                         cp.is_sent,
-                        prm.coupon_expiry_date
-  
+                        prm.coupon_expiry_date,
+                        to_char(prm.coupon_expiry_date,'MM/DD/YYYY') coupon_expiry_date_formatted,
+                        prm.effective_date_from,
+                        prm.effective_date_to
                 FROM ipc.ipc_vpc_coupons cp
                     INNER JOIN ipc_portal.dealers dlr
                         ON dlr.id = cp.dealer_id
@@ -88,9 +90,11 @@ class Coupon extends Model
                         cp.promo_id,
                         cp.new_filename,
                         cp.current_approval_hierarchy,
-                         cp.date_sent,
+                        cp.date_sent,
                         cp.is_sent,
-                        prm.coupon_expiry_date";
+                        prm.coupon_expiry_date,
+                        prm.effective_date_from,
+                        prm.effective_date_to";
         $query = DB::select($sql, [
             'coupon_id' => $couponId
         ]);

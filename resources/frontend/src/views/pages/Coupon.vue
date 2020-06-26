@@ -69,11 +69,21 @@
               </b-col>
               <b-col sm="9">
                   <b-form-select 
-                      v-model="promo_id" 
+                      v-model="promo" 
                       :options="promos"
-                      value-field="id"
-                      text-field="promo_name"
                   ></b-form-select>
+              </b-col>
+          </b-row>
+
+          <b-row class="my-3" v-if="promo != null">
+              <b-col sm="3">
+                  <label>Coupon Expiry Date</label>
+              </b-col>
+              <b-col sm="9">
+                  <b-form-input 
+                     :value="promo.coupon_expiry_date_formatted"
+                     disabled="disabled"
+                  ></b-form-input>
               </b-col>
           </b-row>
 
@@ -266,7 +276,7 @@ export default {
         emailRecipients : [],
         coupon_type : 1,
         coupon_types : [],
-        promo_id : '',
+        promo : null,
         purpose : null,
         enableEdit : true,
         disableEditFlag : false,
@@ -381,14 +391,16 @@ export default {
         });
 
         self.promos.push({
-          id : '',
-          promo_name : 'Please select a promo'
+          value : null,
+          text : 'Please select a promo'
         });
 
         promoRes.data.map( (row) => {
           self.promos.push({
-            'id' : row.id,
-            'promo_name' : row.promo_name
+            value : row,
+            text : row.promo_name
+           // 'id' : row.id,
+           // 'promo_name' : row.promo_name
           });
         });
 
@@ -436,7 +448,7 @@ export default {
       this.description = '';
       this.setDefaultDenomination();
       this.purpose = null;
-      this.promo_id = '';
+      this.promo = null;
       this.emailRecipients = [];
       this.emailRecipient = '';
     },
@@ -473,7 +485,7 @@ export default {
         return true;
       }
 
-      if(this.promo_id == ''){
+      if(this.promo == null){
         this.makeToast('danger','Please select the promo','System message');
         return true;
       } 
@@ -520,7 +532,7 @@ export default {
       formData.append('couponType', self.coupon_type);
       formData.append('description', self.description);
       formData.append('purpose', self.purpose.id);
-      formData.append('promo', self.promo_id);
+      formData.append('promo', self.promo.id);
       formData.append('email', JSON.stringify(self.emailRecipients));
       
       axiosRetry(axios, { retries: 3 });
@@ -578,7 +590,15 @@ export default {
             self.enableEdit = false;
           }
           self.dealer = res.data.dealer_id;
-          self.promo_id = res.data.promo_id;
+          console.log(res.data);
+          self.promo = {
+            id : res.data.promo_id,
+            promo_name : res.data.promo_name,
+            coupon_expiry_date_formatted : res.data.coupon_expiry_date_formatted,
+            coupon_expiry_date : res.data.coupon_expiry_date,
+            effective_date_from : res.data.effective_date_from,
+            effective_date_to : res.data.effective_date_to
+          };
           self.description = res.data.description;
           self.purpose = {
             id : res.data.purpose_id,
@@ -663,7 +683,7 @@ export default {
       formData.append('couponType', self.coupon_type);
       formData.append('description', self.description);
       formData.append('purpose', self.purpose.id);
-      formData.append('promo', self.promo_id);
+      formData.append('promo', self.promo.id);
       formData.append('couponId', self.couponId);
       formData.append('email', JSON.stringify(self.emailRecipients));
       formData.append('status', self.couponDetails.status_id);
@@ -735,7 +755,8 @@ export default {
   computed : {
     total : function() {
       return this.denominations.reduce( (acc,item) => parseFloat(acc) + (parseFloat(item.amount) * parseFloat(item.quantity)),0);
-    }
+    },
+   
   }
  
   

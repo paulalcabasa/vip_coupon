@@ -32,12 +32,10 @@
                 <b-col sm="4">
                   <span class="kt-font-bold kt-font-info">{{ couponDetails.coupon_id }}</span>
                 </b-col>
-                <b-col sm="2">
-                  <label class="kt-font-bold">Dealer</label>
+                   <b-col sm="2">
+                  <label class="kt-font-bold">Promo Code</label>
                 </b-col>
-                <b-col sm="4">
-                  <span class="kt-font-bold kt-font-info">{{ couponDetails.account_name }}</span>
-                </b-col>
+                <b-col sm="4">{{ couponDetails.promo_id }}</b-col>
               </b-row>
               
               <b-row>
@@ -49,6 +47,21 @@
                   <label class="kt-font-bold">Promo</label>
                 </b-col>
                 <b-col sm="4">{{ couponDetails.promo_name }}</b-col>
+              </b-row>
+
+              <b-row>
+                 <b-col sm="2">
+                  <label class="kt-font-bold">Dealer</label>
+                </b-col>
+                <b-col sm="4">
+                  <span class="kt-font-bold kt-font-info">{{ couponDetails.account_name }}</span>
+                </b-col>
+
+             
+                <b-col sm="2">
+                  <label class="kt-font-bold">Coupon expiry date</label>
+                </b-col>
+                <b-col sm="4">{{ couponDetails.coupon_expiry_date_formatted }}</b-col>
               </b-row>
              
               <b-row>

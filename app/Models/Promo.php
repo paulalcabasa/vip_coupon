@@ -17,7 +17,8 @@ class Promo extends Model
                         prm.promo_name,
                         prm.coupon_expiry_date,
                         prm.effective_date_from,
-                        prm.effective_date_to
+                        prm.effective_date_to,
+                        to_char(prm.coupon_expiry_date,'MM/DD/YYYY') coupon_expiry_date_formatted
                 FROM ipc.ipc_vpc_promos prm
                 WHERE SYSDATE BETWEEN prm.effective_date_from  AND prm.effective_date_to";
         $query = DB::select($sql);

@@ -299,28 +299,28 @@ export default {
           this.action = "update";
           this.form = {
             id                : row.item.id,
-            purpose           : row.item.require_cs_no_flag,
+            purpose           : row.item.purpose,
             status            : row.item.status_id,
             require_cs_no_flag: row.item.require_cs_no_flag,
             index             : row.index
           };
-          this.$refs['promo-input'].show();
+          this.$refs['purpose-form'].show();
         },
         update(){
           this.$Progress.start();
-          axios.post('api/promo/update',{
-            promo : this.form
+          axios.post('api/purpose/update',{
+            purpose : this.form
           }).then( res => {
-            //this.submitFlag = true;
             this.makeToast('success',res.data.message,'System message');
             this.message = res.data.message;
-            this.promos = res.data.promos;
-       
-            this.$refs['promo-input'].hide();
-             this.$Progress.finish();
+            this.purposes = res.data.purposes;
+            this.$refs['purpose-form'].hide();
+            this.$Progress.finish();
+            this.formBusy = false;
           }).catch( err => {
             this.makeToast('danger',err,'System message');
              this.$Progress.fail();
+             this.formBusy = false;
           });
         },
         
