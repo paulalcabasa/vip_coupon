@@ -178,7 +178,8 @@ class VoucherService {
                         'creation_date'      => Carbon::now(),
                         'print_date'         => Carbon::now(),
                         'voucher_code'       => $voucherCode,
-                        'control_number'     => $control_number
+                        'control_number'     => $control_number,
+                        'expiration_date'    => $couponDetails->coupon_expiry_date
                     ]);
                 }
             }

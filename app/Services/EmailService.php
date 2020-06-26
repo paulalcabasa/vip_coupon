@@ -56,7 +56,7 @@ class EmailService {
           $mail->setFrom($this->mailCredentials->email, 'System Notification');
           $mail->addAddress($row->email_address, $row->approver_name);	// Add a recipient, Name is optional
           $mail->addBCC('paul-alcabasa@isuzuphil.com');
-          $mail->addBCC('paulalcabasa@gmail.com');
+          //$mail->addBCC('paulalcabasa@gmail.com');
           //Content
           $mail->isHTML(true); 																	// Set email format to HTML
           $mail->Subject = 'System Notification : VIP Coupon Approval';

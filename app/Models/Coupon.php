@@ -41,7 +41,8 @@ class Coupon extends Model
                         cp.current_approval_hierarchy,
                         count(vpa.id) approve_ctr,
                         to_char(cp.date_sent, 'MM/DD/YYYY HH24:MI:SS AM') date_sent,
-                        cp.is_sent
+                        cp.is_sent,
+                        prm.coupon_expiry_date
   
                 FROM ipc.ipc_vpc_coupons cp
                     INNER JOIN ipc_portal.dealers dlr
@@ -88,7 +89,8 @@ class Coupon extends Model
                         cp.new_filename,
                         cp.current_approval_hierarchy,
                          cp.date_sent,
-                        cp.is_sent";
+                        cp.is_sent,
+                        prm.coupon_expiry_date";
         $query = DB::select($sql, [
             'coupon_id' => $couponId
         ]);

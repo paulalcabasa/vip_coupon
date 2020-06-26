@@ -100,10 +100,11 @@ class CouponService {
             $timeline->save();
 
 
-
+            $user = auth()->user();
             $approvers = Approver::where([
                 ['coupon_type_id', $couponType], 
-                ['module_id' , 1]
+                ['module_id' , 1],
+                ['user_type_id', $user->user_type_id]
             ])->get();
               
             $approval = new Approval;
