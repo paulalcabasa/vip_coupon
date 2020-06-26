@@ -227,7 +227,7 @@
                     
                     <tr>
                         <td style="color: #343434; font-size: 16px; font-family: 'Work Sans', Calibri, sans-serif; line-height: 24px;">
-                            Hi <strong><?php echo utf8_decode($approval_details->approver_name); ?></strong>!  this coupon request awaits for your approval.
+                            <?php echo $message; ?>  <a href="<?php echo $print_link;?>">Click here to print</a>
                         </td>
                     </tr>
 
@@ -307,54 +307,7 @@
 						<td height="25" style="font-size: 25px; line-height: 25px;">&nbsp;</td>
 					</tr>
 				
-					<tr>
-						<td align="center">
-							<table border="0" cellpadding="10" width="150" cellspacing="0">
-
-								<tr>
-									<td height="10" colspan="2" style="font-size: 10px; line-height: 10px;">&nbsp;</td>
-								</tr>
-
-								<tr>
-									<td align="center">
-										<table border="0" width="150" cellpadding="0" cellspacing="0" bgcolor="00A65A" style="float: left">
-											<tr>
-												<td height="10" style="font-size: 10px; line-height: 10px;">&nbsp;</td>
-											</tr>
-											<tr>
-												<td align="center" style="color: #00A65A; font-size: 14px; font-family: 'Work Sans', Calibri, sans-serif; ">
-		                                            <a href="<?php echo $approve_link;?>" style="color: #ffffff; text-decoration: none;">Approve</a>
-												</td>
-											</tr>
-											<tr>
-												<td height="10" style="font-size: 10px; line-height: 10px;">&nbsp;</td>
-											</tr>
-										</table>
-							
-									</td>
-									<td  align="center" >
-										<table border="0" width="150" cellpadding="0" cellspacing="0" bgcolor="DD4B39" style="float: right">
-											<tr>
-												<td height="10" style="font-size: 10px; line-height: 10px;">&nbsp;</td>
-											</tr>
-											<tr>
-												<td align="center" style="color: #00A65A; font-size: 14px; font-family: 'Work Sans', Calibri, sans-serif;">
-												    <a href="<?php echo $reject_link;?>" style="color: #ffffff; text-decoration: none;">Reject</a>
-												</td>
-											</tr>
-											<tr>
-												<td height="10" style="font-size: 10px; line-height: 10px;">&nbsp;</td>
-											</tr>
-										</table>
-									</td>
-								</tr>
-
-							</table>
-
-						</td>
-					</tr>
-
-				
+			
 
 
 				</table>

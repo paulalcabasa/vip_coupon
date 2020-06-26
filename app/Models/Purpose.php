@@ -21,5 +21,19 @@ class Purpose extends Model
         $query = DB::select($sql);
         return $query;
     }
+
+    public function get(){
+        $sql = "SELECT pr.id,
+                        pr.purpose,
+                        lower(st.status) status,
+                        st.id status_id,
+                        pr.require_cs_no_flag
+                FROM ipc.ipc_vpc_purposes pr
+                    LEFT JOIN ipc.ipc_vpc_status st
+                        ON st.id = pr.status
+                WHERE 1 = 1";
+        $query = DB::select($sql);
+        return $query;
+    }
     
 }

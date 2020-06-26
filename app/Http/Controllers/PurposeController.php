@@ -18,4 +18,16 @@ class PurposeController extends Controller
     public function getActive(){
         return response()->json($this->purposeService->getActive());
     }
+
+    public function get(){
+        return response()->json($this->purposeService->get());
+    }
+
+    public function store(Request $request){
+        return response()->json($this->purposeService->createPurpose($request));
+    }
+
+    public function update(Request $request){
+        return response()->json($this->purposeService->updatePurpose($request));
+    }
 }

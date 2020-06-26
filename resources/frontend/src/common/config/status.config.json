@@ -4,6 +4,8 @@
         "approved" : "success",
         "rejected" : "danger",
         "issued" : "info",
-        "fleet received" : "success"
+        "fleet received" : "success",
+        "active" : "success",
+        "inactive" : "danger"
     }
 }

@@ -19,6 +19,10 @@ use Illuminate\Http\Request;
  */
  
 Route::get('print-coupon/{coupon_id}', 'PdfController@printCoupon');
+Route::get('print-coupon/{coupon_id}/{email}', 'PdfController@printCoupon');
+Route::get('approve/{approval_id}', 'ApprovalController@approve');
+Route::get('reject/{approval_id}', 'ApprovalController@reject');
+Route::post('reject', 'ApprovalController@rejectCoupon');
 
  // Download Route
 Route::get('download/voucher-template', function(){
@@ -77,13 +81,9 @@ Route::group(['middleware' => 'jwt'], function () {
 
     // Documents
     Route::post('coupon/generate/','VoucherController@generate');
-
     
     Route::get('timeline/show/{couponId}','TimelineController@show');
     Route::get('denomination/show/{couponId}','DenominationController@show');
-    
-    
-
     
     // Payment
     Route::get('voucher/get/{couponId}','VoucherController@show');
@@ -93,18 +93,25 @@ Route::group(['middleware' => 'jwt'], function () {
     Route::get('payment/header/get/{paymentHeaderId}','PaymentRequestController@getHeader');
     Route::post('payment/update/status','PaymentRequestController@updateStatus');
 
-
     Route::get('dashboard/statistics','DashboardController@getStatistics');
    
     Route::get('coupon-types/get', 'CouponTypeController@index');
 
     Route::get('promos/active', 'PromoController@getActive');
+    Route::get('promos','PromoController@index');
+    Route::post('promo/create','PromoController@store');
+    Route::post('promo/update','PromoController@update');
+
     Route::get('purpose/active', 'PurposeController@getActive');
+    Route::get('purpose', 'PurposeController@get');
+    Route::post('purpose/create', 'PurposeController@store');
+    Route::post('purpose/update', 'PurposeController@update');
 
     Route::get('approval/coupon/get/{coupon_id}', 'ApprovalController@getByCoupon');
-
-   
+    Route::post('approval/resend', 'ApprovalController@resend');
+    Route::post('coupon/resend', 'CouponController@resend');
     
+
 });
 
 

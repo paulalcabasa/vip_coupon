@@ -14,7 +14,8 @@ class TimelineService {
     $timelineArr = [];
     foreach($timelineData as $row){
         array_push($timelineArr,[
-            'text' => '<strong>' . $row->created_by . '</strong> has <strong>' . strtolower($row->action) . '</strong> the coupon ' . Carbon::parse($row->created_at)->diffForHumans() . '.' 
+        //    'text' => '<strong>' . $row->created_by . '</strong> has <strong>' . strtolower($row->action) . '</strong> the coupon ' . Carbon::parse($row->created_at)->diffForHumans() . '.' 
+          'text' => $row->message . ' ' . Carbon::parse($row->created_at)->diffForHumans() . '.'
         ]);
     }
     return $timelineArr;

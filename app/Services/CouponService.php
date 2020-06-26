@@ -95,14 +95,16 @@ class CouponService {
             $timeline->action_id   = 8;              // created
             $timeline->user_id     = $createdBy;
             $timeline->user_source = $userSource;
+            $timeline->message     = 'Coupon has been created';
             $timeline->created_at  = Carbon::now();
             $timeline->save();
 
 
-
+            $user = auth()->user();
             $approvers = Approver::where([
                 ['coupon_type_id', $couponType], 
-                ['module_id' , 1]
+                ['module_id' , 1],
+                ['user_type_id', $user->user_type_id]
             ])->get();
               
             $approval = new Approval;
@@ -111,6 +113,7 @@ class CouponService {
                 array_push($params, [
                     'approver_id'         => $approver->id,
                     'module_reference_id' => $couponId,
+                    'hierarchy'           => $approver->hierarchy,
                     'module_id'           => 1,
                     'status'              => 1,
                     'created_at'          => Carbon::now()
@@ -180,6 +183,7 @@ class CouponService {
         $userSource = $request->userSource;
         $couponType = $request->couponType;
         $description = $request->description;
+        $status = $request->status;
         $purpose = $request->purpose;
         $promo = $request->promo;
         $emails = json_decode($request->email);
@@ -245,6 +249,17 @@ class CouponService {
                 $coupon->filename     = $origFilename;
                 $coupon->new_filename = $filename;
             }
+
+            if($status == 6){  // if current status is rejected, revert to pending
+                $coupon->status = 1;
+                // also revert approval statuses and emails
+                $approval = new Approval;
+                $approval->resetApproval($couponId, 1);
+
+                // revert current approver
+                $coupon->current_approval_hierarchy = 1;
+            }
+
             
             $coupon->save();
 
@@ -264,8 +279,12 @@ class CouponService {
             $timeline->action_id   = 10;              // updated
             $timeline->user_id     = $createdBy;
             $timeline->user_source = $userSource; 
+            $timeline->message     = "Coupon request has been updated";
             $timeline->created_at  = Carbon::now();
             $timeline->save();
+
+            $approval = new Approval;
+            $approval->resetApproval($couponId, 1);
 
             DB::commit();
 
@@ -478,6 +497,48 @@ class CouponService {
                 'error'    => true
             ];
         }
+    }
+
+    public function resend($request){
+
+        $coupon_id = $request->coupon_id;
+        $user = $request->user;
+        DB::beginTransaction();
+        
+        try {
+            // update approval status
+          
+            $coupon = Coupon::find($coupon_id);
+            $coupon->is_sent = 'N';
+            $coupon->date_sent = NULL;
+            $coupon->status = 12; // bring back to generated to re print
+            $coupon->save();
+            // add to timeline
+            $timeline = new Timeline;
+            $params = [
+                'coupon_id'  => $coupon_id,
+                'action_id'  => 12,
+                'created_at' => Carbon::now(),
+                'message'    => 'Email has been to resent to <strong>' . $coupon->email . '</strong> by ' . $user['first_name'] . ' ' . $user['last_name']
+            ];
+            $timeline->saveTimeline($params); 
+
+            DB::commit();
+            return [
+                'message' => 'Email to requestor has been resent!'
+            ];
+        } catch(\Exception $e) {
+            DB::rollBack();
+            return [
+                'message'  => 'Error :' . $e,
+                'error'    => true
+            ];
+
+        }
+      
+        
+        
+      
     }
   
 
