@@ -265,10 +265,45 @@ class ApprovalService {
             ];
 
         }
-      
+
+    }
+
+    public function getCouponApprovers($coupon_type, $module_id, $user_type_id, $vehicle_type, $coupon_id){
+        $params = [];
+        $approvers = Approver::where([
+                ['coupon_type_id', $coupon_type], 
+                ['module_id' , $module_id],
+                ['user_type_id', $user_type_id],
+                ['vehicle_type', $vehicle_type]
+            ]) ->orderBy('hierarchy', 'asc')->get();
+        foreach($approvers as $approver){
         
-        
-      
+         /*    
+            if($approver->approver_type == 2 || $approver->approver_type == 1) { // sales manager CV / LCV
+                if($approver->vehicle_type == $vehicle_type){
+                    array_push($params, [
+                        'approver_id'         => $approver->id,
+                        'module_reference_id' => $coupon_id,
+                        'hierarchy'           => $approver->hierarchy,
+                        'module_id'           => 1,
+                        'status'              => 1,
+                        'created_at'          => Carbon::now()
+                    ]);
+                }
+            }
+            else { */
+                array_push($params, [
+                    'approver_id'         => $approver->id,
+                    'module_reference_id' => $coupon_id,
+                    'hierarchy'           => $approver->hierarchy,
+                    'module_id'           => 1,
+                    'status'              => 1,
+                    'created_at'          => Carbon::now()
+                ]);
+            //}
+        }
+        return $params;
+
     }
 
 

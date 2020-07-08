@@ -11,6 +11,8 @@ use App\Models\Coupon;
 use App\Models\Timeline;
 use App\Models\CouponType;
 use Carbon\Carbon;
+use App\Models\Promo;
+
 
 class PdfController extends Controller
 {   
@@ -59,6 +61,18 @@ class PdfController extends Controller
         
         
         $pdf = PDF::loadView($type->file_template,$data);
+        return $pdf->setPaper('a4','portrait')->stream();
+    }
+
+
+    public function previewCoupon(Request $request){
+     //   return $request->promo_id;
+        $promo = new Promo;
+        $promoDetail = $promo->getById($request->promo_id);
+        $data = [
+            'promo' => $promoDetail
+        ];
+        $pdf = PDF::loadView('preview-coupon',$data);
         return $pdf->setPaper('a4','portrait')->stream();
     }
 

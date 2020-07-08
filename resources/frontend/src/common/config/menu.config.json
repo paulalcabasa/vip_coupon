@@ -115,7 +115,9 @@
         "page": "promo",
         "users": [
           "Administrator",
-          "Accounting"
+          "Accounting",
+          "Sales",
+          "Service"
         ]
       },
       {

@@ -58,6 +58,23 @@
                 color:red;
             }
 
+            .terms {
+                position: absolute;
+                top: 190px;
+                left:-20px;
+                font-size:.35em;
+                text-align:left;
+                line-height:1.5;
+            }
+
+            .terms-title {
+                position: absolute;
+                top: 195px;
+                left:10px;
+                font-size:.5em;
+                font-weight:bold;
+                text-align:left;
+            }
            
 
 
@@ -172,6 +189,10 @@
         </div>
 
         <div class="amount">{{ number_format($row->amount,0,'',',') }}</div>
+        <div class="terms-title">Terms and Condition:</div>
+        <div class="terms">
+            <span class="list"><?php echo $header->terms; ?></span>
+        </div>
         <div class="coupon-no">{{ $row->voucher_no }}</div>
     </div>
        

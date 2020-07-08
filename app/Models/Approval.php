@@ -73,16 +73,56 @@ class Approval extends Model
         return !empty($query) ? $query[0] : $query;
     }
 
-    public function resetApproval($couponId,$moduleId){
-        $this->where([
-            'module_reference_id' => $couponId,
-            'module_id' => $moduleId
-        ])->update([
-            'status' => 1,
-            'mail_sent_flag' => 'N',
-            'date_mail_sent' => '',
-            'updated_at' => ''
-        ]);
+    public function setApproval($couponId, $moduleId, $origVehicleType, $newVehicleType, $approvers){
+        DB::beginTransaction();
+
+        try {
+            
+            // only delete if vehicle type has been updated
+            if($origVehicleType != $newVehicleType){
+                // delete previous approval
+                $this->where([
+                    'module_reference_id' => $couponId,
+                    'module_id' => $moduleId
+                ])->delete(); 
+                //insert new approval
+                $this->batchInsert($approvers);
+                
+            }
+            else {
+                // reset only other approvers
+                $this->where([
+                    'module_reference_id' => $couponId,
+                    'module_id' => $moduleId
+                ])->update([
+                    'status' => 1,
+                    'mail_sent_flag' => 'N',
+                    'date_mail_sent' => '',
+                    'updated_at' => ''
+                ]); 
+            }
+
+            
+
+            DB::commit();
+
+            return response()->json([
+                'message'  => 'Coupon request has been saved.',
+                'couponId' => $couponId,
+                'error'    => false
+            ],200);
+
+        } catch(\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message'  => $e,
+                'couponId' => $couponId,
+                'error'    => false
+            ],200);
+        }
+        
+       
+        
     }
 
     public function getByCouponHierarchy($params){
@@ -103,4 +143,23 @@ class Approval extends Model
         $query = DB::select($sql,$params);
         return $query;
     }
+    
+    public function getPromoApprovers(){
+        $sql = "SELECT usr.first_name || ' ' || usr.last_name approver_name,
+                    nvl(va.email_address, usr.email_address) email,
+                    va.id approver_id,
+                    usr.user_id,
+                    usr.user_source_id
+                FROM ipc.ipc_vpc_approvers va                      
+                    INNER JOIN ipc_vpc_users_v usr
+                        ON usr.user_id = va.approver_user_id
+                        AND usr.user_source_id = va.approver_source_id
+                    INNER JOIN ipc.ipc_vpc_modules mdl
+                        ON mdl.id = va.module_id
+                WHERE 1 = 1
+                    AND va.module_id = 3";
+        $query = DB::select($sql);
+        return $query;
+    }
+    
 }

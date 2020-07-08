@@ -80,18 +80,11 @@ class EmailService {
       $denomination = new Denomination;
       $data = $coupon->getGeneratedCoupons();
      
-     
-     
       foreach($data as $row){
         
-          
-        
-         
           $couponDetails = $coupon->getDetails($row->coupon_id);
           $denominations = $denomination->getByCoupon($row->coupon_id);
-          
-          
-          
+        
           $email_recipients = explode(";",$couponDetails->email);
           
           foreach($email_recipients as $email){

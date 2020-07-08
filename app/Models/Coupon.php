@@ -45,7 +45,9 @@ class Coupon extends Model
                         prm.coupon_expiry_date,
                         to_char(prm.coupon_expiry_date,'MM/DD/YYYY') coupon_expiry_date_formatted,
                         prm.effective_date_from,
-                        prm.effective_date_to
+                        prm.effective_date_to,
+                        prm.terms,
+                        cp.vehicle_type
                 FROM ipc.ipc_vpc_coupons cp
                     INNER JOIN ipc_portal.dealers dlr
                         ON dlr.id = cp.dealer_id
@@ -94,7 +96,9 @@ class Coupon extends Model
                         cp.is_sent,
                         prm.coupon_expiry_date,
                         prm.effective_date_from,
-                        prm.effective_date_to";
+                        prm.effective_date_to,
+                        prm.terms,
+                        cp.vehicle_type";
         $query = DB::select($sql, [
             'coupon_id' => $couponId
         ]);
@@ -251,6 +255,8 @@ class Coupon extends Model
                 'date_sent'        => $params['date_sent'],
             ]);
     }
+
+   
 
     
 }
