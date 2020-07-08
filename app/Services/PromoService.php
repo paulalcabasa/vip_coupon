@@ -73,6 +73,7 @@ class PromoService {
             $promo->status = 10; // set to active
             $promo->approved_by_id = $request->user_id;
             $promo->approved_by_source = $request->user_id;
+            $promo->mail_sent = 'N'; // sent to requestor
             $promo->save();
             return [
                 'message' => 'Promo has been approved!',
@@ -94,6 +95,7 @@ class PromoService {
             $promo->approved_by_id = $request->user_id;
             $promo->approved_by_source = $request->user_source;
             $promo->remarks = $request->remarks;
+            $promo->mail_sent = 'N'; // sent to requestor
             $promo->save();
             return [
                 'message' => 'Promo has been rejected!',

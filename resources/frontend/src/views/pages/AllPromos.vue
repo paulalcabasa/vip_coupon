@@ -170,11 +170,9 @@
           <b-form-group
             label="Terms"
           >
-             <vue-editor v-model="form.terms" :editor-toolbar="customToolbar"></vue-editor>
-            
+            <vue-editor v-model="form.terms" :editor-toolbar="customToolbar"></vue-editor>
           </b-form-group>
-        
-          <b-button type="submit" variant="primary" :disabled="formBusy">Save</b-button>
+          <b-button type="submit" variant="primary" :disabled="formBusy" v-if="form.status_id != 10">Save</b-button>
         </b-form> 
       </template>
 
@@ -268,7 +266,8 @@ export default {
               effective_date_from : '',
               effective_date_to : '',
               terms : '',
-              coupon_type : ''
+              coupon_type : '',
+              status_id : ''
             },
             action : '',
             user : JSON.parse(jwtService.getUser()),
@@ -314,7 +313,8 @@ export default {
             effective_date_from: '',
             effective_date_to  : '',
             terms              : '',
-            coupon_type        : ''
+            coupon_type        : '',
+            status_id          : ''
           };
           this.formBusy = false;
         },
@@ -394,7 +394,8 @@ export default {
             effective_date_to  : row.item.effective_date_to_orig,
             index              : row.index,
             terms              : row.item.terms,
-            coupon_type        : row.item.coupon_type_id
+            coupon_type        : row.item.coupon_type_id,
+            status_id          : row.item.status_id
           };
           this.$refs['promo-input'].show();
         },

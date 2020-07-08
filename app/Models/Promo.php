@@ -32,6 +32,7 @@ class Promo extends Model
                         prm.terms,
                         prm.coupon_type_id,
                         prm.remarks,
+                        prm.status status_id,
                         to_char(prm.coupon_expiry_date,'YYYY-MM-DD') coupon_expiry_date_orig,
                         to_char(prm.effective_date_from,'YYYY-MM-DD') effective_date_from_orig,
                         to_char(prm.effective_date_to,'YYYY-MM-DD') effective_date_to_orig,
@@ -109,6 +110,39 @@ class Promo extends Model
         return $query;
     }
 
+    public function getValidated(){
+        $sql = "SELECT  prm.id,
+                        prm.promo_name,
+                        prm.terms,
+                        prm.coupon_type_id,
+                        prm.remarks,
+                        to_char(prm.coupon_expiry_date,'YYYY-MM-DD') coupon_expiry_date_orig,
+                        to_char(prm.effective_date_from,'YYYY-MM-DD') effective_date_from_orig,
+                        to_char(prm.effective_date_to,'YYYY-MM-DD') effective_date_to_orig,
+                        to_char(prm.coupon_expiry_date, 'MM/DD/YYYY') coupon_expiry_date,
+                        to_char(prm.effective_date_from, 'MM/DD/YYYY') effective_date_from,
+                        to_char(prm.effective_date_to, 'MM/DD/YYYY') effective_date_to,
+                        CASE 
+                            WHEN st.id = 1 THEN lower(st.status)
+                            ELSE CASE WHEN trunc(SYSDATE) BETWEEN prm.effective_date_from  AND prm.effective_date_to THEN lower(st.status) ELSE 'expired' END
+                        END status,
+                        ct.name coupon_type,
+                        lower(st.status) status_name,
+                        usr.email_address,
+                        usr.first_name || ' ' || usr.last_name requestor
+                FROM ipc.ipc_vpc_promos prm
+                    LEFT JOIN ipc.ipc_vpc_status st
+                        ON st.id = prm.status
+                    LEFT JOIN ipc.ipc_vpc_coupon_types ct
+                        ON ct.id = prm.coupon_type_id
+                    LEFT JOIN ipc_vpc_users_v usr   
+                        ON usr.user_id  = prm.created_by
+                        AND usr.user_source_id = prm.create_user_source
+                WHERE prm.status IN (6,10)
+                    AND prm.mail_sent = 'N'";
+        $query = DB::select($sql);
+        return $query;
+    }
 
    
 }
