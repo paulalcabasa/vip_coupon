@@ -10,6 +10,7 @@
                 <div class="card-body">
                     <form method="POST" action="<?php echo $claim_api; ?>">
                         <input type="hidden" class="form-control" name="voucher_id" value="<?php echo $voucherDetails->id; ?>"/>
+                        <input type="hidden" class="form-control" name="coupon_type_id" value="<?php echo $couponTypeId; ?>"/>
                         <div class="form-group">
                             <label>Voucher Code</label>
                             <input type="text" class="form-control" name="voucher_code" value="<?php echo $voucherDetails->voucher_code; ?>" readonly="readonly"/>
@@ -24,6 +25,31 @@
                             <label>Customer Name</label>
                             <input type="text" class="form-control" name="customer_name" required/>
                         </div>
+
+                        <div class="form-group">
+                            <label>CS Number</label>
+                            <input type="text" class="form-control" name="cs_number" required value="<?php echo $voucherDetails->cs_number; ?>"/>
+                        </div>
+                
+                        <?php if($couponTypeId == 2) : ?>
+                      
+
+                        <div class="form-group">
+                            <label>Plate Number</label>
+                            <input type="text" class="form-control" name="plate_number" />
+                        </div>
+
+                        <div class="form-group">
+                            <label>Service Invoice No.</label>
+                            <input type="text" class="form-control" name="service_invoice_no" required />
+                        </div>
+
+                        <div class="form-group">
+                            <label>Service Date</label>
+                            <input type="date" class="form-control" name="service_date" required/>
+                        </div>
+
+                        <?php endif; ?>
                         
                         <div class="form-group">
                             <button type="submit" class="btn btn-primary">Submit</button>

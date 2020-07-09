@@ -80,7 +80,7 @@
         <div class="qr-code" >
             <img  src="data:image/png;base64, {!! base64_encode(QrCode::format('png')
                 ->size(500)->errorCorrection('H')
-                ->generate($row->voucher_code)) !!} "
+                ->generate($claimApiUrl . $row->voucher_code)) !!} "
                 width="70" />
         </div>
 

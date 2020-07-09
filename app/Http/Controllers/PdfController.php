@@ -38,7 +38,8 @@ class PdfController extends Controller
        
         $data = [
             'docs' => $docs,
-            'header' => $header
+            'header' => $header,
+            'claimApiUrl' => url('/') . 'api/voucher/claim/'
         ];
 
         // update status to printed
