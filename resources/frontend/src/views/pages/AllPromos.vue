@@ -323,7 +323,19 @@ export default {
             self.$Progress.start();
             axiosRetry(axios, { retries: 3 });
 
-            let promoApi = 'api/promos';
+            var promoApi = '';
+             if(self.user.user_type_id == 45){
+              promoApi = 'api/promos/1';
+              
+            }
+            else if(self.user.user_type_id == 47){
+              promoApi = 'api/promos/2';
+            }
+            else {
+              promoApi = 'api/promos';
+            }
+            console.log(promoApi);
+            
             let couponTypeUrl = 'api/coupon-types/get';
             const promoReq = axios.get(promoApi);
             const couponTypeReq = axios.get(couponTypeUrl);
@@ -401,7 +413,7 @@ export default {
         },
         updatePromo(){
           this.$Progress.start();
-          axios.post('api/promo/update',{
+          axios.patch('api/promo/update',{
             promo : this.form
           }).then( res => {
             //this.submitFlag = true;
@@ -414,6 +426,7 @@ export default {
           }).catch( err => {
             this.makeToast('danger',err,'System message');
              this.$Progress.fail();
+             this.formBusy = false;
           });
         },
         preview(promo){

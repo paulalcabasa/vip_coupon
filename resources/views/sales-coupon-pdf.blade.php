@@ -58,6 +58,19 @@
                 color:red;
             }
 
+            .cs-no {
+                position: absolute;
+                top: 245px;
+                left: 10px;
+                font-weight:bold;
+                font-size:.7em;
+                color:black;
+            }
+
+            .cs-no .cs {
+                color:red;
+            }
+
             .terms {
                 position: absolute;
                 top: 190px;
@@ -149,7 +162,7 @@
             <th></th>
         </tr>
     </table>
-
+<!-- 
     <br/>
     <hr/>
 
@@ -171,7 +184,7 @@
             <td style="border-bottom: 1px solid black;">H. Nakaguro</td>
             <td style="border-bottom: 1px solid black;">Y. Oyama</td>
         </tr>
-    </table>
+    </table> -->
 
     <div style="page-break-before: always"></div>
      
@@ -194,6 +207,7 @@
             <span class="list"><?php echo $header->terms; ?></span>
         </div>
         <div class="coupon-no">{{ $row->voucher_no }}</div>
+        <div class="cs-no"><span class="label">CS no.</span> <span class="cs">CS1234</span></div>
     </div>
        
       

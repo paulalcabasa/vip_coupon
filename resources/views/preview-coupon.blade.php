@@ -58,6 +58,19 @@
                 color:red;
             }
 
+            .cs-no {
+                position: absolute;
+                top: 245px;
+                left: 10px;
+                font-weight:bold;
+                font-size:.7em;
+                color:black;
+            }
+
+            .cs-no .cs {
+                color:red;
+            }
+
             .terms {
                 position: absolute;
                 top: 190px;
@@ -106,6 +119,8 @@
             <span class="list"><?php echo $promo->terms; ?></span>
         </div>
         <div class="coupon-no">0001</div>
+                
+        <div class="cs-no"><span class="label">CS no.</span> <span class="cs">CS1234</span></div>
     </div>
        
       

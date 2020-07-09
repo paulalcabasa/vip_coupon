@@ -18,6 +18,11 @@ class PromoController extends Controller
         return response()->json($promoService->getPromos());
     }
 
+    public function getByCouponType(Request $request){
+        $promoService = new PromoService;
+        return response()->json($promoService->getByCouponType($request->coupon_type_id));
+    }
+
     public function store(Request $request){
         $promoService = new PromoService;
         return response()->json($promoService->createPromo($request));
@@ -62,6 +67,5 @@ class PromoController extends Controller
             'message' => $result['message']
         ];
         return view($result['template'], $data);
-     
     }
 }

@@ -50,6 +50,31 @@ class Promo extends Model
         return $query;
     }
 
+    public function getByCouponType($coupon_type_id){
+        $sql = "SELECT  prm.id,
+                        prm.promo_name,
+                        prm.terms,
+                        prm.coupon_type_id,
+                        prm.remarks,
+                        prm.status status_id,
+                        to_char(prm.coupon_expiry_date,'YYYY-MM-DD') coupon_expiry_date_orig,
+                        to_char(prm.effective_date_from,'YYYY-MM-DD') effective_date_from_orig,
+                        to_char(prm.effective_date_to,'YYYY-MM-DD') effective_date_to_orig,
+                        to_char(prm.coupon_expiry_date, 'MM/DD/YYYY') coupon_expiry_date,
+                        to_char(prm.effective_date_from, 'MM/DD/YYYY') effective_date_from,
+                        to_char(prm.effective_date_to, 'MM/DD/YYYY') effective_date_to,
+                        CASE 
+                            WHEN st.id = 1 THEN lower(st.status)
+                            ELSE CASE WHEN trunc(SYSDATE) BETWEEN prm.effective_date_from  AND prm.effective_date_to THEN lower(st.status) ELSE 'expired' END
+                        END status         
+                FROM ipc.ipc_vpc_promos prm
+                    LEFT JOIN ipc.ipc_vpc_status st
+                        ON st.id = prm.status
+                WHERE prm.coupon_type_id = :coupon_type_id";
+        $query = DB::select($sql, ['coupon_type_id' => $coupon_type_id]);
+        return $query;
+    }
+
     public function getById($promo_id){
         $sql = "SELECT  prm.id,
                         prm.promo_name,

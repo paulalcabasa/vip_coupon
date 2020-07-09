@@ -19,6 +19,11 @@ class PromoService {
         return $promo->get();
     }
 
+    public function getByCouponType($couponTypeId){
+        $promo = new Promo;
+        return $promo->getByCouponType($couponTypeId);
+    }
+
     public function createPromo($request){
         $promo = new Promo;
         $user = auth()->user();

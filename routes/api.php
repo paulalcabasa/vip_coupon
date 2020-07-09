@@ -29,6 +29,8 @@ Route::get('promo/approve/{promo_id}/{approver_id}/{approver_source}','PromoCont
 Route::get('promo/reject/{promo_id}/{approver_id}/{approver_source}','PromoController@reject');
 Route::post('promo/reject', 'PromoController@rejectPromo');
 
+Route::get('voucher/claim/{voucher_code}', 'ClaimController@claimForm');
+Route::post('voucher/claim', 'ClaimController@store');
 
  // Download Route
 Route::get('download/voucher-template', function(){
@@ -106,8 +108,9 @@ Route::group(['middleware' => 'jwt'], function () {
     Route::get('promos/active', 'PromoController@getActive');
     Route::get('promos/active/{coupon_type_id}', 'PromoController@getActiveByCouponType');
     Route::get('promos','PromoController@index');
+    Route::get('promos/{coupon_type_id}','PromoController@getByCouponType');
     Route::post('promo/create','PromoController@store');
-    Route::post('promo/update','PromoController@update');
+    Route::patch('promo/update','PromoController@update');
    
     Route::get('purpose/active', 'PurposeController@getActive');
     Route::get('purpose', 'PurposeController@get');

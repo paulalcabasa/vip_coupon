@@ -35,6 +35,7 @@ class Voucher extends Model
                     LEFT JOIN ipc.ipc_vpc_payment_lines pl
                         ON pl.voucher_id = cd.id
                 WHERE cd.coupon_id = :coupon_id
+                    AND cd.status NOT IN (4)
                 ORDER BY cd.control_number";
         $query = DB::select($sql,['coupon_id' => $couponId]);
         return $query;
