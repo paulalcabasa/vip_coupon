@@ -50,6 +50,17 @@
               </b-row>
 
               <b-row>
+                <b-col sm="2">
+                  <label class="kt-font-bold">Vehicle Type</label>
+                </b-col>
+                <b-col sm="4">{{ couponDetails.vehicle_type }}</b-col>
+                <b-col sm="2">
+                  <label class="kt-font-bold">Created by</label>
+                </b-col>
+                <b-col sm="4">{{ couponDetails.created_by }}</b-col>
+              </b-row>
+
+              <b-row>
                  <b-col sm="2">
                   <label class="kt-font-bold">Dealer</label>
                 </b-col>
@@ -77,28 +88,20 @@
              
             
               <b-row>
-                <b-col sm="2">
-                  <label class="kt-font-bold">Created by</label>
-                </b-col>
-                <b-col sm="4">{{ couponDetails.created_by }}</b-col>
+               
                 <b-col sm="2">
                   <label class="kt-font-bold">Date Created</label>
                 </b-col>
                 <b-col sm="4">{{ couponDetails.date_created }}</b-col>
-              </b-row>
 
-              <b-row>
-                <b-col sm="2">
+                 <b-col sm="2">
                   <label class="kt-font-bold">Status</label>
                 </b-col>
                 <b-col sm="4">
                   <b-badge class="mr-1" :variant="statusColors[couponDetails.status.trim().toLowerCase()]">{{ couponDetails.status.toLowerCase() }}</b-badge>
                 </b-col>
-                   <b-col sm="2">
-                  <label class="kt-font-bold">Attachment</label>
-                </b-col>
-                <b-col sm="4"><b-link variant="primary" target="_blank" :href="downloadUrl()">{{ couponDetails.filename }}</b-link></b-col>
               </b-row>
+
              
 
               <b-row>
@@ -108,6 +111,11 @@
                 <b-col sm="4">
                   <b-badge class="mr-1 mb-1" variant="info" :key="index" v-for="(email,index) in couponDetails.email">{{ email }}</b-badge>
                 </b-col>
+
+                <b-col sm="2">
+                  <label class="kt-font-bold">Attachment</label>
+                </b-col>
+                <b-col sm="4"><b-link variant="primary" target="_blank" :href="downloadUrl()">{{ couponDetails.filename }}</b-link></b-col>
               </b-row>
 
               <b-row>
@@ -137,8 +145,8 @@
           <b-tab title="Timeline">
             <Timeline2 v-bind:datasrc="timelines"></Timeline2>
           </b-tab>
-
-          <b-tab title="Approval">
+<!-- v-if="user.user_type_id != 51" -->
+          <b-tab title="Approval" >
             <b-table striped hover :items="approvalItems" :fields="approvalFields"></b-table>
             <b-button @click="resendApproval" v-if="couponDetails.status_id == 1" size="sm" variant="primary" class="ml-2">Resend</b-button>
           </b-tab>
@@ -156,6 +164,7 @@ import Timeline2 from "@/views/partials/widgets/Timeline2.vue";
 import axios from 'axios';
 import badge from '@/common/config/status.config.json';
 import axiosRetry from 'axios-retry';
+import jwtService from '@/common/jwt.service.js'
 export default {
   name: "ViewCoupon",
   components: {
@@ -245,12 +254,12 @@ export default {
           sortable: false, 
           sortDirection: 'desc' 
         },
-        {
+        /* {
           key: 'mail_sent_flag', 
           label: 'Is Notified', 
           sortable: false, 
           sortDirection: 'desc' 
-        },
+        }, */
         {
           key: 'date_sent', 
           label: 'Date Sent', 
@@ -287,7 +296,8 @@ export default {
       denomination: [],
       timelines: [],
       disableActions : false,
-      submitFlag : false
+      submitFlag : false,
+      user : JSON.parse(jwtService.getUser()),
     }
   },
   mounted() {

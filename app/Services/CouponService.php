@@ -17,23 +17,24 @@ use App\Models\Approval;
 class CouponService {
 
     public function saveCoupon($request){
-        $dealer = $request->dealerId;
-        $denominations = json_decode($request->denominations);
-        $createdBy = $request->createdBy;
-        $userSource = $request->userSource;
-        $couponType = $request->couponType;
-        $description = $request->description;
-        $purpose = $request->purpose;
-        $promo = $request->promo;
-        $emails = json_decode($request->email);
-        $attachment = $request->attachment;
+        $dealer           = $request->dealerId;
+        $denominations    = json_decode($request->denominations);
+        $createdBy        = $request->createdBy;
+        $userSource       = $request->userSource;
+        $couponType       = $request->couponType;
+        $description      = $request->description;
+        $purpose          = $request->purpose;
+        $promo            = $request->promo;
+        $vehicle_type     = $request->vehicle_type;
+        $emails           = json_decode($request->email);
+        $attachment       = $request->attachment;
         $email_recipients = "";
-        $csNumbers = [];
-        $filename = "";
-        $attachment_path = "";
-        $origFilename = "";
-        $serialNumber = new SerialNumber;
-        $symlink_dir = "";
+        $csNumbers        = [];
+        $filename         = "";
+        $attachment_path  = "";
+        $origFilename     = "";
+        $serialNumber     = new SerialNumber;
+        $symlink_dir      = "";
         foreach($denominations as $amount) {
             foreach($amount->csNumbers as $csNumber) {
                 array_push($csNumbers, $csNumber->text);
@@ -80,6 +81,7 @@ class CouponService {
             $coupon->attachment         = $symlink_dir . $filename;
             $coupon->filename           = $origFilename;
             $coupon->new_filename       = $filename;
+            $coupon->vehicle_type       = $vehicle_type;
             $coupon->save();
             $couponId = $coupon->id;
 
@@ -101,25 +103,17 @@ class CouponService {
 
 
             $user = auth()->user();
-            $approvers = Approver::where([
-                ['coupon_type_id', $couponType], 
-                ['module_id' , 1],
-                ['user_type_id', $user->user_type_id]
-            ])->get();
-              
+            $approvalService = new ApprovalService;
+            $approvers = $approvalService->getCouponApprovers(
+                $couponType, 
+                1, 
+                $user->user_type_id, 
+                $vehicle_type,
+                $couponId
+            );
             $approval = new Approval;
-            $params = [];
-            foreach($approvers as $approver){
-                array_push($params, [
-                    'approver_id'         => $approver->id,
-                    'module_reference_id' => $couponId,
-                    'hierarchy'           => $approver->hierarchy,
-                    'module_id'           => 1,
-                    'status'              => 1,
-                    'created_at'          => Carbon::now()
-                ]);
-            }
-            $approval->batchInsert($params);
+            $approval->batchInsert($approvers);
+        
     
     
             DB::commit();
@@ -186,6 +180,7 @@ class CouponService {
         $status = $request->status;
         $purpose = $request->purpose;
         $promo = $request->promo;
+        $vehicle_type = $request->vehicle_type;
         $emails = json_decode($request->email);
         $attachment = $request->attachment;
         $email_recipients = "";
@@ -196,6 +191,7 @@ class CouponService {
         $serialNumber = new SerialNumber;
         $symlink_dir = "";
 
+        
         foreach($emails as $email) {
             $email_recipients .= $email->text . ';';
         }
@@ -230,18 +226,21 @@ class CouponService {
             );
         }
 
+        $old_vehicle_type = '';
 
         DB::beginTransaction();
 
         try {
             
             $coupon                     = \App\Models\Coupon::find($couponId);
+            $old_vehicle_type           = $coupon->vehicle_type;
             $coupon->dealer_id          = $dealer;
             $coupon->updated_by         = $createdBy;
             $coupon->update_user_source = $userSource;
             $coupon->promo_id           = $promo;
             $coupon->purpose_id         = $purpose;
             $coupon->description        = $description;
+            $coupon->vehicle_type       = $vehicle_type;
             $coupon->email              = $email_recipients;
 
             if(!empty($_FILES)){
@@ -253,9 +252,20 @@ class CouponService {
             if($status == 6){  // if current status is rejected, revert to pending
                 $coupon->status = 1;
                 // also revert approval statuses and emails
+                $module_id = 1;
+                $user = auth()->user();
+                $approvalService = new ApprovalService;
+                $approvers = $approvalService->getCouponApprovers(
+                    $couponType, 
+                    $module_id, 
+                    $user->user_type_id, 
+                    $vehicle_type,
+                    $couponId
+                );
+                
                 $approval = new Approval;
-                $approval->resetApproval($couponId, 1);
-
+                $approval->setApproval($couponId, $module_id, $old_vehicle_type, $vehicle_type, $approvers);
+                      
                 // revert current approver
                 $coupon->current_approval_hierarchy = 1;
             }
@@ -283,9 +293,23 @@ class CouponService {
             $timeline->created_at  = Carbon::now();
             $timeline->save();
 
-            $approval = new Approval;
-            $approval->resetApproval($couponId, 1);
+            
 
+            $module_id = 1;
+            $user = auth()->user();
+            $approvalService = new ApprovalService;
+            $approvers = $approvalService->getCouponApprovers(
+                $couponType, 
+                $module_id, 
+                $user->user_type_id, 
+                $vehicle_type,
+                $couponId
+            );
+            
+            $approval = new Approval;
+            $approval->setApproval($couponId, $module_id, $old_vehicle_type, $vehicle_type, $approvers);
+            
+           
             DB::commit();
 
             return [
@@ -296,11 +320,11 @@ class CouponService {
 
         } catch(\Exception $e) {
             DB::rollBack();
-            return $e;
-            return response()->json([
-                'message'  => $e,
+            //return $e;
+            return [
+                'message'  => 'Error occured.' . $e,
                 'error'    => true
-            ],200);
+            ];
         }
 
     }
@@ -533,13 +557,9 @@ class CouponService {
                 'message'  => 'Error :' . $e,
                 'error'    => true
             ];
-
-        }
-      
-        
-        
-      
+        } 
     }
+
   
 
 }

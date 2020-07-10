@@ -62,6 +62,20 @@
                   ></b-form-select>
               </b-col>
           </b-row>
+          <b-row class="my-3" v-show="coupon_type == 1">
+              <b-col sm="3">
+                  <label>Vehicle type</label>
+              </b-col>
+              <b-col sm="9">
+                  <b-form-select 
+                      v-model="vehicle_type" 
+                      :options="vehicle_types"
+                      value-field="id"
+                      text-field="text"
+                  ></b-form-select>
+              </b-col>
+          </b-row>
+
 
           <b-row class="my-3">
               <b-col sm="3">
@@ -285,13 +299,9 @@ export default {
           html : '<i class="fa fa-cog fa-spin fa-3x fa-fw"></i>',
           state : false
         },
+        vehicle_type : '',
         defaultDenominations : [
-          {
-              amount : 100,
-              quantity : 0,
-              csNumbers : [],
-              csNumber : ''
-          },
+       
           {
               amount : 500,
               quantity : 0,
@@ -328,7 +338,21 @@ export default {
           rule: tag => tag.text.length == 6 ? false : true,
           disableAdd: true,
         }],
-        reg: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,24}))$/
+        reg: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,24}))$/,
+        vehicle_types : [
+          {
+            id : '',
+            text : 'Please select a vehicle type'
+          },
+          {
+            id : 'LCV',
+            text : 'LCV'
+          },
+          {
+            id : 'CV',
+            text : 'CV'
+          }
+        ]
     }    
   },
  
@@ -367,19 +391,19 @@ export default {
     loadDropdowns(){
       axiosRetry(axios, { retries: 3 });
       var self = this;
-      let promoUrl = 'api/promos/active';
-      let purposeUrl = 'api/purpose/active';
       let couponTypeUrl = 'api/coupon-types/get';
+      //let promoUrl = 'api/promos/active';
+      let purposeUrl = 'api/purpose/active';
      
-      const promoReq = axios.get(promoUrl);
+     // const promoReq = axios.get(promoUrl);
       const purposeReq = axios.get(purposeUrl);
       const couponTypeReq = axios.get(couponTypeUrl);
  
       this.$Progress.start();
-      axios.all([promoReq, purposeReq, couponTypeReq]).then(axios.spread((...responses) => {
-        const promoRes = responses[0];
-        const purposeRes = responses[1];
-        const couponTypeRes = responses[2];
+      axios.all([purposeReq, couponTypeReq]).then(axios.spread((...responses) => {
+      //  const promoRes = responses[0];
+        const purposeRes = responses[0];
+        const couponTypeRes = responses[1];
      
         
         couponTypeRes.data.map( (row) => {
@@ -387,20 +411,6 @@ export default {
             'id' : row.id,
             'name' : row.name,
             'user_type_id' : row.user_type_id
-          });
-        });
-
-        self.promos.push({
-          value : null,
-          text : 'Please select a promo'
-        });
-
-        promoRes.data.map( (row) => {
-          self.promos.push({
-            value : row,
-            text : row.promo_name
-           // 'id' : row.id,
-           // 'promo_name' : row.promo_name
           });
         });
 
@@ -419,12 +429,24 @@ export default {
         self.$Progress.finish();
       })).then( () => {
         this.setDefaultCouponType();
-      })
-      .catch(errors => {
+      }).then( () => {
+        axios.get('api/promos/active/' + self.coupon_type).then(res => {
+          self.promos.push({
+            value : null,
+            text : 'Please select a promo'
+          });
+
+          res.data.map( (row) => {
+            self.promos.push({
+              value : row,
+              text : row.promo_name
+            });
+          });
+
+        });
+      }).catch(errors => {
         self.makeToast('error',"Failed to load resources, please refresh the page.",'System message');
-    
         self.$Progress.fail();
-        // react on errors.
       });
     },
     deleteDenomination(index){
@@ -485,6 +507,11 @@ export default {
         return true;
       }
 
+      if(this.coupon_type == 1 && this.vehicle_type == null){
+        this.makeToast('danger','Please select the vehicle type','System message');
+        return true;
+      } 
+
       if(this.promo == null){
         this.makeToast('danger','Please select the promo','System message');
         return true;
@@ -533,6 +560,7 @@ export default {
       formData.append('description', self.description);
       formData.append('purpose', self.purpose.id);
       formData.append('promo', self.promo.id);
+      formData.append('vehicle_type', self.vehicle_type);
       formData.append('email', JSON.stringify(self.emailRecipients));
       
       axiosRetry(axios, { retries: 3 });
@@ -600,6 +628,7 @@ export default {
             effective_date_to : res.data.effective_date_to
           };
           self.description = res.data.description;
+          self.vehicle_type = res.data.vehicle_type;
           self.purpose = {
             id : res.data.purpose_id,
             purpose : res.data.purpose,
@@ -685,6 +714,7 @@ export default {
       formData.append('purpose', self.purpose.id);
       formData.append('promo', self.promo.id);
       formData.append('couponId', self.couponId);
+      formData.append('vehicle_type', self.vehicle_type);
       formData.append('email', JSON.stringify(self.emailRecipients));
       formData.append('status', self.couponDetails.status_id);
       
@@ -730,10 +760,8 @@ export default {
     },
     setDefaultCouponType(){
       this.coupon_types.map((type) => {
-    
         if(type.user_type_id == this.user.user_type_id){
           this.coupon_type = type.id;
-          
         }
       });
     },

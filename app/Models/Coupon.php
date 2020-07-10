@@ -45,7 +45,9 @@ class Coupon extends Model
                         prm.coupon_expiry_date,
                         to_char(prm.coupon_expiry_date,'MM/DD/YYYY') coupon_expiry_date_formatted,
                         prm.effective_date_from,
-                        prm.effective_date_to
+                        prm.effective_date_to,
+                        prm.terms,
+                        cp.vehicle_type
                 FROM ipc.ipc_vpc_coupons cp
                     INNER JOIN ipc_portal.dealers dlr
                         ON dlr.id = cp.dealer_id
@@ -94,7 +96,9 @@ class Coupon extends Model
                         cp.is_sent,
                         prm.coupon_expiry_date,
                         prm.effective_date_from,
-                        prm.effective_date_to";
+                        prm.effective_date_to,
+                        prm.terms,
+                        cp.vehicle_type";
         $query = DB::select($sql, [
             'coupon_id' => $couponId
         ]);
@@ -251,6 +255,32 @@ class Coupon extends Model
                 'date_sent'        => $params['date_sent'],
             ]);
     }
+
+    public function getApproved(){
+
+        $sql = "SELECT cp.id coupon_id,
+                    dlr.account_name,
+                    usr.first_name || ' ' || usr.last_name created_by,
+                    TRIM(TO_CHAR(cp.creation_date, 'Month')) || ' ' ||  TO_CHAR(cp.creation_date,'DD, YYYY') date_created,
+                    lower(st.status) status,
+                    cp.dealer_id,
+                    ct.name coupon_type
+                FROM ipc.ipc_vpc_coupons cp
+                    LEFT JOIN ipc_portal.dealers dlr
+                        ON cp.dealer_id = dlr.id
+                    LEFT JOIN apps.ipc_vpc_users_v usr
+                        ON usr.user_id = cp.created_by
+                        AND usr.user_source_id = cp.create_user_source
+                    LEFT JOIN ipc.ipc_vpc_status st
+                        ON st.id = cp.status
+                    LEFT JOIN ipc.ipc_vpc_coupon_types ct
+                        ON ct.id = cp.coupon_type_id
+                WHERE cp.status = 2";
+        $query = DB::select($sql);
+        return $query;
+    
+    }
+   
 
     
 }

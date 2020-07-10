@@ -58,6 +58,36 @@
                 color:red;
             }
 
+            .cs-no {
+                position: absolute;
+                top: 245px;
+                left: 10px;
+                font-weight:bold;
+                font-size:.7em;
+                color:black;
+            }
+
+            .cs-no .cs {
+                color:red;
+            }
+
+            .terms {
+                position: absolute;
+                top: 190px;
+                left:-20px;
+                font-size:.35em;
+                text-align:left;
+                line-height:1.5;
+            }
+
+            .terms-title {
+                position: absolute;
+                top: 195px;
+                left:10px;
+                font-size:.5em;
+                font-weight:bold;
+                text-align:left;
+            }
            
 
 
@@ -132,7 +162,7 @@
             <th></th>
         </tr>
     </table>
-
+<!-- 
     <br/>
     <hr/>
 
@@ -154,7 +184,7 @@
             <td style="border-bottom: 1px solid black;">H. Nakaguro</td>
             <td style="border-bottom: 1px solid black;">Y. Oyama</td>
         </tr>
-    </table>
+    </table> -->
 
     <div style="page-break-before: always"></div>
      
@@ -167,12 +197,17 @@
         <div class="qr-code" >
             <img  src="data:image/png;base64, {!! base64_encode(QrCode::format('png')
                 ->size(500)->errorCorrection('H')
-                ->generate($row->voucher_code)) !!} "
+                ->generate($claimApiUrl . $row->voucher_code)) !!} "
                 width="83" />
         </div>
 
         <div class="amount">{{ number_format($row->amount,0,'',',') }}</div>
+        <div class="terms-title">Terms and Condition:</div>
+        <div class="terms">
+            <span class="list"><?php echo $header->terms; ?></span>
+        </div>
         <div class="coupon-no">{{ $row->voucher_no }}</div>
+        <div class="cs-no"><span class="label">CS no.</span> <span class="cs">CS1234</span></div>
     </div>
        
       

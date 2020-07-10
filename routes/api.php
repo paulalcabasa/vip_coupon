@@ -19,10 +19,18 @@ use Illuminate\Http\Request;
  */
  
 Route::get('print-coupon/{coupon_id}', 'PdfController@printCoupon');
+Route::get('preview-coupon/{promo_id}', 'PdfController@previewCoupon');
 Route::get('print-coupon/{coupon_id}/{email}', 'PdfController@printCoupon');
 Route::get('approve/{approval_id}', 'ApprovalController@approve');
 Route::get('reject/{approval_id}', 'ApprovalController@reject');
 Route::post('reject', 'ApprovalController@rejectCoupon');
+
+Route::get('promo/approve/{promo_id}/{approver_id}/{approver_source}','PromoController@approve');
+Route::get('promo/reject/{promo_id}/{approver_id}/{approver_source}','PromoController@reject');
+Route::post('promo/reject', 'PromoController@rejectPromo');
+
+Route::get('voucher/claim/{voucher_code}', 'ClaimController@claimForm');
+Route::post('voucher/claim', 'ClaimController@store');
 
  // Download Route
 Route::get('download/voucher-template', function(){
@@ -98,10 +106,12 @@ Route::group(['middleware' => 'jwt'], function () {
     Route::get('coupon-types/get', 'CouponTypeController@index');
 
     Route::get('promos/active', 'PromoController@getActive');
+    Route::get('promos/active/{coupon_type_id}', 'PromoController@getActiveByCouponType');
     Route::get('promos','PromoController@index');
+    Route::get('promos/{coupon_type_id}','PromoController@getByCouponType');
     Route::post('promo/create','PromoController@store');
-    Route::post('promo/update','PromoController@update');
-
+    Route::patch('promo/update','PromoController@update');
+   
     Route::get('purpose/active', 'PurposeController@getActive');
     Route::get('purpose', 'PurposeController@get');
     Route::post('purpose/create', 'PurposeController@store');

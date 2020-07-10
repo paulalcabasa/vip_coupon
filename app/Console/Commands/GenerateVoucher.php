@@ -3,16 +3,17 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\Services\EmailService;
+use App\Services\VoucherService;
+use App\Models\Coupon;
 
-class Notification extends Command
+class GenerateVoucher extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'notification:send';
+    protected $signature = 'voucher:generate';
 
     /**
      * The console command description.
@@ -38,9 +39,18 @@ class Notification extends Command
      */
     public function handle()
     {
-        $mailService = new EmailService;
-        \Log::info("Sending email to approvers");
-        $mailService->sendCouponApproval();
-        $mailService->sendGeneratedCoupons();
+        $coupon = new Coupon;
+
+        $approvedCoupons = $coupon->getApproved();
+
+        foreach($approvedCoupons as $row){
+            $voucherService = new VoucherService;
+            $voucherService->generateVoucher(
+                $row->coupon_id, 
+                -1, 
+                -1
+            );
+        }
+       
     }
 }

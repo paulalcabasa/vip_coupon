@@ -43,9 +43,12 @@
               </template>
 
               <template v-slot:cell(actions)="row">
-                  <b-button size="sm" @click="edit(row)" class="mr-1">
-                      <i class="fa fa-search"></i>
-                  </b-button>
+                <b-button size="sm" @click="edit(row)" class="mr-1">
+                    <i class="fa fa-search"></i>
+                </b-button>
+                <b-button size="sm" @click="preview(row.item)" class="mr-1">
+                    <i class="flaticon2-printer"></i>
+                </b-button>
               </template>
           </b-table>
         </b-container>
@@ -153,7 +156,23 @@
             ></b-form-input>
           </b-form-group>
 
-          <b-button type="submit" variant="primary" :disabled="formBusy">Save</b-button>
+          <b-form-group
+            label="Coupon Type"
+          >
+            <b-form-select 
+                v-model="form.coupon_type" 
+                :options="couponTypes"
+                value-field="id"
+                text-field="name"
+            ></b-form-select>
+          </b-form-group>
+
+          <b-form-group
+            label="Terms"
+          >
+            <vue-editor v-model="form.terms" :editor-toolbar="customToolbar"></vue-editor>
+          </b-form-group>
+          <b-button type="submit" variant="primary" :disabled="formBusy" v-if="form.status_id != 10">Save</b-button>
         </b-form> 
       </template>
 
@@ -161,7 +180,11 @@
 
   </div>
 </template>
-
+<style>
+.ql-editor strong{
+     font-weight:bold;
+ }
+</style>
 <script>
 
 import KTPortlet from "@/views/partials/content/Portlet.vue";
@@ -169,10 +192,12 @@ import axios from 'axios';
 import axiosRetry from 'axios-retry';
 import badge from '@/common/config/status.config.json';
 import jwtService from '@/common/jwt.service.js';
+import { VueEditor } from 'vue2-editor'
 export default {
     name: "AllPromos",
     components: {
-        KTPortlet
+        KTPortlet,
+        VueEditor
     },
     data(){
         return {
@@ -218,6 +243,11 @@ export default {
                     sortByFormatted: true,
                     filterByFormatted: true
                 },
+                { 
+                    key: 'remarks', 
+                    label: 'Remarks', 
+                    sortable: true, 
+                },
                 
             ],
             totalRows: 1,
@@ -234,17 +264,29 @@ export default {
               promo_name : '',
               coupon_expiry_date : '',
               effective_date_from : '',
-              effective_date_to : ''
+              effective_date_to : '',
+              terms : '',
+              coupon_type : '',
+              status_id : ''
             },
             action : '',
             user : JSON.parse(jwtService.getUser()),
             submitFlag : false,
             message : '',
-            formBusy : false
-        }
+            formBusy : false,
+            editor: null,
+            customToolbar: [
+              ["bold", "italic", "underline"],
+              [{ list: "ordered" }, { list: "bullet" }],
+              [{ indent: "-1" }, { indent: "+1" }]
+            ],
+            couponTypes : []
+        }   
     },
+    
     mounted() {
         this.loadData();
+        
     },
     created() {
 
@@ -265,11 +307,14 @@ export default {
         },
         resetForm(){
           this.form = {
-            id                  : '',
-            promo_name          : '',
-            coupon_expiry_date  : '',
-            effective_date_from : '',
-            effective_date_to : ''
+            id                 : '',
+            promo_name         : '',
+            coupon_expiry_date : '',
+            effective_date_from: '',
+            effective_date_to  : '',
+            terms              : '',
+            coupon_type        : '',
+            status_id          : ''
           };
           this.formBusy = false;
         },
@@ -278,12 +323,38 @@ export default {
             self.$Progress.start();
             axiosRetry(axios, { retries: 3 });
 
-            let promoApi = 'api/promos';
+            var promoApi = '';
+             if(self.user.user_type_id == 45){
+              promoApi = 'api/promos/1';
+              
+            }
+            else if(self.user.user_type_id == 47){
+              promoApi = 'api/promos/2';
+            }
+            else {
+              promoApi = 'api/promos';
+            }
+            console.log(promoApi);
+            
+            let couponTypeUrl = 'api/coupon-types/get';
             const promoReq = axios.get(promoApi);
-          
-            axios.all([promoReq]).then(axios.spread((...responses) => {
+            const couponTypeReq = axios.get(couponTypeUrl);
+
+            axios.all([promoReq, couponTypeReq]).then(axios.spread((...responses) => {
                 const promoRes = responses[0];
+                const couponTypeRes = responses[1];
                 self.promos = promoRes.data;
+                self.couponTypes.push({
+                  id : '',
+                  name : 'Please select a coupon type'
+                });
+                couponTypeRes.data.map( (row) => {
+                  self.couponTypes.push({
+                    id : row.id,
+                    name : row.name,
+                    user_type_id : row.user_type_id
+                  });
+                });
                 self.$Progress.finish();
             })).catch(errors => {
                 self.makeToast('error',"Failed to load resources, please refresh the page.",'System message');
@@ -333,13 +404,16 @@ export default {
             coupon_expiry_date : row.item.coupon_expiry_date_orig,
             effective_date_from: row.item.effective_date_from_orig,
             effective_date_to  : row.item.effective_date_to_orig,
-            index              : row.index
+            index              : row.index,
+            terms              : row.item.terms,
+            coupon_type        : row.item.coupon_type_id,
+            status_id          : row.item.status_id
           };
           this.$refs['promo-input'].show();
         },
         updatePromo(){
           this.$Progress.start();
-          axios.post('api/promo/update',{
+          axios.patch('api/promo/update',{
             promo : this.form
           }).then( res => {
             //this.submitFlag = true;
@@ -348,12 +422,16 @@ export default {
             this.promos = res.data.promos;
        
             this.$refs['promo-input'].hide();
-             this.$Progress.finish();
+            this.$Progress.finish();
           }).catch( err => {
             this.makeToast('danger',err,'System message');
              this.$Progress.fail();
+             this.formBusy = false;
           });
         },
+        preview(promo){
+          window.open(process.env.VUE_APP_LARAVEL_BASEURL + '/api/preview-coupon/' + promo.id);
+        }
         
     },
     computed: {

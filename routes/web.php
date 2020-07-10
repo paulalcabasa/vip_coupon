@@ -12,3 +12,5 @@
 */
 
 Route::any('/{any}', 'FrontendController@app')->where('any', '^(?!api).*$');
+
+///Route::get('voucher/claim/{voucher_code}', 'ClaimController@store');
