@@ -14,7 +14,10 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         //
-      //  Commands\SendApprovalNotif::class,
+      Commands\Notification::class,
+      Commands\GenerateVoucher::class,
+      Commands\PromoNotification::class,
+      Commands\PromoRequestorNotif::class,
     ];
 
     /**
@@ -25,8 +28,22 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-      /*   $schedule->command('approval:send')
-                  ->everyMinute(); */
+        $schedule -> exec("php artisan notification:send");
+        $schedule -> exec("php artisan voucher:generate");
+        $schedule -> exec("php artisan requestor:send");
+        $schedule -> exec("php artisan promo:send");
+        /* $schedule->command('notification:send')
+                  ->everyFiveMinutes();
+
+        $schedule->command('voucher:generate')
+                  ->everyFiveMinutes();
+        
+        $schedule->command('requestor:send')
+                  ->everyFiveMinutes();
+
+        $schedule->command('promo:send')
+                  ->everyFiveMinutes(); */
+                  
                   
     }
 
