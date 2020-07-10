@@ -74,6 +74,18 @@
         ]
       },
       {
+        "title": "Customer Claims",
+        "root": true,
+        "icon": "flaticon-users",
+        "page": "claims",
+        "users": [
+          "Administrator",
+          "Service",
+          "Sales",
+          "Dealer"
+        ]
+      },
+      {
         "title": "Payment Request",
         "root": true,
         "icon": "flaticon-coins",

@@ -62,7 +62,6 @@ class ClaimController extends Controller
             return view('claim-message', $data);
         }
 
-
         $claim                = new Claim;
         $claim->voucher_id    = $request->voucher_id;
         $claim->customer_name = $request->customer_name;
