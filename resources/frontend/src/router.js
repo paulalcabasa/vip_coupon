@@ -11,6 +11,7 @@ import AllPayments from "@/views/pages/AllPayments.vue";
 import ViewPaymentRequest from "@/views/pages/ViewPaymentRequest.vue";
 import AllPromo from "@/views/pages/AllPromos.vue";
 import AllPurpose from "@/views/pages/AllPurpose.vue";
+import Claims from "@/views/pages/Claims.vue";
 
 import Auth from "@/views/pages/auth/Auth";
 import Login from "@/views/pages/auth/Login";
@@ -141,6 +142,15 @@ export default new Router({
           meta: {
             requiresAuth: true,
             title: 'Purpose'
+          }
+        },
+        {
+          path: "claims",
+          name: "Claims",
+          component: Claims,
+          meta: {
+            requiresAuth: true,
+            title: 'Claims'
           }
         },
       ]

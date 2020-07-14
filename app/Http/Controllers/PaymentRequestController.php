@@ -10,7 +10,7 @@ class PaymentRequestController extends Controller
 {
     
     public function store(Request $request, PaymentRequestService $paymentRequestService){
-        return response()->json($paymentRequestService->handlePaymentSave($request),200);
+        return response()->json($paymentRequestService->savePayment($request),200);
     }
 
     public function get(Request $request,PaymentRequestService $paymentRequestService){

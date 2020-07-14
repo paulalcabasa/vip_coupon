@@ -18,7 +18,7 @@
         
                         <div class="form-group">
                             <label>Amount</label>
-                            <input type="text" class="form-control" name="amount" value="<?php echo $voucherDetails->amount; ?>"/>
+                            <input type="number" min="0" max="<?php echo  $voucherDetails->amount;?>" class="form-control" name="amount" value="<?php echo $voucherDetails->amount; ?>"/>
                         </div>
 
                         <div class="form-group">

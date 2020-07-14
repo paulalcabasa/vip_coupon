@@ -120,6 +120,8 @@ Route::group(['middleware' => 'jwt'], function () {
     Route::get('approval/coupon/get/{coupon_id}', 'ApprovalController@getByCoupon');
     Route::post('approval/resend', 'ApprovalController@resend');
     Route::post('coupon/resend', 'CouponController@resend');
+
+    Route::get('claims/get', 'ClaimController@get');
     
 
 });

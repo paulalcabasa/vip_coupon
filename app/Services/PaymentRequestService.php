@@ -12,6 +12,123 @@ use App\Models\SerialNumber;
 
 class PaymentRequestService {
 
+
+    public function savePayment($request){
+        $user = $request->user;
+        $vouchers = $request->vouchers;
+        
+        $voucher = new Voucher;
+        $paymentHeader = new PaymentHeader;
+        $paymentLine = new PaymentLine;
+
+        $voucherCodes = collect($vouchers)->pluck('voucher_code')->toArray();
+        
+     
+        $invalidVoucherCodes = $voucher->getInvalidVouchers($voucherCodes);
+        $claimedVoucherCodes = $paymentLine->getClaimedVouchers($voucherCodes);
+        
+        $csNumbers = [];
+        foreach($vouchers as $row){
+          
+            if($row['cs_number'] != ""){
+                array_push($csNumbers, $row['cs_number']);
+            }
+        }
+
+        
+        $invalidCSNumbers = [];
+
+        if(count($csNumbers) > 0){
+            $serialNumber = new SerialNumber;
+            $invalidCSNumbers = $serialNumber->getInvalidCsNumbers($csNumbers);
+        }
+
+        if(!empty($invalidVoucherCodes) || !empty($claimedVoucherCodes) || !empty($invalidCSNumbers)) {
+            return [
+                'message'             => 'Payment request fail to upload.',
+                'invalidVoucherCodes' => implode(", ", $invalidVoucherCodes),
+                'claimedVoucherCodes' => implode("," , $claimedVoucherCodes),
+                'invalidCSNumbers' => implode("," , $invalidCSNumbers),
+                'error'               => true,
+                'errors' => []
+            ];
+        }
+
+         /* Validate voucher codes per amount and cs number validity */
+        $errors = [];
+        
+        foreach($vouchers as $row){
+            // voucher details
+            $voucherDetails = $voucher->getByCode($row['voucher_code']);
+            
+            if($row['amount'] > $voucherDetails[0]->amount ){
+                array_push($errors,[
+                    'voucher_code' => $row['voucher_code'],
+                    'message' => 'Invalid amount specified.'
+                ]);
+            }
+         
+        }
+
+        if(count($errors) > 0){
+            return [
+                'message'             => 'Payment request fail to upload.',
+                'invalidVoucherCodes' => implode(", ", $invalidVoucherCodes),
+                'claimedVoucherCodes' => implode("," , $claimedVoucherCodes),
+                'error'               => true,
+                'errors'              => $errors
+            ];
+        }
+
+
+
+        DB::beginTransaction();
+        try {
+         
+            $paymentHeaderId = $paymentHeader->insertHeader([
+                'status'             => 1,
+                'created_by'         => $user['user_id'],
+                'create_user_source' => $user['user_source_id'],
+                'creation_date'      => Carbon::now()
+            ]);
+            $paymentLineParams = [];
+          
+            foreach($vouchers as $row){
+              
+                array_push($paymentLineParams,[
+                    'payment_header_id'  => $paymentHeaderId,
+                    'voucher_code'       => $row['voucher_code'],
+                    'voucher_id'         => $row['voucher_no'],
+                    'cs_number'          => $row['cs_number'],
+                    'service_invoice_no' => $row['service_invoice_number'],
+                    'service_date'       => $row['service_date'],
+                   // 'dealer_code'        => $row->dealer_code,
+                    'customer_name'      => $row['customer_name'],
+                    'created_by'         => $user['user_id'],
+                    'create_user_source' => $user['user_source_id'],
+                    'creation_date'      => Carbon::now()
+                ]);
+            }
+            $paymentLine->batchInsert($paymentLineParams);
+        
+            DB::commit();
+
+            return [
+                'message'         => 'Payment Request has been created.',
+                'error'           => false,
+                'paymentHeaderId' => $paymentHeaderId
+            ];
+
+            
+        
+    
+        } catch(\Exception $e) {
+            DB::rollBack();
+            return $e;
+        }
+        
+    }
+
     public function handlePaymentSave($request){
         $user = $request->userId;
         $userSource = $request->userSource;
