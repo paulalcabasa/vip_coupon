@@ -5,10 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use DB;
 
-class PaymentHeader extends Model
+class ClaimHeader extends Model
 {
     protected $connection = "oracle";
-    protected $table = "ipc.ipc_vpc_payment_headers";
+    protected $table = "ipc.ipc_vpc_claim_headers";
     const CREATED_AT = 'creation_date';
     const UPDATED_AT = 'update_date';
     protected $primaryKey = 'id';
@@ -31,7 +31,7 @@ class PaymentHeader extends Model
                     usr.first_name || ' ' || usr.last_name created_by,
                     TRIM(TO_CHAR(ph.creation_date, 'Month')) || ' ' ||  TO_CHAR(ph.creation_date,'DD, YYYY') date_created,
                     lower(st.status) status
-                FROM ipc.ipc_vpc_payment_headers ph
+                FROM ipc.ipc_vpc_claim_headers ph
                 LEFT JOIN ipc.ipc_vpc_status st
                     ON ph.status = st.id
                 LEFT JOIN apps.ipc_vpc_users_v usr
@@ -44,13 +44,7 @@ class PaymentHeader extends Model
         return $query;
     }
 
-    public function getByUser($status, $params){
-
-        $where = "";
-
-        if($status == "pending"){
-            $where .= 'AND ph.status = 1';
-        }
+    public function getByUser($params){
 
         $sql = "SELECT ph.id,
                     st.status,
@@ -58,7 +52,7 @@ class PaymentHeader extends Model
                     usr.first_name || ' ' || usr.last_name created_by,
                     TRIM(TO_CHAR(ph.creation_date, 'Month')) || ' ' ||  TO_CHAR(ph.creation_date,'DD, YYYY') date_created,
                     lower(st.status) status
-                FROM ipc.ipc_vpc_payment_headers ph
+                FROM ipc.ipc_vpc_claim_headers ph
                 LEFT JOIN ipc.ipc_vpc_status st
                     ON ph.status = st.id
                 LEFT JOIN apps.ipc_vpc_users_v usr
@@ -68,26 +62,26 @@ class PaymentHeader extends Model
                     AND usr.user_id = :userId
                     AND usr.user_source_id = :sourceId";
         
-        $sql .= $where;
+ 
         $query = DB::select($sql, $params);
         return $query;
     }
 
-    public function get($paymentHeaderId){
+    public function get($claimHeaderId){
         $sql = "SELECT ph.id,
                     st.status,
                     ph.creation_date,
                     usr.first_name || ' ' || usr.last_name created_by,
                     TRIM(TO_CHAR(ph.creation_date, 'Month')) || ' ' ||  TO_CHAR(ph.creation_date,'DD, YYYY') date_created,
                     lower(st.status) status
-                FROM ipc.ipc_vpc_payment_headers ph
+                FROM ipc.ipc_vpc_claim_headers ph
                 LEFT JOIN ipc.ipc_vpc_status st
                     ON ph.status = st.id
                 LEFT JOIN apps.ipc_vpc_users_v usr
                     ON usr.user_id = ph.created_by
                     AND usr.user_source_id = ph.create_user_source
-                WHERE ph.id = :payment_header_id";
-        $query = DB::select($sql, ['payment_header_id' => $paymentHeaderId]);
+                WHERE ph.id = :claim_header_id";
+        $query = DB::select($sql, ['claim_header_id' => $claimHeaderId]);
         return !empty($query) ? $query[0] : $query;
     }
 

@@ -78,7 +78,7 @@
         "title": "Request",
         "root": true,
         "icon": "flaticon-coins",
-        "page": "payment/request",
+        "page": "claim/request",
         "users": [
           "Administrator",
           "Service",
@@ -90,7 +90,7 @@
         "title": "All Requests",
         "root": true,
         "icon": "flaticon-file-2",
-        "page": "payments",
+        "page": "claim-requests",
         "users": [
           "Administrator",
           "Service",

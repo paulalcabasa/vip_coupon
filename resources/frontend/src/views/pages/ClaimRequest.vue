@@ -1,8 +1,12 @@
 <template>
     <div>
 
+        <b-alert variant="info" show v-show="searchFlag && items.length == 0">
+            No results found.
+        </b-alert>
+
         <b-alert variant="success" show v-show="submitFlag">
-            <span class="mr-2">Payment Request No. <strong>{{ paymentRequestNo}}</strong> has been created!</span> 
+            <span class="mr-2">Claim Request No. <strong>{{ claimHeaderId }}</strong> has been created!</span> 
             <b-link href="#" style="color:#fff;" @click.prevent="viewRequest"><u>Click here to view</u></b-link>
         </b-alert>
 
@@ -22,7 +26,7 @@
             </b-card-text>
         </b-card>
 
-        <KTPortlet v-bind:title="'Payment Request'" >
+        <KTPortlet v-bind:title="'Claim Request'" >
             <template v-slot:toolbar>
                 <b-button type="submit" @click.prevent="getClaims()" variant="primary">Search</b-button>
           
@@ -48,6 +52,17 @@
                                 placeholder="Enter to date"
                             ></b-form-input>
                         </b-form-group>
+
+                        <b-form-group  label="Vehicle type" >
+                            <b-form-select 
+                                v-model="form.vehicleType" 
+                                :options="vehicle_types"
+                                value-field="id"
+                                text-field="text"
+                            ></b-form-select>
+                        </b-form-group>
+
+                         
                     </b-col>
                     <b-col sm="6">
 
@@ -208,7 +223,7 @@ import badge from '@/common/config/status.config.json';
 import axiosRetry from 'axios-retry';
 import jwtService from '@/common/jwt.service.js';
 export default {
-    name: "coupons",
+    name: "claimrequest",
     mounted() {
         this.loadDropdowns();
         this.user = JSON.parse(jwtService.getUser());
@@ -222,12 +237,14 @@ export default {
             user : [],
             dealers : [],
             coupon_types: [],
+            searchFlag : false,
             form : {
                 startDate : '',
                 endDate : '',
                 dealer : '',
                 formBusy : false,
-                couponType : 1
+                couponType : 1,
+                vehicleType : ''
             },
             fields: [
                 { 
@@ -297,9 +314,24 @@ export default {
             message : '',
             title : '',
             errors :  [],
-            paymentRequestNo : '',
+            claimHeaderId : '',
             submitFlag : false,
-            formBusy : false
+            formBusy : false,
+            vehicle_types : [
+                {
+                    id : '',
+                    text : 'Please select a vehicle type'
+                },
+                {
+                    id : 'LCV',
+                    text : 'LCV'
+                },
+                {
+                    id : 'CV',
+                    text : 'CV'
+                }
+            ]
+           
         }
     },
     components: {
@@ -327,6 +359,7 @@ export default {
         },
         getClaims(){
             var self = this;
+            
             self.$Progress.start();
             self.form.formBusy = true;
             return new Promise(resolve => {
@@ -335,19 +368,21 @@ export default {
                 
                 let user = JSON.parse(jwtService.getUser());
 
-                //console.log(user);
+             
                 axios.get('api/claims/get', {
                     params : {
                         startDate : self.form.startDate,
                         endDate : self.form.endDate,
                         dealerId : self.form.dealer,
-                        couponType : self.form.couponType
+                        couponType : self.form.couponType,
+                        vehicleType : self.form.vehicleType
                     }
                 }).then( (res) => {
                     self.items = res.data;
                     self.totalRows = self.items.length;
                     self.$Progress.finish();
                     self.form.formBusy = false;
+                    self.searchFlag = true;
                     resolve(res);
                 }).catch( err => {
                     self.$bvToast.toast('Failed loading resources, please submit again.', {
@@ -439,9 +474,12 @@ export default {
                 if (result.value) {
 
                     self.formBusy = true;
-                    axios.post( '/api/payment-request/submit', {
-                        user : this.user,
-                        vouchers : this.items
+                    axios.post( '/api/claim-request/submit', {
+                        user        : this.user,
+                        vouchers    : this.items,
+                        dealer_id   : this.form.dealer,
+                        coupon_type : this.form.couponType,
+                        vehicle_type: this.form.vehicleType
                     }).then(res => {
                         
                         if(res.data.error){
@@ -460,7 +498,7 @@ export default {
                 
                             self.submitFlag = true;
 
-                            self.paymentRequestNo =  res.data.paymentHeaderId;
+                            self.claimHeaderId =  res.data.claimHeaderId;
                             self.$Progress.finish();
                         }
                 
@@ -487,11 +525,10 @@ export default {
         },
         viewRequest(){
             this.$router.push({
-                name : 'view-payment-request',
-                params : {
-                'action' : 'view',
-                'paymentHeaderId' : this.paymentRequestNo
-                }
+               name : 'view-claim-request', 
+                params : { 
+                    claimHeaderId : this.claimHeaderId
+                } 
             });
         }
     },

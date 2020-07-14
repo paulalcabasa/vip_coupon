@@ -25,6 +25,12 @@ class ApprovalService {
         return $data;
     }
 
+    public function getByClaimRequest($claimHeaderId){
+        $approval = new Approval;
+        $data = $approval->getByClaimRequest($claimHeaderId);
+        return $data;
+    }
+
     public function approve($approvalId){
         $approval = new Approval;
         $coupon = new Coupon;
@@ -313,6 +319,30 @@ class ApprovalService {
                     'created_at'          => Carbon::now()
                 ]);
             //}
+        }
+        return $params;
+
+    }
+
+    public function getClaimApprovers($coupon_type, $module_id, $user_type_id, $vehicle_type, $module_reference_id){
+        $params = [];
+        $approvers = Approver::where([
+                ['coupon_type_id', $coupon_type], 
+                ['module_id' , $module_id],
+                ['user_type_id', $user_type_id],
+                ['vehicle_type', $vehicle_type]
+            ]) ->orderBy('hierarchy', 'asc')->get();
+        foreach($approvers as $approver){
+    
+            array_push($params, [
+                'approver_id'         => $approver->id,
+                'module_reference_id' => $module_reference_id,
+                'hierarchy'           => $approver->hierarchy,
+                'module_id'           => $module_id,
+                'status'              => 1,
+                'created_at'          => Carbon::now()
+            ]);
+          
         }
         return $params;
 

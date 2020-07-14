@@ -95,11 +95,13 @@ Route::group(['middleware' => 'jwt'], function () {
     
     // Payment
     Route::get('voucher/get/{couponId}','VoucherController@show');
-    Route::post('payment-request/submit','PaymentRequestController@store');
-    Route::get('payments/get','PaymentRequestController@get');
-    Route::get('payment/lines/get/{paymentHeaderId}','PaymentRequestController@getLines');
-    Route::get('payment/header/get/{paymentHeaderId}','PaymentRequestController@getHeader');
-    Route::post('payment/update/status','PaymentRequestController@updateStatus');
+    Route::post('claim-request/submit','ClaimRequestController@store');
+    //Route::get('payments/get','ClaimRequestController@get');
+    Route::get('claim-requests/get', 'ClaimRequestController@get');
+    Route::get('claim-request/lines/get/{claimHeaderId}','ClaimRequestController@getLines');
+    Route::get('claim-request/header/get/{claimHeaderId}','ClaimRequestController@getHeader');
+    Route::get('approval/claim-request/get/{claimHeaderId}', 'ApprovalController@getByClaimRequest');
+    Route::post('payment/update/status','ClaimRequestController@updateStatus');
 
     Route::get('dashboard/statistics','DashboardController@getStatistics');
    
@@ -122,6 +124,7 @@ Route::group(['middleware' => 'jwt'], function () {
     Route::post('coupon/resend', 'CouponController@resend');
 
     Route::get('claims/get', 'ClaimController@get');
+    
     
 
 });

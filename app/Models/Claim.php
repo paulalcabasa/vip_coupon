@@ -39,7 +39,15 @@ class Claim extends Model
                         ON ct.id = cp.coupon_type_id
                 WHERE trunc(cl.creation_date) BETWEEN :start_date AND :end_date
                     AND cp.dealer_id = :dealer_id
-                    AND cp.coupon_type_id = :coupon_type";
+                    AND cp.coupon_type_id = :coupon_type
+                    AND cp.vehicle_type = :vehicle_type
+                    AND cl.voucher_id NOT IN (
+                        SELECT pl.voucher_id
+                        FROM ipc.ipc_vpc_claim_headers  ph 
+                            INNER JOIN ipc.ipc_vpc_claim_lines pl
+                                ON ph.id = pl.claim_header_id
+                        WHERE ph.status IN(1,2)
+                    )";
         $query = DB::select($sql, $params);
         return $query;
     }

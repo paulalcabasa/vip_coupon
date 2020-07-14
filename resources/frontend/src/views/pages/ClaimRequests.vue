@@ -1,6 +1,6 @@
 <template>
     <div>
-        <KTPortlet v-bind:title="'Payments'" >
+        <KTPortlet v-bind:title="'Claims'" >
             <template v-slot:toolbar>
                 <b-col lg="12" class="my-1">
                     <b-form-group
@@ -108,7 +108,7 @@ import badge from '@/common/config/status.config.json';
 import jwtService from '@/common/jwt.service.js';
 
 export default {
-    name: "coupons",
+    name: "claimRequests",
     mounted() {
         this.loadRequests();
       
@@ -125,7 +125,7 @@ export default {
                 },
                 { 
                     key: 'id', 
-                    label: 'Payment Ref No.', 
+                    label: 'Claim Request No.', 
                     sortable: true, 
                 },
               
@@ -187,27 +187,11 @@ export default {
         info(item) {
             var action = "";
             var self = this;
-            if(self.currentRouteName == "all-payments"){
-                action = "view";
-            }
-            else if(self.currentRouteName == "payments-approval"){
-                action = "approve";
-            }
-         
+        
             this.$router.push({ 
-                name : 'view-payment-request', 
+                name : 'view-claim-request', 
                 params : { 
-                    paymentHeaderId : item.id,
-                    action : action
-                } 
-            });
-        },
-        edit(item){
-            this.$router.push({ 
-                name : 'edit-coupon', 
-                params : { 
-                    action : 'edit',
-                    couponId : item.coupon_id
+                    claimHeaderId : item.id
                 } 
             });
         },
@@ -222,23 +206,17 @@ export default {
             let status = "";
             let user = JSON.parse(jwtService.getUser());
 
-            if(self.currentRouteName == "all-payments"){
-                apiUrl ='api/payments/get';
-                status = "all";
-            }
-            else if(self.currentRouteName == "payments-approval"){
-                apiUrl ='api/payments/get';
-                status = "pending";
-            }
+       
+          
             
             self.$Progress.start();
             return new Promise(resolve => {
-                axios.get(apiUrl, {
+                axios.get('api/claim-requests/get', {
                     params : {
                         userId : user.user_id,
                         sourceId : user.user_source_id,
                         userType : user.user_type_id,
-                        status : status
+                        status : 'all'
                     }
                 }).then( (res) => {
                         self.items = res.data;

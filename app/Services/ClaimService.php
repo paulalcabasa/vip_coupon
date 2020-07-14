@@ -13,10 +13,11 @@ class ClaimService
     {
         $claim = new Claim;
         $params = [
-            'start_date' => $request->startDate,
-            'end_date' => $request->endDate,
-            'dealer_id' => $request->dealerId,
-            'coupon_type' => $request->couponType
+            'start_date'   => $request->startDate,
+            'end_date'     => $request->endDate,
+            'dealer_id'    => $request->dealerId,
+            'coupon_type'  => $request->couponType,
+            'vehicle_type' => $request->vehicleType
         ];
         return $claim->getClaims($params);
        
