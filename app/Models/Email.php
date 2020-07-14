@@ -10,7 +10,7 @@ class Email extends Model
 {
     public function getCouponApprovalMail(){
         $sql = "SELECT usr.first_name || ' ' || usr.last_name approver_name,
-                        va.email_address,
+                        nvl(va.email_address, usr.email_address) email_address,
                         apl.mail_sent_flag,
                         apl.date_mail_sent,
                         apl.id,

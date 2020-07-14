@@ -97,5 +97,32 @@ class ClaimHeader extends Model
             ]);
     }
 
+    public function getPendingApproval(){
+        $sql = "SELECT usr.first_name || ' ' || usr.last_name approver_name,
+                        nvl(va.email_address, usr.email_address) email_address,
+                        apl.mail_sent_flag,
+                        apl.date_mail_sent,
+                        apl.id,
+                        apl.module_reference_id,
+                        apl.module_id,
+                        mdl.module
+                FROM ipc.ipc_vpc_claim_headers cp
+                    INNER JOIN ipc.ipc_vpc_approval apl
+                        ON apl.module_reference_id = cp.id
+                        AND apl.module_id = 2
+                    INNER JOIN ipc.ipc_vpc_approvers va
+                        ON va.id = apl.approver_id
+                        AND cp.current_approval_hierarchy = va.hierarchy
+                    INNER JOIN ipc_vpc_users_v usr
+                        ON usr.user_id = va.approver_user_id
+                        AND usr.user_source_id = va.approver_source_id
+                    INNER JOIN ipc.ipc_vpc_modules mdl
+                        ON mdl.id = apl.module_id
+                WHERE 1 = 1
+                    AND apl.mail_sent_flag = 'N'";
+        $query = DB::select($sql);
+        return $query;
+    }
+
 
 }
