@@ -31,7 +31,8 @@ Route::post('promo/reject', 'PromoController@rejectPromo');
 
 Route::get('voucher/claim/{voucher_code}', 'ClaimController@claimForm');
 Route::post('voucher/claim', 'ClaimController@store');
-
+Route::get('claim-request/approval/details/{approval_id}', 'ClaimRequestController@approval');
+Route::get('claim-request/approve/{approval_id}', 'ClaimRequestController@approve');
  // Download Route
 Route::get('download/voucher-template', function(){
  
@@ -100,7 +101,8 @@ Route::group(['middleware' => 'jwt'], function () {
     Route::get('claim-requests/get', 'ClaimRequestController@get');
     Route::get('claim-request/lines/get/{claimHeaderId}','ClaimRequestController@getLines');
     Route::get('claim-request/header/get/{claimHeaderId}','ClaimRequestController@getHeader');
-    Route::get('approval/claim-request/get/{claimHeaderId}', 'ApprovalController@getByClaimRequest');
+    Route::get('claim-request/approvers/get/{claimHeaderId}','ClaimRequestController@approvers');
+  
     Route::post('payment/update/status','ClaimRequestController@updateStatus');
 
     Route::get('dashboard/statistics','DashboardController@getStatistics');

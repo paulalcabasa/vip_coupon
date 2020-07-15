@@ -4,11 +4,13 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use App\Models\ClaimHeader;
+use App\Models\ClaimLine;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 use App\Models\Approval;
 use Carbon\Carbon;
 use App\Models\Email;
+
 class ClaimApprovalNotif extends Command
 {
     /**
@@ -43,16 +45,17 @@ class ClaimApprovalNotif extends Command
     public function handle()
     {
         $claimHeader = new ClaimHeader;
-
+        $claimLine = new ClaimLine;
         $email = new Email;
         $mailCredentials = $email->getMailCredentials();
-
+    
         $approval = $claimHeader->getPendingApproval();
         foreach($approval as $approver){
             $mail = new PHPMailer();                            // Passing `true` enables exceptions
-          
+            
             try {
-        
+                $headerDetails = $claimHeader->get($approver->module_reference_id);
+           
                 // Server settings
                 $mail->SMTPDebug = 0;                                	// Enable verbose debug output
                 $mail->isSMTP();       
@@ -66,18 +69,19 @@ class ClaimApprovalNotif extends Command
 
                 //Recipients
                 $mail->setFrom($mailCredentials->email, 'System Notification');
-                
-                $mail->addAddress($approver->email, $approver->approver_name);
+               
+                $mail->addAddress($approver->email_address, $approver->approver_name);
     
                     // Add a recipient, Name is optional
                 $mail->addBCC('paul-alcabasa@isuzuphil.com');
                 //$mail->addBCC('paulalcabasa@gmail.com');
                 //Content
                 $data = [
-                    'promo'        => $prm,
                     'approver'     => $approver,
+                    'headerDetails' => $headerDetails,
                     'approve_link' => url('/') . '/api/claim-request/approve/' . $approver->id,
-                    'reject_link'  => url('/') . '/api/promo/reject/' . $approver->id
+                    'reject_link'  => url('/') . '/api/claim-request/reject/' . $approver->id,
+                    'full_details_link' => url('/') . '/api/claim-request/approval/details/' . $approver->id
                 ];
             
                 $mail->isHTML(true); 																	// Set email format to HTML

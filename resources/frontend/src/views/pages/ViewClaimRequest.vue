@@ -203,7 +203,7 @@ export default {
 
             let claimLineApi = 'api/claim-request/lines/get/' + this.claimHeaderId;
             let claimHeaderApi = 'api/claim-request/header/get/' + this.claimHeaderId;
-            let approvalApi = 'api/approval/claim-request/get/' + this.claimHeaderId;
+            let approvalApi = 'api/claim-request/approvers/get/' + this.claimHeaderId;
 
             const claimLineReq = axios.get(claimLineApi);
             const claimHeaderReq = axios.get(claimHeaderApi);

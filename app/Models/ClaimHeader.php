@@ -69,18 +69,42 @@ class ClaimHeader extends Model
 
     public function get($claimHeaderId){
         $sql = "SELECT ph.id,
-                    st.status,
-                    ph.creation_date,
-                    usr.first_name || ' ' || usr.last_name created_by,
-                    TRIM(TO_CHAR(ph.creation_date, 'Month')) || ' ' ||  TO_CHAR(ph.creation_date,'DD, YYYY') date_created,
-                    lower(st.status) status
+                        ph.creation_date,
+                        usr.first_name || ' ' || usr.last_name created_by,
+                        TRIM(TO_CHAR(ph.creation_date, 'Month')) || ' ' ||  TO_CHAR(ph.creation_date,'DD, YYYY') date_created,
+                        lower(st.status) status,
+                        ph.vehicle_type,
+                        ct.name coupon_type,
+                        ph.dealer_id,
+                        dlr.account_name dealer,
+                        sum(cl.amount) total_amount,
+                        ct.id coupon_type_id,
+                        ph.current_approval_hierarchy
                 FROM ipc.ipc_vpc_claim_headers ph
-                LEFT JOIN ipc.ipc_vpc_status st
-                    ON ph.status = st.id
-                LEFT JOIN apps.ipc_vpc_users_v usr
-                    ON usr.user_id = ph.created_by
-                    AND usr.user_source_id = ph.create_user_source
-                WHERE ph.id = :claim_header_id";
+                    LEFT JOIN ipc.ipc_vpc_status st
+                        ON ph.status = st.id
+                    LEFT JOIN apps.ipc_vpc_users_v usr
+                        ON usr.user_id = ph.created_by
+                        AND usr.user_source_id = ph.create_user_source
+                    LEFT JOIN ipc.ipc_vpc_coupon_types ct
+                        ON ct.id = ph.coupon_type
+                    LEFT JOIN ipc_portal.dealers dlr
+                        ON dlr.id = ph.dealer_id
+                    LEFT JOIN ipc.ipc_vpc_claim_lines cl
+                        ON cl.claim_header_id = ph.id
+                WHERE ph.id = :claim_header_id
+                GROUP BY
+                        ph.id,
+                        ph.creation_date,
+                        usr.first_name, usr.last_name ,
+                        ph.creation_date,
+                        st.status,
+                        ph.vehicle_type,
+                        ct.name,
+                        ph.dealer_id,
+                        dlr.account_name,
+                        ct.id,
+                        ph.current_approval_hierarchy";
         $query = DB::select($sql, ['claim_header_id' => $claimHeaderId]);
         return !empty($query) ? $query[0] : $query;
     }
@@ -88,7 +112,7 @@ class ClaimHeader extends Model
     public function updateStatus($params){
         $this
             ->where([
-                [ 'id', '=' , $params['payment_header_id'] ],
+                [ 'id', '=' , $params['claim_header_id'] ],
             ])
             ->update([
                 'status'             => $params['status'],
@@ -123,6 +147,18 @@ class ClaimHeader extends Model
         $query = DB::select($sql);
         return $query;
     }
+
+    public function updateCurrentApprovalHierarchy($params){
+        $this
+            ->where([
+                [ 'id', '=' , $params['claim_header_id'] ],
+            ])
+            ->update([
+                'current_approval_hierarchy'             => $params['next_hierarchy']
+            ]);
+    }
+
+    
 
 
 }

@@ -123,6 +123,7 @@ class ClaimRequestService {
                     'service_date'       => $row['service_date'],
                    // 'dealer_code'        => $row->dealer_code,
                     'customer_name'      => $row['customer_name'],
+                    'amount'             => $row['amount'],
                     'created_by'         => $user['user_id'],
                     'create_user_source' => $user['user_source_id'],
                     'creation_date'      => Carbon::now()
@@ -176,6 +177,104 @@ class ClaimRequestService {
         return $claimHeader->get($request->claimHeaderId);
     }
 
+    public function approvalDetails($request){
+        $approval_id = $request->approval_id;
+        $approvalDetails = Approval::where('id',$approval_id)->get();
+        $claimHeader = new ClaimHeader;
+        $header = $claimHeader->get($approvalDetails[0]->module_reference_id);
+        $claimLine = new ClaimLine;
+        $lines = $claimLine->get($header->id);
+     
+        $data = [
+            'approval_details' => [],
+            'header'           => $header,
+            'lines'            => $lines,
+            'approve_link'     => url('/') . '/api/claim-request/approve/' . $approval_id,
+            'reject_link'      => url('/') . '/api/claim-request/reject/' . $approval_id,
+        ];
+
+        return [
+            'data' => $data,
+            'view' => 'email/claim-details'
+        ];
+    }
+
+    public function approve($request){
+        $approval_id = $request->approval_id;
+        $approval_data = Approval::where('id',$approval_id)->first();
+        $claimHeader = new ClaimHeader;
+        $header = $claimHeader->get($approval_data->module_reference_id);
+        
+        if($approval_data->status != 1){
+            $data = [
+                'message' => 'It seems like you have already approved Claim request no.' . $approval_data->module_reference_id,
+                'image_url' => url('/') . '/public/images/approval-error.jpg',
+            ];
+
+            return [
+                'data' => $data,
+                'view' => 'claim-message'
+            ];
+        }
+
+        $approval = new Approval;
+        DB::beginTransaction();
+        try {
+            // update status of approval
+            $approval->updateStatus([
+                'approval_id'   => $approval_id,
+                'status'        => 2, // approved
+                'date_approved' => Carbon::now(),
+                'remarks'       => ''
+            ]);
+
+            // check if already max approver
+            $max_hierarchy = $approval->getMaxApproval([
+                'module_reference_id' => $approval_data->module_reference_id,
+                'module_id' => $approval_data->module_id,
+            ]);
+
+            if($approval_data->hierarchy == $max_hierarchy->hierarchy){
+                // update status of claim request
+                $claimHeader->updateStatus([
+                    'claim_header_id'    => $header->id,
+                    'status'             => 2,
+                    'updated_by'         => -1,
+                    'update_user_source' => -1
+                ]);
+            }
+            else {
+                $next_hierarchy = $header->current_approval_hierarchy + 1;
+                $claimHeader->updateCurrentApprovalHierarchy([
+                    'claim_header_id' => $header->id,
+                    'next_hierarchy' => $next_hierarchy
+                ]);
+            }
+
+            DB::commit();
+
+            $data = [
+                'message' => 'You have successfully approved Claim request no. ' . $approval_data->module_reference_id,
+                'image_url' => url('/') . '/public/images/approval-success.gif',
+            ];
+
+            return [
+                'data' => $data,
+                'view' => 'claim-message'
+            ];
+
+        } catch(\Exception $e){
+            DB::rollback();
+            return $e;
+        }
+
+        
+    }
+
+    public function getApprovers($request){
+        $approval = new Approval;
+        return $approval->getByClaimRequest($request->claimHeaderId);
+    }
    /*  public function cancelPayment($request){
         $paymentHeader = new PaymentHeader();
         $paymentHeader->updateStatus([
