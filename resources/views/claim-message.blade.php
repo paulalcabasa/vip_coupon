@@ -77,6 +77,9 @@
 				</div>
 				<div class="col-6">
 					<div class="text"><?php echo $message; ?></div>
+					<?php if(isset($back_url)) : ?>
+					<a href="<?php echo $back_url;?>">Click here to go back.</a>
+					<?php endif;?>
 				</div>
 			</div>
 		</div>

@@ -94,6 +94,8 @@ class ClaimApprovalNotif extends Command
                     $promo_update->mail_sent = 'Y'; // set to active
                     $promo_update->date_sent = Carbon::now(); // set to active
                     $promo_update->save(); */
+
+                    $email->updateStatus($approver->id);
                     \Log::info("Mail sent");
                 }
             

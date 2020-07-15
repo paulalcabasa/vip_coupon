@@ -5,10 +5,10 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Claim;
 use App\Models\Voucher;
+use App\Models\SerialNumber;
 use Carbon\Carbon;
 use App\Models\Coupon;
 use App\Services\ClaimService;
-
 class ClaimController extends Controller
 {
     public function claimForm(Request $request){
@@ -65,6 +65,20 @@ class ClaimController extends Controller
 
     public function store(Request $request){
 
+        // check CS Number
+        
+        $isExist = SerialNumber::where('serial_number', $request->cs_number)->first();
+    
+        if($isExist == null){
+            $data = [
+                'message' => 'It seems that you CS Number ' . $request->cs_number . ' does not exist, try again.',
+                'image_url' => url('/') . '/public/images/approval-error.jpg',
+                'back_url' => url('/') . '/api/voucher/claim/' . $request->voucher_code
+            ];
+            return view('claim-message', $data);
+        }
+
+       
         $claimCheck = Claim::where('voucher_id', $request->voucher_id)->get();
       
         if(count($claimCheck) > 0){
@@ -74,6 +88,8 @@ class ClaimController extends Controller
             ];
             return view('claim-message', $data);
         }
+
+
      
 
         $claim                = new Claim;
@@ -81,9 +97,9 @@ class ClaimController extends Controller
         $claim->customer_name = $request->customer_name;
         $claim->amount        = $request->amount;
         $claim->creation_date        = Carbon::now();
+        $claim->cs_number = $request->cs_number;
 
         if($request->coupon_type_id == 2) { // service
-            $claim->cs_number = $request->cs_number;
             $claim->plate_no = $request->plate_number;
             $claim->service_invoice_number = $request->service_invoice_no;
             $claim->service_date = $request->service_date;

@@ -6,6 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 use DB;
 class SerialNumber extends Model
 {
+
+    protected $connection = "oracle";
+    protected $table = "apps.mtl_serial_numbers";
+    protected $primaryKey = 'inventory_item_id';
+    public $timestamps = false;
+
     public function getInvalidCsNumbers($csNumbers){
         $isExist = DB::connection('oracle')->table('mtl_serial_numbers')
                     ->whereIn('serial_number', $csNumbers)
@@ -15,4 +21,8 @@ class SerialNumber extends Model
         $isExist = collect($isExist)->pluck('serial_number')->toArray();
         return array_diff($csNumbers, $isExist);
     }
+
+    
+
+
 }
