@@ -51,4 +51,10 @@ class ClaimRequestController extends Controller
         $result = $claimRequestService->rejectForm($request);
         return view($result['view'], $result['data']);
     }
+
+    public function reject(Request $request, ClaimRequestService $claimRequestService){
+        $result = $claimRequestService->reject($request);
+    
+        return view($result['view'], $result['data']);
+    }
 }

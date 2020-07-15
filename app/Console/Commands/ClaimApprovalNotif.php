@@ -55,7 +55,6 @@ class ClaimApprovalNotif extends Command
             
             try {
                 $headerDetails = $claimHeader->get($approver->module_reference_id);
-           
                 // Server settings
                 $mail->SMTPDebug = 0;                                	// Enable verbose debug output
                 $mail->isSMTP();       

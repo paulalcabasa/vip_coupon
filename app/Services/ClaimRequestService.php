@@ -275,6 +275,75 @@ class ClaimRequestService {
         $approval = new Approval;
         return $approval->getByClaimRequest($request->claimHeaderId);
     }
+
+    public function rejectForm($request){
+        $approval_id = $request->approval_id;
+        $reject_url = url('/') . '/api/claim-request/reject-state';
+        $data = [
+            'approval_id' => $approval_id,
+            'reject_url' => $reject_url
+        ];
+
+        return [
+            'data' => $data,
+            'view' => 'reject-claim-form'
+        ];
+    }
+
+    public function reject($request){
+        $approval_id = $request->approval_id;
+        $approval_data = Approval::where('id',$approval_id)->first();
+        $remarks = $request->remarks;
+        if($approval_data->status != 1){
+            $data = [
+                'message' => 'It seems like you have already rejected Claim request no.' . $approval_data->module_reference_id,
+                'image_url' => url('/') . '/public/images/approval-error.jpg',
+            ];
+
+            return [
+                'data' => $data,
+                'view' => 'claim-message'
+            ];
+        }
+
+        $claimHeader = new ClaimHeader;
+        $approval = new Approval;
+        DB::beginTransaction();
+        try {
+            // update status of approval
+            $approval->updateStatus([
+                'approval_id'   => $approval_id,
+                'status'        => 6, // rejected
+                'date_approved' => Carbon::now(),
+                'remarks'       => $remarks
+            ]);
+            
+            $claimHeader->updateStatus([
+                'claim_header_id'    => $approval_data->module_reference_id,
+                'status'             => 6,
+                'updated_by'         => -1,
+                'update_user_source' => -1
+            ]);
+
+            DB::commit();
+
+            $data = [
+                'message' => 'You have successfully rejected Claim request no. ' . $approval_data->module_reference_id,
+                'image_url' => url('/') . '/public/images/approval-success.gif',
+            ];
+
+            return [
+                'data' => $data,
+                'view' => 'claim-message'
+            ];
+
+        } catch(\Exception $e){
+            DB::rollback();
+            return $e;
+        }
+
+        
+    }
    /*  public function cancelPayment($request){
         $paymentHeader = new PaymentHeader();
         $paymentHeader->updateStatus([

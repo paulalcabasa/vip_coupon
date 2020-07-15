@@ -33,6 +33,8 @@ Route::get('voucher/claim/{voucher_code}', 'ClaimController@claimForm');
 Route::post('voucher/claim', 'ClaimController@store');
 Route::get('claim-request/approval/details/{approval_id}', 'ClaimRequestController@approval');
 Route::get('claim-request/approve/{approval_id}', 'ClaimRequestController@approve');
+Route::post('claim-request/reject-state', 'ClaimRequestController@reject');
+Route::get('claim-request/reject/{approval_id}', 'ClaimRequestController@rejectForm');
  // Download Route
 Route::get('download/voucher-template', function(){
  
