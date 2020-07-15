@@ -19,7 +19,6 @@
           <li v-for="(row,index) in errors" :key="index">{{ row.voucher_code + " : " + row.message }}</li>
         </ol>
       </p>
-      
     </b-card-text>
     </b-card>
      

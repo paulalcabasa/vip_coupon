@@ -6,11 +6,12 @@ import Coupon from "@/views/pages/Coupon.vue";
 import ViewCoupon from "@/views/pages/ViewCoupon.vue";
 import AllCoupons from "@/views/pages/AllCoupons.vue";
 import Approval from "@/views/pages/Approval.vue";
-import PaymentRequest from "@/views/pages/PaymentRequest.vue";
-import AllPayments from "@/views/pages/AllPayments.vue";
-import ViewPaymentRequest from "@/views/pages/ViewPaymentRequest.vue";
+import ClaimRequest from "@/views/pages/ClaimRequest.vue";
+import ClaimRequests from "@/views/pages/ClaimRequests.vue";
+import ViewClaimRequest from "@/views/pages/ViewClaimRequest.vue";
 import AllPromo from "@/views/pages/AllPromos.vue";
 import AllPurpose from "@/views/pages/AllPurpose.vue";
+import Claims from "@/views/pages/Claims.vue";
 
 import Auth from "@/views/pages/auth/Auth";
 import Login from "@/views/pages/auth/Login";
@@ -89,42 +90,34 @@ export default new Router({
           }
         },
         {
-          path: "/payment/request",
-          name: "payment-request",
-          component: PaymentRequest,
+          path: "/claim/request",
+          name: "claim-request",
+          component: ClaimRequest,
           meta: {
             requiresAuth: true,
             title: 'Approval'
           }
         },
         {
-          path: "/payments",
-          name: "all-payments",
-          component: AllPayments,
+          path: "/claim-requests",
+          name: "claim-requests",
+          component: ClaimRequests,
           meta: {
             requiresAuth: true,
             title: 'Approval'
           }
         },
         {
-          path: "view-payment-request/:action/:paymentHeaderId",
-          name: "view-payment-request",
-          component: ViewPaymentRequest,
+          path: "view-claim-request/:claimHeaderId",
+          name: "view-claim-request",
+          component: ViewClaimRequest,
           props: true,
           meta: {
             requiresAuth: true,
             title: 'Approval'
           }
         },
-        {
-          path: "/payments/approval",
-          name: "payments-approval",
-          component: AllPayments,
-          meta: {
-            requiresAuth: true,
-            title: 'Approval'
-          }
-        },
+      
         {
           path: "promo",
           name: "promo",
@@ -141,6 +134,15 @@ export default new Router({
           meta: {
             requiresAuth: true,
             title: 'Purpose'
+          }
+        },
+        {
+          path: "claims",
+          name: "Claims",
+          component: Claims,
+          meta: {
+            requiresAuth: true,
+            title: 'Claims'
           }
         },
       ]

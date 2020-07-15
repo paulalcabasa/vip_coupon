@@ -13,11 +13,11 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        //
       Commands\Notification::class,
       Commands\GenerateVoucher::class,
       Commands\PromoNotification::class,
       Commands\PromoRequestorNotif::class,
+      Commands\ClaimApprovalNotif::class,
     ];
 
     /**
@@ -32,6 +32,7 @@ class Kernel extends ConsoleKernel
         $schedule -> exec("php artisan voucher:generate");
         $schedule -> exec("php artisan requestor:send");
         $schedule -> exec("php artisan promo:send");
+        $schedule -> exec("php artisan claim_approval:send");
         /* $schedule->command('notification:send')
                   ->everyFiveMinutes();
 

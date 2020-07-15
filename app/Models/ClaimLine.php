@@ -5,10 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use DB;
 
-class PaymentLine extends Model
+class ClaimLine extends Model
 {
     protected $connection = "oracle";
-    protected $table = "ipc.ipc_vpc_payment_lines";
+    protected $table = "ipc.ipc_vpc_claim_lines";
     const CREATED_AT = 'creation_date';
     const UPDATED_AT = 'update_date';
     protected $primaryKey = 'id';
@@ -23,8 +23,8 @@ class PaymentLine extends Model
 
     public function getClaimedVouchers($voucherCodes){
         $query = DB::connection('oracle')->table('ipc.ipc_vpc_vouchers vch')
-                    ->leftJoin('ipc.ipc_vpc_payment_lines pl', 'pl.voucher_code','=','vch.voucher_code')
-                    ->leftJoin('ipc.ipc_vpc_payment_headers ph', 'ph.id','=','pl.payment_header_id')
+                    ->leftJoin('ipc.ipc_vpc_claim_lines pl', 'pl.voucher_code','=','vch.voucher_code')
+                    ->leftJoin('ipc.ipc_vpc_claim_headers ph', 'ph.id','=','pl.claim_header_id')
                     ->whereIn('vch.voucher_code', $voucherCodes)
                     ->whereNotIn('ph.status', [4]) // approved
                     ->select('vch.voucher_code')
@@ -33,7 +33,7 @@ class PaymentLine extends Model
         return $codes;
     }
 
-    public function get($paymentHeaderId){
+    public function get($claimHeaderId){
         $sql = "SELECT pl.id,
                         pl.voucher_code,
                         nvl(vch.cs_number,pl.cs_number) cs_number,
@@ -43,12 +43,12 @@ class PaymentLine extends Model
                         to_char(pl.service_date,'mm/dd/yyyy') service_date,
                         pl.dealer_code,
                         pl.customer_name
-                FROM ipc.ipc_vpc_payment_lines pl
+                FROM ipc.ipc_vpc_claim_lines pl
                     LEFT JOIN ipc.ipc_vpc_vouchers vch
                         ON pl.voucher_code = vch.voucher_code
                     
-                WHERE pl.payment_header_id = :payment_header_id";
-        $query = DB::select($sql, ['payment_header_id' => $paymentHeaderId]);
+                WHERE pl.claim_header_id = :claim_header_id";
+        $query = DB::select($sql, ['claim_header_id' => $claimHeaderId]);
         return $query;
     }
 }

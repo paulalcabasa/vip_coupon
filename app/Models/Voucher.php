@@ -32,7 +32,7 @@ class Voucher extends Model
                 FROM ipc.ipc_vpc_vouchers cd
                     LEFT JOIN ipc.ipc_vpc_status st
                         ON cd.status = st.id
-                    LEFT JOIN ipc.ipc_vpc_payment_lines pl
+                    LEFT JOIN ipc.ipc_vpc_claim_lines pl
                         ON pl.voucher_id = cd.id
                 WHERE cd.coupon_id = :coupon_id
                     AND cd.status NOT IN (4)
@@ -71,10 +71,10 @@ class Voucher extends Model
         $sql = "SELECT COUNT(CASE WHEN ph.status = 2 THEN 1 ELSE NULL END) CLAIMED,
                         count(vch.id) printed 
                 FROM ipc.ipc_vpc_vouchers vch
-                LEFT JOIN ipc.ipc_vpc_payment_lines pl
+                LEFT JOIN ipc.ipc_vpc_claim_lines pl
                     ON pl.voucher_id = vch.id
-                LEFT JOIN ipc.ipc_vpc_payment_headers ph
-                    ON ph.id = pl.payment_header_id
+                LEFT JOIN ipc.ipc_vpc_claim_headers ph
+                    ON ph.id = pl.claim_header_id
                 WHERE 1 = 1";
         $query = DB::select($sql);
         return $query[0];
@@ -88,10 +88,10 @@ class Voucher extends Model
                         dlr.account_name,
                         TRIM(TO_CHAR(ph.creation_date, 'Month')) || ' ' ||  TO_CHAR(ph.creation_date,'DD, YYYY') date_claimed
                 FROM ipc.ipc_vpc_vouchers vch
-                INNER JOIN ipc.ipc_vpc_payment_lines pl
+                INNER JOIN ipc.ipc_vpc_claim_lines pl
                     ON pl.voucher_id = vch.id
-                INNER JOIN ipc.ipc_vpc_payment_headers ph
-                    ON ph.id = pl.payment_header_id
+                INNER JOIN ipc.ipc_vpc_claim_headers ph
+                    ON ph.id = pl.claim_header_id
                 INNER JOIN ipc.ipc_vpc_coupons cp
                     ON cp.id = vch.coupon_id
                 INNER JOIN ipc_portal.dealers dlr

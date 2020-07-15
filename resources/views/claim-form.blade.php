@@ -5,7 +5,8 @@
   	<body>
         
         <div class=" col-lg-6 offset-lg-3" style="margin-top:2em;">
-            <div class="card ">
+            
+            <div class="card">
                 <h5 class="card-header  bg-primary text-center text-light text-bold">VIP Coupon - Claim Coupon</h5>
                 <div class="card-body">
                     <form method="POST" action="<?php echo $claim_api; ?>">
@@ -18,7 +19,7 @@
         
                         <div class="form-group">
                             <label>Amount</label>
-                            <input type="text" class="form-control" name="amount" value="<?php echo $voucherDetails->amount; ?>"/>
+                            <input type="number" min="0" max="<?php echo  $voucherDetails->amount;?>" class="form-control" name="amount" value="<?php echo $voucherDetails->amount; ?>"/>
                         </div>
 
                         <div class="form-group">

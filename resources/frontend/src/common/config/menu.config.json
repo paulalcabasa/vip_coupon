@@ -64,7 +64,7 @@
       },
     
       {
-        "section": "PAYMENT",
+        "section": "CLAIMS",
         "users": [
           "Administrator",
           "Service",
@@ -73,23 +73,12 @@
           "Dealer"
         ]
       },
+      
       {
-        "title": "Customer Claims",
-        "root": true,
-        "icon": "flaticon-users",
-        "page": "claims",
-        "users": [
-          "Administrator",
-          "Service",
-          "Sales",
-          "Dealer"
-        ]
-      },
-      {
-        "title": "Payment Request",
+        "title": "Request",
         "root": true,
         "icon": "flaticon-coins",
-        "page": "payment/request",
+        "page": "claim/request",
         "users": [
           "Administrator",
           "Service",
@@ -101,7 +90,7 @@
         "title": "All Requests",
         "root": true,
         "icon": "flaticon-file-2",
-        "page": "payments",
+        "page": "claim-requests",
         "users": [
           "Administrator",
           "Service",
@@ -110,7 +99,7 @@
           "Dealer"
         ]
       },
-      
+    
       {
         "section": "Settings",
         "users": [

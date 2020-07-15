@@ -1,6 +1,32 @@
 <template>
     <div>
-        <KTPortlet v-bind:title="'Payments'" >
+        <KTPortlet v-bind:title="'Claims'" >
+            <template v-slot:body>
+                <b-form>
+                    <b-form-group label="Claim Date From">
+                    <b-form-input
+                        type="date"
+                        required
+                        v-model="form.startDate"
+                        placeholder="Enter start date"
+                    ></b-form-input>
+                    </b-form-group>
+
+                    <b-form-group  label="Claim Date To" >
+                    <b-form-input
+                        type="date"
+                        required
+                        v-model="form.endDate"
+                        placeholder="Enter to date"
+                    ></b-form-input>
+                    </b-form-group>
+
+                <b-button type="submit" @click.prevent="getClaims()" variant="primary">Submit</b-button>
+             
+            </b-form>
+            </template>
+        </KTPortlet>
+        <KTPortlet v-bind:title="'List'">
             <template v-slot:toolbar>
                 <b-col lg="12" class="my-1">
                     <b-form-group
@@ -52,9 +78,6 @@
                             <b-button size="sm" @click="info(row.item)" class="mr-1">
                                 <i class="fa fa-search"></i>
                             </b-button>
-                          <!--    <b-button v-if="row.item.status.trim() == 'pending'" size="sm" @click="edit(row.item)" class="mr-1">
-                                <i class="fa fa-edit"></i>
-                            </b-button>  -->
                         </template>
                     </b-table>
 
@@ -105,52 +128,99 @@
 import KTPortlet from "@/views/partials/content/Portlet.vue";
 import axios from 'axios'; 
 import badge from '@/common/config/status.config.json';
+import axiosRetry from 'axios-retry';
 import jwtService from '@/common/jwt.service.js';
-
 export default {
     name: "coupons",
     mounted() {
-        this.loadRequests();
-      
+       
+        this.user = JSON.parse(jwtService.getUser());
     },
     data(){
         return {
             statusColors : badge.badgeColors,
             items: [],
-            currentRoute : '',
+            user : [],
+            form : {
+                startDate : '',
+                endDate : '',
+                formBusy : false
+            },
             fields: [
                 { 
-                    key: 'actions', 
-                    label: 'Actions' 
-                },
-                { 
-                    key: 'id', 
-                    label: 'Payment Ref No.', 
-                    sortable: true, 
-                },
-              
-                { 
-                    key: 'created_by', 
-                    label: 'Created By', 
+                    key: 'coupon_type', 
+                    label: 'Coupon Type', 
                     sortable: true, 
                     class: 'text-center' 
                 },
                 { 
-                    key: 'date_created', 
-                    label: 'Date Created', 
+                    key: 'voucher_no', 
+                    label: 'Voucher No', 
                     sortable: true, 
                     class: 'text-center' 
                 },
-                {
-                    key: 'status',
-                    label: 'Status',
-                    formatter: (value, key, item) => {
-                        return value;
-                    },
-                    sortable: true,
-                    sortByFormatted: true,
-                    filterByFormatted: true
+                { 
+                    key: 'voucher_code', 
+                    label: 'Voucher Code', 
+                    sortable: true, 
+                    sortDirection: 'desc' 
                 },
+                { 
+                    key: 'amount', 
+                    label: 'Amount', 
+                    sortable: true, 
+                    class: 'text-center' 
+                },
+                { 
+                    key: 'account_name', 
+                    label: 'Dealer', 
+                    sortable: true, 
+                    class: 'text-center' 
+                },
+                { 
+                    key: 'claim_date', 
+                    label: 'Claim Date', 
+                    sortable: true, 
+                    class: 'text-center' 
+                },
+                { 
+                    key: 'customer_name', 
+                    label: 'Customer', 
+                    sortable: true, 
+                    class: 'text-center' 
+                },
+                { 
+                    key: 'cs_number', 
+                    label: 'CS Number', 
+                    sortable: true, 
+                    class: 'text-center' 
+                },
+                { 
+                    key: 'plate_no', 
+                    label: 'Plate No', 
+                    sortable: true, 
+                    class: 'text-center' 
+                },
+                { 
+                    key: 'cs_number', 
+                    label: 'CS Number', 
+                    sortable: true, 
+                    class: 'text-center' 
+                },
+                { 
+                    key: 'service_invoice_number', 
+                    label: 'Service Invoice No.', 
+                    sortable: true, 
+                    class: 'text-center' 
+                },
+                { 
+                    key: 'service_date', 
+                    label: 'Service Date', 
+                    sortable: true, 
+                    class: 'text-center' 
+                },
+                
+               
                 
             ],
             totalRows: 1,
@@ -178,84 +248,47 @@ export default {
                 .map(f => {
                 return { text: f.label, value: f.key }
             })
-        },
-        currentRouteName() {
-            return this.$route.name;
         }
     },
     methods: {
-        info(item) {
-            var action = "";
-            var self = this;
-            if(self.currentRouteName == "all-payments"){
-                action = "view";
-            }
-            else if(self.currentRouteName == "payments-approval"){
-                action = "approve";
-            }
-         
-            this.$router.push({ 
-                name : 'view-payment-request', 
-                params : { 
-                    paymentHeaderId : item.id,
-                    action : action
-                } 
-            });
-        },
-        edit(item){
-            this.$router.push({ 
-                name : 'edit-coupon', 
-                params : { 
-                    action : 'edit',
-                    couponId : item.coupon_id
-                } 
-            });
-        },
+      
         onFiltered(filteredItems) {
             // Trigger pagination to update the number of buttons/pages due to filtering
             this.totalRows = filteredItems.length
             this.currentPage = 1
         },
-        loadRequests(){
+        getClaims(){
             var self = this;
-            var apiUrl = "";
-            let status = "";
-            let user = JSON.parse(jwtService.getUser());
-
-            if(self.currentRouteName == "all-payments"){
-                apiUrl ='api/payments/get';
-                status = "all";
-            }
-            else if(self.currentRouteName == "payments-approval"){
-                apiUrl ='api/payments/get';
-                status = "pending";
-            }
-            
             self.$Progress.start();
             return new Promise(resolve => {
-                axios.get(apiUrl, {
+
+                axiosRetry(axios, { retries: 3 });
+                
+                let user = JSON.parse(jwtService.getUser());
+
+                //console.log(user);
+                axios.get('api/claims/get', {
                     params : {
-                        userId : user.user_id,
-                        sourceId : user.user_source_id,
-                        userType : user.user_type_id,
-                        status : status
+                        startDate : self.form.startDate,
+                        endDate : self.form.endDate
                     }
                 }).then( (res) => {
-                        self.items = res.data;
-                        self.totalRows = self.items.length;
-                        self.$Progress.finish();
-                        resolve(res);
-                    }).catch( err => {
-                        self.$bvToast.toast('Failed loading resources, please refresh the page.', {
-                            title: 'System message',
-                            variant: 'danger',
-                            solid: true
-                        });
-                        self.$Progress.fail();
-                        resolve(err);
-                    }).finally( () => {
-                        
+                    self.items = res.data;
+                    self.totalRows = self.items.length;
+                    self.$Progress.finish();
+                    resolve(res);
+                }).catch( err => {
+                    self.$bvToast.toast('Failed loading resources, please submit again.', {
+                        title: 'System message',
+                        variant: 'danger',
+                        solid: true
                     });
+                    self.$Progress.fail();
+                    resolve(err);
+                })
+                .finally( () => {
+                    
+                });
             });
         }
     }
