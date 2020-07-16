@@ -23,7 +23,7 @@
                 position: relative;
                 text-align: center;
                 color: black;
-                width:500px;
+                width:680px;
                 height:260px; /* 288px */
             }
 
@@ -36,84 +36,69 @@
 
             .qr-code {
                 position: absolute;
-                top: 1px;
+                top: 30px;
                 right: 0px;
             }
 
             .amount {
                 position: absolute;
-                top: 90px;
-                right: 30px;
+                top: 85px;
+                left:180px;
                 font-weight:bold;
-                font-size:3.9em;
+                font-size:3em;
                 color:#fff;
             }
 
             .coupon-no {
                 position: absolute;
-                top: 238px;
-                right: 20px;
+                top: 10px;
+                right: 410px;
                 font-weight:bold;
-                font-size:1em;
-                color:red;
+                font-size:.6em;
+                color:#fff;
             }
-
-            .cs-no {
-                position: absolute;
-                top: 245px;
-                left: 10px;
-                font-weight:bold;
-                font-size:.7em;
-                color:black;
-            }
-
-            .cs-no .cs {
-                color:red;
-            }
-
+            
             .terms {
                 position: absolute;
-                top: 190px;
-                left:-20px;
+                top: 200px;
+                left:140px;
                 font-size:.35em;
                 text-align:left;
                 line-height:1.5;
+                color:#fff;
             }
 
             .terms-title {
                 position: absolute;
-                top: 195px;
-                left:10px;
+                top: 200px;
+                left:173px;
                 font-size:.5em;
                 font-weight:bold;
                 text-align:left;
+                color:#fff;
             }
 
-         
         
         </style>
     </head>
 <body>
-    
- 
+
     <div class="voucher-body" style="z-index:2099;">
-        <img src="{{ asset('public/images/vip_coupon_template.jpg')}}" style="border:1px solid #000;width:100%;height:260px;"/>
+        <img src="{{ asset('public/images/service-coupon.jpg')}}" style="border:1px solid #000;width:100%;height:260px;"/>
 
         <div class="qr-code" >
             <img  src="data:image/png;base64, {!! base64_encode(QrCode::format('png')
                 ->size(500)->errorCorrection('H')
-                ->generate(1)) !!} "
-                width="83" />
+                ->generate(123)) !!} "
+                width="70" />
         </div>
-            
-        <div class="amount">1,000</div>
+        
+        <div class="amount"><span style="font-family: DejaVu Sans; sans-serif;">&#8369;</span>  50,000</div>
         <div class="terms-title">Terms and Condition:</div>
         <div class="terms">
             <span class="list"><?php echo $promo->terms; ?></span>
         </div>
-        <div class="coupon-no">0001</div>
-                
-        <div class="cs-no"><span class="label">CS no.</span> <span class="cs">CS1234</span></div>
+        <div class="coupon-no">Control No. 00001</div>
     </div>
        
       
