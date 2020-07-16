@@ -188,6 +188,7 @@
                                       v-model="row.csNumber"
                                       :tags="row.csNumbers"
                                        :validation="csNumValidation"
+                                       :avoidAddingDuplicates="false"
                                       @tags-changed="newTags => row.csNumbers = newTags"
                                   />
                               </td>
@@ -232,9 +233,6 @@
     max-width:100%;
   }
 
-
-
- 
 </style>
 <script>  
 import KTPortlet from "@/views/partials/content/Portlet.vue";
@@ -293,6 +291,7 @@ export default {
         promo : null,
         purpose : null,
         enableEdit : true,
+        handlers: [],
         disableEditFlag : false,
         blockui : {
           msg : 'Please wait',
@@ -336,7 +335,7 @@ export default {
         csNumValidation: [{
           classes: 'min-length',
           rule: tag => tag.text.length == 6 ? false : true,
-          disableAdd: true,
+          //disableAdd: true,
         }],
         reg: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,24}))$/,
         vehicle_types : [

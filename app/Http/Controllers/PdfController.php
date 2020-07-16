@@ -73,7 +73,9 @@ class PdfController extends Controller
         $data = [
             'promo' => $promoDetail
         ];
-        $pdf = PDF::loadView('preview-coupon',$data);
+
+        $template = $promoDetail->coupon_type_id == 1 ? 'preview-coupon' : 'preview-service-coupon';
+        $pdf = PDF::loadView($template,$data);
         return $pdf->setPaper('a4','portrait')->stream();
     }
 
