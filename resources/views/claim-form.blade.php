@@ -26,11 +26,19 @@
                             <label>Customer Name</label>
                             <input type="text" class="form-control" name="customer_name" required/>
                         </div>
+                        <?php if($voucherDetails->cs_number != "") : ?>
+                        <div class="form-group">
+                            <label>CS Number</label>
+                            <input type="text" class="form-control" readonly="readonly" name="cs_number" required value="<?php echo $voucherDetails->cs_number; ?>"/>
+                        </div>
 
+                        <?php else :?>
                         <div class="form-group">
                             <label>CS Number</label>
                             <input type="text" class="form-control" name="cs_number" required value="<?php echo $voucherDetails->cs_number; ?>"/>
                         </div>
+
+                        <?php endif; ?>
                 
                         <?php if($couponTypeId == 2) : ?>
                       
