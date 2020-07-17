@@ -207,7 +207,7 @@
             <span class="list"><?php echo $header->terms; ?></span>
         </div>
         <div class="coupon-no">{{ $row->voucher_no }}</div>
-        <div class="cs-no"><span class="label">CS no.</span> <span class="cs">CS1234</span></div>
+        <div class="cs-no"><span class="label">CS no.</span> <span class="cs"><?php echo $row->cs_number; ?></span></div>
     </div>
        
       
