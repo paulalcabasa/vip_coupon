@@ -99,6 +99,8 @@ class ClaimRequestService {
                 'vehicle_type'       => $vehicle_type
             ]);
 
+
+          
             $approvalService = new ApprovalService;
             $approvers = $approvalService->getClaimApprovers(
                 $coupon_type, 
@@ -109,30 +111,32 @@ class ClaimRequestService {
             );
             $approval = new Approval;
             $approval->batchInsert($approvers);
-
+            
             $lineParams = [];
           
             foreach($vouchers as $row){
               
                 array_push($lineParams,[
-                    'claim_header_id'  => $claimHeaderId,
+                    'claim_header_id'    => $claimHeaderId,
                     'voucher_code'       => $row['voucher_code'],
                     'voucher_id'         => $row['voucher_no'],
                     'cs_number'          => $row['cs_number'],
                     'service_invoice_no' => $row['service_invoice_number'],
-                    'service_date'       => $row['service_date'],
-                   // 'dealer_code'        => $row->dealer_code,
+                    'service_date'       => $row['raw_service_date'],
+                    'plate_no'           => $row['plate_no'],
                     'customer_name'      => $row['customer_name'],
                     'amount'             => $row['amount'],
                     'created_by'         => $user['user_id'],
                     'create_user_source' => $user['user_source_id'],
-                    'creation_date'      => Carbon::now()
+                    'creation_date'      => Carbon::now(),
+                    'claim_id'           => $row['id']
                 ]);
             }
+          //  return $lineParams;
             $claimLine->batchInsert($lineParams);
-            
+           
             DB::commit();
-
+        
             return [
                 'message'         => 'Claim Request has been created.',
                 'error'           => false,

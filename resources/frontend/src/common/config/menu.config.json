@@ -99,6 +99,31 @@
           "Dealer"
         ]
       },
+
+      {
+        "section": "REPORTS",
+        "users": [
+          "Administrator",
+          "Service",
+          "Sales",
+          "Accounting",
+          "Dealer"
+        ]
+      },
+
+      {
+        "title": "Voucher Summary",
+        "root": true,
+        "icon": "flaticon2-tag",
+        "page": "voucher-summary",
+        "users": [
+          "Administrator",
+          "Service",
+          "Sales",
+          "Accounting",
+          "Dealer"
+        ]
+      },
     
       {
         "section": "Settings",

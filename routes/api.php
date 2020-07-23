@@ -130,7 +130,9 @@ Route::group(['middleware' => 'jwt'], function () {
     Route::get('claims/get', 'ClaimController@get');
     
     
-
+    // Reports
+    Route::get('report/voucher-summary', 'ReportController@getVoucherSummary');
+    
 });
 
 

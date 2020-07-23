@@ -12,6 +12,7 @@ import ViewClaimRequest from "@/views/pages/ViewClaimRequest.vue";
 import AllPromo from "@/views/pages/AllPromos.vue";
 import AllPurpose from "@/views/pages/AllPurpose.vue";
 import Claims from "@/views/pages/Claims.vue";
+import VoucherSummary from "@/views/pages/VoucherSummary.vue";
 
 import Auth from "@/views/pages/auth/Auth";
 import Login from "@/views/pages/auth/Login";
@@ -143,6 +144,15 @@ export default new Router({
           meta: {
             requiresAuth: true,
             title: 'Claims'
+          }
+        },
+        {
+          path: "voucher-summary",
+          name: "voucher-summary",
+          component: VoucherSummary,
+          meta: {
+            requiresAuth: true,
+            title: 'Voucher Summary'
           }
         },
       ]

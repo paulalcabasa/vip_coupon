@@ -108,4 +108,5 @@ class Voucher extends Model
         $query = DB::select($sql);
         return $query[0]->control_number;
     }
+
 }

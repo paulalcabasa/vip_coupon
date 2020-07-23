@@ -27,9 +27,11 @@ import VueSweetalert2 from 'vue-sweetalert2';
 import VueProgressBar from 'vue-progressbar';
 import 'sweetalert2/dist/sweetalert2.min.css';
 import axios from 'axios';
+import JsonExcel from 'vue-json-excel'
 Vue.use(BlockUI);
 Vue.use(VueSweetalert2);
 
+Vue.component('downloadExcel', JsonExcel)
 Vue.use(VueProgressBar, {
   color: 'rgb(143, 255, 199)',
   failedColor: 'red',
