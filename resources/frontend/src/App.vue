@@ -33,6 +33,7 @@ export default {
      */
     this.$store.dispatch(OVERRIDE_LAYOUT_CONFIG);
  
-  }
+  },
+ 
 };
 </script>

@@ -735,7 +735,7 @@ export default {
          }
          else {
           self.makeToast('success',res.data.message,'System message');
-  
+
          }
        })
        .catch(err => {
@@ -744,7 +744,8 @@ export default {
        })
        .finally( () => {
         self.disableSubmit = false;
-       });
+        
+      });
 
     },
     viewCoupon(){

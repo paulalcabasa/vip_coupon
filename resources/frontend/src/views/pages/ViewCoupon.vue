@@ -146,7 +146,11 @@
           </b-tab>
 <!-- v-if="user.user_type_id != 51" -->
           <b-tab title="Approval" >
-            <b-table striped hover :items="approvalItems" :fields="approvalFields"></b-table>
+            <b-table striped hover :items="approvalItems" :fields="approvalFields">
+              <template v-slot:cell(email_address)="data">
+                <span v-html="maskString(data.value, 10, '*')"></span>
+              </template>
+            </b-table>
             <b-button @click="resendApproval" v-if="couponDetails.status_id == 1" size="sm" variant="primary" class="ml-2">Resend</b-button>
           </b-tab>
           
@@ -494,6 +498,14 @@ export default {
       let endStr = voucherCode.substr(5,voucherCode.length);
       let maskedCode = 'XXXXX' + endStr;
       return maskedCode;
+    },
+    maskString(str, maskPosition, maskChar){
+      let endStr = str.substr(maskPosition ,str.length);
+      let maskStr = '';
+      for(let i = 1; i <= maskPosition; i++) {
+        maskStr += maskChar + '';
+      }
+      return maskStr + '' + endStr;
     },
     printCoupon(){
       window.open(process.env.VUE_APP_API_URL + '/api/print-coupon/' + this.couponId);

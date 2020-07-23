@@ -89,7 +89,11 @@ export default {
       this.$store.dispatch(REMOVE_BODY_CLASSNAME, "kt-page--loading");
     }, 2000);
   },
-  methods: {},
+  methods: {
+ 
+   
+
+  },
   computed: {
     ...mapGetters([
       "isAuthenticated",

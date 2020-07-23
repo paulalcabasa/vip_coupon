@@ -28,7 +28,8 @@ class Voucher extends Model
                     nvl(pl.cs_number,cd.cs_number) cs_number,
                     st.status,
                     lpad(cd.control_number,6,0) voucher_no,
-                    cd.voucher_code
+                    cd.voucher_code,
+                    to_char(cd.expiration_date,'MM/DD/YYYY') expiration_date
                 FROM ipc.ipc_vpc_vouchers cd
                     LEFT JOIN ipc.ipc_vpc_status st
                         ON cd.status = st.id

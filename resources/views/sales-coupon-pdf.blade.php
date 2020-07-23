@@ -88,6 +88,15 @@
                 font-weight:bold;
                 text-align:left;
             }
+
+            .validity {
+                position: absolute;
+                top: 190px;
+                right: 10px;
+                font-weight:bold;
+                font-size:.4em;
+                color:black;
+            }
            
 
 
@@ -208,6 +217,7 @@
         </div>
         <div class="coupon-no">{{ $row->voucher_no }}</div>
         <div class="cs-no"><span class="label">CS no.</span> <span class="cs"><?php echo $row->cs_number; ?></span></div>
+        <div class="validity"><span class="label">Expires at : </span> <span class="validity-text">{{ $row->expiration_date }}</span></div>
     </div>
        
       

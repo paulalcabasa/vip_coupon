@@ -89,6 +89,14 @@
                 text-align:left;
             }
 
+            .validity {
+                position: absolute;
+                top: 190px;
+                right: 10px;
+                font-weight:bold;
+                font-size:.4em;
+                color:black;
+            }
          
         
         </style>
@@ -114,6 +122,7 @@
         <div class="coupon-no">0001</div>
                 
         <div class="cs-no"><span class="label">CS no.</span> <span class="cs">CS1234</span></div>
+        <div class="validity"><span class="label">Expires at : </span> <span class="validity-text">July 1, 2019</span></div>
     </div>
        
       
