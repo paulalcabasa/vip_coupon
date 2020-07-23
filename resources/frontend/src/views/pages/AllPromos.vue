@@ -453,7 +453,7 @@ export default {
           }).then((result) => {
               if (result.value) {
               //  console.log(this.form);
-                self.$Progress.start();
+                /* self.$Progress.start();
                 self.formBusy = true;
                   axios.post(apiUrl,{
                       claimHeaderId: self.claimHeaderId,
@@ -471,7 +471,7 @@ export default {
                       self.makeToast('error',err,'System message');
                       self.$Progress.fail();
                       self.formBusy = false;
-                  });
+                  }); */
               }
           });
 

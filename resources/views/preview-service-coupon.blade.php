@@ -78,6 +78,13 @@
                 color:#fff;
             }
 
+            .validity {
+                position: absolute;
+                top: 250px;
+                right: 15px;
+                font-size:.5em;
+                color:#000;
+            }
         
         </style>
     </head>
@@ -99,6 +106,7 @@
             <span class="list"><?php echo $promo->terms; ?></span>
         </div>
         <div class="coupon-no">Control No. 00001</div>
+        <div class="validity">Expires at : 07/31/2020</div>
     </div>
        
       

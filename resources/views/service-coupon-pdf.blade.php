@@ -58,6 +58,14 @@
                 color:#fff;
             }
 
+            .validity {
+                position: absolute;
+                top: 250px;
+                right: 15px;
+                font-size:.5em;
+                color:#000;
+            }
+
            
 
 
@@ -147,6 +155,7 @@
 
         <div class="amount"><span style="font-family: DejaVu Sans; sans-serif;">&#8369;</span>  {{ number_format($row->amount,0,'',',') }}</div>
         <div class="coupon-no">Control No. {{ $row->voucher_no }}</div>
+        <div class="validity">Expires at : {{ $row->expiration_date }}</div>
     </div>   
     @endforeach
 
