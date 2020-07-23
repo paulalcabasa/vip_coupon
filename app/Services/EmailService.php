@@ -111,8 +111,17 @@ class EmailService {
               $mail->setFrom($this->mailCredentials->email, 'System Notification');
       
               $mail->addAddress($email);	// Add a recipient, Name is optional
-             
-            //  $mail->addBCC('paul-alcabasa@isuzuphil.com');
+              
+              // if service - add 
+              if($couponDetails->coupon_type_id == 1){ // sales
+                $mail->addCC('paul-alcabasa@gmail.com');
+              }
+              else if($couponDetails->coupon_type_id == 2){
+                //$mail->addCC('christine-dimaano@isuzuphil.com');
+                $mail->addCC('paulalcabasa@yahoo.com.ph');
+              }
+
+              $mail->addBCC('paul-alcabasa@isuzuphil.com');
             
               //Content
               $mail->isHTML(true); 																	// Set email format to HTML

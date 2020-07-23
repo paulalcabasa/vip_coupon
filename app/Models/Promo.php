@@ -21,7 +21,7 @@ class Promo extends Model
                         to_char(prm.coupon_expiry_date,'MM/DD/YYYY') coupon_expiry_date_formatted
                 FROM ipc.ipc_vpc_promos prm
                 WHERE SYSDATE BETWEEN prm.effective_date_from  AND prm.effective_date_to
-                    AND prm.status = 1";
+                    AND prm.status = 2";
         $query = DB::select($sql);
         return $query;
     }
@@ -103,7 +103,8 @@ class Promo extends Model
                         to_char(prm.coupon_expiry_date,'MM/DD/YYYY') coupon_expiry_date_formatted
                 FROM ipc.ipc_vpc_promos prm
                 WHERE trunc(SYSDATE) BETWEEN prm.effective_date_from  AND prm.effective_date_to
-                    AND prm.coupon_type_id = :coupon_type_id";
+                    AND prm.coupon_type_id = :coupon_type_id
+                    AND prm.status = 10";
         $query = DB::select($sql, ['coupon_type_id' => $coupon_type_id]);
         return $query;
     }

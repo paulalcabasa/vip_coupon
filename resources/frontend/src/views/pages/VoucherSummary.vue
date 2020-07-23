@@ -5,37 +5,17 @@
             No results found.
         </b-alert>
 
-        <b-alert variant="success" show v-show="submitFlag">
-            <span class="mr-2">Claim Request No. <strong>{{ claimHeaderId }}</strong> has been created!</span> 
-            <b-link href="#" style="color:#fff;" @click.prevent="viewRequest"><u>Click here to view</u></b-link>
-        </b-alert>
-
-        <b-card v-show="isError" bg-variant="danger" text-variant="white"  class="mb-3">
-            <b-card-text>
-            <h6>{{ title}}</h6>
-            <p>{{ message }} </p>
-            <p class="mb-0" v-if="invalidVoucherCodes != ''"><strong>Not existing</strong> : {{ invalidVoucherCodes }}</p>
-            <p class="mb-0" v-if="claimedVoucherCodes != ''"><strong>Already claimed</strong> : {{ claimedVoucherCodes }}</p>
-            <p class="mb-0" v-if="invalidCSNumbers != ''"><strong>Invalid CS Numbers</strong> : {{ invalidCSNumbers }}</p>
-            <p class="mb-0" v-show="errors.length > 0">
-                <strong>Errors : </strong>
-                <ol>
-                <li v-for="(row,index) in errors" :key="index">{{ row.voucher_code + " : " + row.message }}</li>
-                </ol>
-            </p>
-            </b-card-text>
-        </b-card>
-
-        <KTPortlet v-bind:title="'Claim Request'" >
+        <KTPortlet v-bind:title="'Voucher Summary'" >
             <template v-slot:toolbar>
-                <b-button type="submit" @click.prevent="getClaims()" variant="primary">Search</b-button>
-          
+                
+            
+                <b-btn class="btn btn-primary" @click="search" :disabled="form.formBusy">Search</b-btn>
             </template> 
             <template v-slot:body>
                 <b-form>
                 <b-row>
                     <b-col sm="6">
-                        <b-form-group label="Claim Date From">
+                        <b-form-group label="Creation Date From">
                             <b-form-input
                                 type="date"
                                 required
@@ -44,7 +24,7 @@
                             ></b-form-input>
                         </b-form-group>
 
-                        <b-form-group  label="Claim Date To" >
+                        <b-form-group  label="Creation Date To" >
                             <b-form-input
                                 type="date"
                                 required
@@ -92,15 +72,21 @@
                         </b-form-group>
                     </b-col>
                 </b-row>
-                    
-
-              
             </b-form>
             </template>
         </KTPortlet>
+
         <KTPortlet v-bind:title="'List'" v-show="items.length > 0">
             <template v-slot:toolbar>
-                <b-button type="submit" @click.prevent="submit" variant="success" :disabled="formBusy">Submit</b-button>
+                <download-excel
+                      class = "btn btn-primary"
+                    :fields = "fields"
+                    :data   = "items"
+                      type  = "csv"
+                      name  = "voucher-summary.xls"
+                >
+                    Download
+                </download-excel>
             </template> 
 
             <template v-slot:body>
@@ -132,11 +118,10 @@
                     </b-row>
                     <b-table 
                         responsive 
-                        sticky-header
                         show-empty
                         small
                         :items="items"
-                        :fields="fields"
+                        :fields="tableFields"
                         :current-page="currentPage"
                         :per-page="perPage"
                         :filter="filter"
@@ -154,22 +139,6 @@
                             </div>
                         </template>
 
-                        <template v-slot:cell(actions)="row">
-                            <b-button size="sm" @click="remove(row)" class="mr-1">
-                                <i class="fa fa-trash"></i>
-                            </b-button>
-                         
-                        </template>
-
-                     <!--    <template v-slot:cell(amount)="row">
-                            <b-form-input v-model="row.item.amount"/>
-                        </template> -->
-
-                        <template v-slot:cell(status)="row">
-                            <b-badge class="mr-1" :variant="statusColors[row.value.trim()]">{{ row.value }}</b-badge>
-                        </template>
-
-                        
                     </b-table>
 
                 </div>
@@ -210,6 +179,7 @@
                 </b-row>
             </template>
         </KTPortlet>
+
     </div>
 </template>
 <style>
@@ -225,6 +195,8 @@ import axios from 'axios';
 import badge from '@/common/config/status.config.json';
 import axiosRetry from 'axios-retry';
 import jwtService from '@/common/jwt.service.js';
+
+
 export default {
     name: "claimrequest",
     mounted() {
@@ -235,7 +207,6 @@ export default {
     },
     data(){
         return {
-            statusColors : badge.badgeColors,
             items: [],
             user : [],
             dealers : [],
@@ -249,81 +220,6 @@ export default {
                 couponType : 1,
                 vehicleType : ''
             },
-            fields: [
-                { 
-                    key: 'actions', 
-                    label: 'Actions' 
-                },
-                { 
-                    key: 'coupon_type', 
-                    label: 'Coupon Type', 
-                    sortable: true, 
-                    class: 'text-center' 
-                },
-                { 
-                    key: 'account_name', 
-                    label: 'Dealer', 
-                    sortable: true, 
-                    class: 'text-center' 
-                },
-                { 
-                    key: 'voucher_no', 
-                    label: 'Voucher No', 
-                    sortable: true, 
-                    class: 'text-center' 
-                },
-                { 
-                    key: 'voucher_code', 
-                    label: 'Voucher Code', 
-                    sortable: true, 
-                    sortDirection: 'desc' 
-                },
-                { 
-                    key: 'amount', 
-                    label: 'Amount', 
-                    sortable: true, 
-                    class: 'text-center' 
-                },
-                
-                { 
-                    key: 'claim_date', 
-                    label: 'Date Created', 
-                    sortable: true, 
-                    class: 'text-center' 
-                },
-                { 
-                    key: 'customer_name', 
-                    label: 'Customer', 
-                    sortable: true, 
-                    class: 'text-center' 
-                },
-                { 
-                    key: 'cs_number', 
-                    label: 'CS Number', 
-                    sortable: true, 
-                    class: 'text-center' 
-                },
-            ],
-            totalRows: 1,
-            currentPage: 1,
-            perPage: 10,
-            pageOptions: [5, 10, 15, 20, 25, 30],
-            sortBy: '',
-            sortDesc: false,
-            sortDirection: 'asc',
-            filter: null,
-            filterOn: [],
-           
-            isError : false,
-            invalidVoucherCodes : [],
-            claimedVoucherCodes : [],
-            invalidCSNumbers : [],
-            message : '',
-            title : '',
-            errors :  [],
-            claimHeaderId : '',
-            submitFlag : false,
-            formBusy : false,
             vehicle_types : [
                 {
                     id : '',
@@ -337,15 +233,50 @@ export default {
                     id : 'CV',
                     text : 'CV'
                 }
-            ]
-           
+            ],
+            fields : {
+                'Ctrl No'              : 'voucher_no',
+                'Voucher Code '        : 'voucher_code',
+                'Voucher Amount'       : 'amount',
+                'Claimed mount'        : 'claimed_amount',
+                'Paid amount'          : 'paid_amount',
+                'Dealer'               : 'account_name',
+                'Customer Name'        : 'customer_name',
+                'Service Invoice No.'  : 'service_invoice_number',
+                'Service Date'         : 'service_date',
+                'Expiration Date'      : 'expiration_date',
+                'Voucher creation date': 'creation_date',
+                'Coupon request date'  : 'coupon_request_date',
+                'Requested by'         : 'coupon_requested_by',
+                'Coupon Type'          : 'coupon_type',
+                'Vehicle Type'         : 'vehicle_type',
+            }, 
+            tableFields: [],  
+
+            /* Table */
+            totalRows: 1,
+            currentPage: 1,
+            perPage: 10,
+            pageOptions: [5, 10, 15, 20, 25, 30],
+            sortBy: '',
+            sortDesc: false,
+            sortDirection: 'asc',
+            filter: null,
+            filterOn: [],
         }
     },
     components: {
         KTPortlet
     },
     created() {
-
+        for (let [key, value] of Object.entries(this.fields)) {
+            this.tableFields.push({ 
+                    key: value, 
+                    label: key, 
+                    sortable: true, 
+                    class: 'text-center' 
+            });
+        }
     },
     computed: {
         sortOptions() {
@@ -358,53 +289,35 @@ export default {
         }
     },
     methods: {
-      
         onFiltered(filteredItems) {
             // Trigger pagination to update the number of buttons/pages due to filtering
             this.totalRows = filteredItems.length
             this.currentPage = 1
         },
-        getClaims(){
-            var self = this;
+        search(){
+            this.$Progress.start();
+            this.form.formBusy = true;
             
-            self.$Progress.start();
-            self.form.formBusy = true;
-            return new Promise(resolve => {
-
-                axiosRetry(axios, { retries: 3 });
-                
-                let user = JSON.parse(jwtService.getUser());
-
-             
-                axios.get('api/claims/get', {
-                    params : {
-                        startDate : self.form.startDate,
-                        endDate : self.form.endDate,
-                        dealerId : self.form.dealer,
-                        couponType : self.form.couponType,
-                        vehicleType : self.form.vehicleType
-                    }
-                }).then( (res) => {
-                    self.items = res.data;
-                    self.totalRows = self.items.length;
-                    self.$Progress.finish();
-                    self.form.formBusy = false;
-                    self.searchFlag = true;
-                    resolve(res);
-                }).catch( err => {
-                    self.$bvToast.toast('Failed loading resources, please submit again.', {
-                        title: 'System message',
-                        variant: 'danger',
-                        solid: true
-                    });
-                    self.$Progress.fail();
-                    resolve(err);
-                })
-                .finally( () => {
-                    
-                });
-            });
+            var self = this;
+            axios.get('api/report/voucher-summary', {
+                params : {
+                    voucherStartDate: self.form.startDate,
+                    voucherEndDate  : self.form.endDate,
+                    dealerId        : self.form.dealer,
+                    couponType      : self.form.couponType,
+                    vehicleType     : self.form.vehicleType
+                }
+            }).then(res => {
+                this.items = res.data;
+                this.$Progress.finish();
+                this.form.formBusy = false;
+                this.searchFlag = true;
+            }).catch(err => {
+                this.$Progress.fail();
+                this.form.formBusy = false;
+            })
         },
+      
         setDefaultCouponType(){
             this.coupon_types.map((type) => {
                 if(type.user_type_id == this.user.user_type_id){
@@ -458,71 +371,7 @@ export default {
                 self.$Progress.fail();
             });
         },
-        submit(){
-
-            var self = this;
-
-            const swalWithBootstrapButtons = this.$swal.mixin({
-                customClass: {
-                    confirmButton: 'btn btn-success',
-                    cancelButton: 'btn btn-danger'
-                },
-                buttonsStyling: false
-            })
-      
-            swalWithBootstrapButtons.fire({
-                title: 'Are you sure to submit?',
-                icon: 'info',
-                showCancelButton: true,
-                confirmButtonText: 'Yes',
-                cancelButtonText: 'Cancel',
-                 //reverseButtons: true
-            }).then((result) => {
-                if (result.value) {
-
-                    self.formBusy = true;
-                    axios.post( '/api/claim-request/submit', {
-                        user        : this.user,
-                        vouchers    : this.items,
-                        dealer_id   : this.form.dealer,
-                        coupon_type : this.form.couponType,
-                        vehicle_type: this.form.vehicleType
-                    }).then(res => {
-                        
-                        if(res.data.error){
-                            self.invalidVoucherCodes = res.data.invalidVoucherCodes;
-                            self.claimedVoucherCodes = res.data.claimedVoucherCodes;
-                            self.invalidCSNumbers = res.data.invalidCSNumbers;
-                            self.errors = res.data.errors;
-                            self.message = res.data.message;
-                            self.isError = true;
-                            self.title = "Transaction failed!";
-                            self.$Progress.fail();
-                        }
-                        else {
-                            self.isError = false;
-                            self.makeToast('success',res.data.message,'System message');
-                
-                            self.submitFlag = true;
-
-                            self.claimHeaderId =  res.data.claimHeaderId;
-                            self.$Progress.finish();
-                        }
-                
-                    
-                    })
-                    .catch(function(){
-                    // console.log('FAILURE!!');
-                        self.$Progress.fail();
-                        self.formBusy = false;
-                    })
-                    .finally( () => {
-                        self.formBusy = false;
-                    });
-                }
-            });
-                        
-        },
+    
         makeToast(variant = null,body,title) {
             this.$bvToast.toast(body, {
                 title: `${title}`,
@@ -530,48 +379,8 @@ export default {
                 solid: true
             })
         },
-        viewRequest(){
-            this.$router.push({
-               name : 'view-claim-request', 
-                params : { 
-                    claimHeaderId : this.claimHeaderId
-                } 
-            });
-        },
-        remove(row){
-            this.items.splice(row.index,1);
-        }
+      
     },
-    watch: {
-        'form.couponType' : function (val) {
-            if(val == 2) {
-                this.fields.push({ 
-                    key: 'plate_no', 
-                    label: 'Plate No', 
-                    sortable: true, 
-                    class: 'text-center' 
-                });
-                this.fields.push({ 
-                    key: 'cs_number', 
-                    label: 'CS Number', 
-                    sortable: true, 
-                    class: 'text-center' 
-                });
-                this.fields.push({ 
-                    key: 'service_invoice_number', 
-                    label: 'Service Invoice No.', 
-                    sortable: true, 
-                    class: 'text-center' ,  
-                });
-                this.fields.push({ 
-                    key: 'service_date', 
-                    label: 'Service Date', 
-                    sortable: true, 
-                    class: 'text-center' 
-                });
-            }
-        }
-    }
-
+   
 };
 </script>

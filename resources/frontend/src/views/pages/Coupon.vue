@@ -125,6 +125,7 @@
                       v-model="purpose" 
                       :options="purposes"
                   ></b-form-select>
+                  <b-form-text v-if="purpose != null">{{ purpose.require_cs_no_flag == 'Y' ? 'Upon selecting this option, you are required to assign CS Numbers on each denomination.' : ''}}</b-form-text>
               </b-col>
           </b-row>
 

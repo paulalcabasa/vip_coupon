@@ -40,7 +40,7 @@ class PromoService {
         $promo_id = $promo->id;
         return [
             'message' => $request->promo['promo_name'] . ' has been created.',
-            'promos' => $promo->get()
+            'promos' => $promo->getByCouponType($request->promo['coupon_type'])
         ];
     }
 

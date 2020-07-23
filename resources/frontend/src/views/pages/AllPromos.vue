@@ -124,7 +124,7 @@
             <b-form-input
               id="coupon-expiry-date"
               type="date"
-              required
+              
               placeholder="Enter coupon expiry date"
               v-model="form.coupon_expiry_date"
             ></b-form-input>
@@ -172,7 +172,9 @@
           >
             <vue-editor v-model="form.terms" :editor-toolbar="customToolbar"></vue-editor>
           </b-form-group>
+          <b-button type="button" @click="cancelPromo" variant="danger" :disabled="formBusy" v-if="action == 'update'" class="mr-2">Cancel Promo</b-button>
           <b-button type="submit" variant="primary" :disabled="formBusy" v-if="form.status_id != 10">Save</b-button>
+         
         </b-form> 
       </template>
 
@@ -431,8 +433,50 @@ export default {
         },
         preview(promo){
           window.open(process.env.VUE_APP_LARAVEL_BASEURL + '/api/preview-coupon/' + promo.id);
+        },
+        cancelPromo(){
+          const swalWithBootstrapButtons = this.$swal.mixin({
+              customClass: {
+              confirmButton: 'btn btn-success',
+              cancelButton: 'btn btn-danger'
+              },
+              buttonsStyling: false
+          })
+      
+          swalWithBootstrapButtons.fire({
+              title: "Are you sure to cancel this promo?",
+              icon: 'info',
+              showCancelButton: true,
+              confirmButtonText: 'Yes',
+              cancelButtonText: 'Cancel',
+              //reverseButtons: true
+          }).then((result) => {
+              if (result.value) {
+              //  console.log(this.form);
+                self.$Progress.start();
+                self.formBusy = true;
+                  axios.post(apiUrl,{
+                      claimHeaderId: self.claimHeaderId,
+                      userId         : self.$store.getters.currentUser.user_id,
+                      userSource     : self.$store.getters.currentUser.user_source_id,
+                      status         : status,
+                      statusVerb     : verb
+                  }).then(res => {
+                      self.makeToast(toastState,res.data.message,'System message');
+                      self.claimHeader.status = res.data.status;
+                      self.$Progress.finish();
+                      self.formBusy = false;
+
+                  }).catch(err => {
+                      self.makeToast('error',err,'System message');
+                      self.$Progress.fail();
+                      self.formBusy = false;
+                  });
+              }
+          });
+
+          
         }
-        
     },
     computed: {
         sortOptions() {

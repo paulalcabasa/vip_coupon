@@ -27,6 +27,7 @@ class Claim extends Model
                     cl.plate_no,
                     cl.service_invoice_number,
                     to_char(cl.service_date,'MM/DD/YYYY') service_date,
+                    cl.service_date raw_service_date,
                     cl.amount
                 FROM ipc.ipc_vpc_claims cl 
                     LEFT JOIN ipc.ipc_vpc_vouchers vch
@@ -40,7 +41,7 @@ class Claim extends Model
                 WHERE trunc(cl.creation_date) BETWEEN :start_date AND :end_date
                     AND cp.dealer_id = :dealer_id
                     AND cp.coupon_type_id = :coupon_type
-                    AND cp.vehicle_type = :vehicle_type
+                    AND nvl(cp.vehicle_type,1) = nvl(:vehicle_type,1)
                     AND cl.voucher_id NOT IN (
                         SELECT pl.voucher_id
                         FROM ipc.ipc_vpc_claim_headers  ph 
