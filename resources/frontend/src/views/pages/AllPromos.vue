@@ -172,8 +172,8 @@
           >
             <vue-editor v-model="form.terms" :editor-toolbar="customToolbar"></vue-editor>
           </b-form-group>
-          <b-button type="button" @click="cancelPromo" variant="danger" :disabled="formBusy" v-if="action == 'update'" class="mr-2">Cancel Promo</b-button>
-          <b-button type="submit" variant="primary" :disabled="formBusy" v-if="form.status_id != 10">Save</b-button>
+          <b-button type="submit" variant="primary" :disabled="formBusy" v-if="form.status_id != 10 && form.status_id != 4" class="mr-2">Save</b-button>
+          <b-button type="button" @click="cancelPromo" variant="danger" v-if="(form.status_id == 1 || form.status_id == 10) && action == 'update'" :disabled="formBusy" >Cancel Promo</b-button>
          
         </b-form> 
       </template>
@@ -426,7 +426,7 @@ export default {
             this.$refs['promo-input'].hide();
             this.$Progress.finish();
           }).catch( err => {
-            this.makeToast('danger',err,'System message');
+             this.makeToast('danger',err,'System message');
              this.$Progress.fail();
              this.formBusy = false;
           });
@@ -435,6 +435,7 @@ export default {
           window.open(process.env.VUE_APP_LARAVEL_BASEURL + '/api/preview-coupon/' + promo.id);
         },
         cancelPromo(){
+          var self = this;
           const swalWithBootstrapButtons = this.$swal.mixin({
               customClass: {
               confirmButton: 'btn btn-success',
@@ -452,26 +453,21 @@ export default {
               //reverseButtons: true
           }).then((result) => {
               if (result.value) {
-              //  console.log(this.form);
-                /* self.$Progress.start();
+                self.$Progress.start();
                 self.formBusy = true;
-                  axios.post(apiUrl,{
-                      claimHeaderId: self.claimHeaderId,
-                      userId         : self.$store.getters.currentUser.user_id,
-                      userSource     : self.$store.getters.currentUser.user_source_id,
-                      status         : status,
-                      statusVerb     : verb
+                  axios.patch('api/promo/cancel',{
+                      promo : self.form
                   }).then(res => {
-                      self.makeToast(toastState,res.data.message,'System message');
-                      self.claimHeader.status = res.data.status;
-                      self.$Progress.finish();
-                      self.formBusy = false;
-
+                    this.makeToast('success',res.data.message,'System message');
+                    this.message = res.data.message;
+                    this.promos = res.data.promos;
+                    this.$refs['promo-input'].hide();
+                    this.$Progress.finish();
                   }).catch(err => {
-                      self.makeToast('error',err,'System message');
-                      self.$Progress.fail();
-                      self.formBusy = false;
-                  }); */
+                    this.makeToast('danger',err,'System message');
+                    this.$Progress.fail();
+                    this.formBusy = false;
+                  });
               }
           });
 

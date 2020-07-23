@@ -68,4 +68,9 @@ class PromoController extends Controller
         ];
         return view($result['template'], $data);
     }
+
+    public function cancel(Request $request){
+        $promoService = new PromoService;
+        return response()->json($promoService->cancelPromo($request));
+    }
 }
