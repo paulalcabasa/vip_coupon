@@ -62,7 +62,7 @@ class PromoService {
      
         return [
             'message' => $request->promo['promo_name'] . ' has been updated.',
-            'promos' => $promo->get()
+            'promos' => $promo->getByCouponType($request->promo['coupon_type'])
         ];
     }
 
@@ -112,6 +112,23 @@ class PromoService {
             'message' => 'It looks like the promo has been already rejected.',
             'image_url' => url('/') . '/public/images/approval-error.jpg',
             'template' => 'promo-message'
+        ];
+    }
+
+    public function cancelPromo($request){
+        $promo = Promo::find($request->promo['id']);
+        $user = auth()->user();
+        
+        $promo->status             = 4;
+        $promo->updated_at         = Carbon::now();
+        $promo->updated_by         = $user->user_id;
+        $promo->update_user_source = $user->user_source_id;
+       
+        $promo->save();
+     
+        return [
+            'message' => $request->promo['promo_name'] . ' has been cancelled.',
+            'promos' => $promo->getByCouponType($request->promo['coupon_type'])
         ];
     }
 

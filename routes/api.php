@@ -117,6 +117,7 @@ Route::group(['middleware' => 'jwt'], function () {
     Route::get('promos/{coupon_type_id}','PromoController@getByCouponType');
     Route::post('promo/create','PromoController@store');
     Route::patch('promo/update','PromoController@update');
+    Route::patch('promo/cancel','PromoController@cancel');
    
     Route::get('purpose/active', 'PurposeController@getActive');
     Route::get('purpose', 'PurposeController@get');
