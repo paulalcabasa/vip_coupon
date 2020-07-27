@@ -15,8 +15,8 @@ import "popper.js";
 import "tooltip.js";
 import "perfect-scrollbar";
 // Vue 3rd party plugins
-import i18n from "./common/plugins/vue-i18n";
-import vuetify from "./common/plugins/vuetify";
+//import i18n from "./common/plugins/vue-i18n";
+//import vuetify from "./common/plugins/vuetify";
 import "./common/plugins/bootstrap-vue";
 import "./common/plugins/perfect-scrollbar";
 import "./common/plugins/highlight-js";
@@ -101,7 +101,7 @@ router.beforeEach((to, from, next) => {
 new Vue({
   router,
   store,
-  i18n,
-  vuetify,
+ // i18n,
+ // vuetify,
   render: h => h(App)
 }).$mount("#app");

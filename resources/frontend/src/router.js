@@ -24,7 +24,7 @@ import Error404 from "@/views/pages/error/Error-1.vue";
 Vue.use(Router);
 
 export default new Router({
-  mode: 'history',
+  mode: 'hash',
   base : 'vip_coupon',
   routes: [
     {
