@@ -33,6 +33,7 @@ class Kernel extends ConsoleKernel
         $schedule -> exec("php artisan requestor:send");
         $schedule -> exec("php artisan promo:send");
         $schedule -> exec("php artisan claim_approval:send");
+        $schedule -> exec("php artisan approved_claim:send");
         /* $schedule->command('notification:send')
                   ->everyFiveMinutes();
 
