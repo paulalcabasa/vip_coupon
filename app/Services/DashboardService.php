@@ -9,13 +9,37 @@ class DashboardService {
     public function getStatistics(){
         $denomination = new Denomination;
         $voucher = new Voucher;   
-        $totalDenomination = $denomination->getTotalDenomination();
-        $voucherStats = $voucher->getVoucherStats();
-        $recentClaims = $voucher->getRecentClaims();
+        
+        
+        
+        $user = Auth()->user();
+        
+        if($user->user_type_id == 51){ // if dealer, get only their claims
+            $recentClaims = $voucher->getRecentClaimsByDealer([
+                'dealer_id' => $user->dealer_id
+            ]);
+            $voucherStats = $voucher->getVoucherStatsByDealer([
+                'dealer_id' => $user->dealer_id
+            ]);
+            $totalDenomination = $denomination->getTotalDenominationByDealer([
+                'dealer_id' => $user->dealer_id
+            ]);
+        }
+        else {
+            $recentClaims = $voucher->getRecentClaims([
+                'user_type_id' => $user->user_type_id
+            ]);
+            $voucherStats = $voucher->getVoucherStats([
+                'user_type_id' => $user->user_type_id
+            ]);
+            $totalDenomination = $denomination->getTotalDenomination([
+                'user_type_id' => $user->user_type_id
+            ]);
+        }
         return [
             'totalCoupons' => $totalDenomination,
             'voucherStats' => $voucherStats,
-            'recentClaims' => $recentClaims,
+            'recentClaims' => $recentClaims
         ];
     }
 }

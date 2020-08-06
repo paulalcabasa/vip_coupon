@@ -68,7 +68,23 @@ class Voucher extends Model
         return $this->where('voucher_code', $voucherCode)->get();
     }
 
-    public function getVoucherStats(){
+    public function getVoucherStats($params){
+        $sql = "SELECT COUNT(CASE WHEN ph.status = 2 THEN 1 ELSE NULL END) CLAIMED,
+                        count(vch.id) printed 
+                FROM ipc.ipc_vpc_vouchers vch
+                    LEFT JOIN ipc.ipc_vpc_claim_lines pl
+                        ON pl.voucher_id = vch.id
+                    LEFT JOIN ipc.ipc_vpc_claim_headers ph
+                        ON ph.id = pl.claim_header_id
+                    LEFT JOIN ipc.ipc_vpc_coupon_types ct
+                        ON ct.id = ph.coupon_type
+                WHERE 1 = 1
+                    AND ct.user_type_id = :user_type_id";
+        $query = DB::select($sql, $params);
+        return $query[0];
+    }
+
+    public function getVoucherStatsByDealer($params){
         $sql = "SELECT COUNT(CASE WHEN ph.status = 2 THEN 1 ELSE NULL END) CLAIMED,
                         count(vch.id) printed 
                 FROM ipc.ipc_vpc_vouchers vch
@@ -76,12 +92,13 @@ class Voucher extends Model
                     ON pl.voucher_id = vch.id
                 LEFT JOIN ipc.ipc_vpc_claim_headers ph
                     ON ph.id = pl.claim_header_id
-                WHERE 1 = 1";
-        $query = DB::select($sql);
+                WHERE 1 = 1
+                    and ph.dealer_id = :dealer_id";
+        $query = DB::select($sql, $params);
         return $query[0];
     }
 
-    public function getRecentClaims(){
+    public function getRecentClaims($params){
         $sql = "SELECT vch.id,
                         vch.voucher_code,
                         ph.creation_date,
@@ -89,18 +106,21 @@ class Voucher extends Model
                         dlr.account_name,
                         TRIM(TO_CHAR(ph.creation_date, 'Month')) || ' ' ||  TO_CHAR(ph.creation_date,'DD, YYYY') date_claimed
                 FROM ipc.ipc_vpc_vouchers vch
-                INNER JOIN ipc.ipc_vpc_claim_lines pl
-                    ON pl.voucher_id = vch.id
-                INNER JOIN ipc.ipc_vpc_claim_headers ph
-                    ON ph.id = pl.claim_header_id
-                INNER JOIN ipc.ipc_vpc_coupons cp
-                    ON cp.id = vch.coupon_id
-                INNER JOIN ipc_portal.dealers dlr
-                    ON dlr.id = cp.dealer_id
+                    INNER JOIN ipc.ipc_vpc_claim_lines pl
+                        ON pl.voucher_id = vch.id
+                    INNER JOIN ipc.ipc_vpc_claim_headers ph
+                        ON ph.id = pl.claim_header_id
+                    INNER JOIN ipc.ipc_vpc_coupons cp
+                        ON cp.id = vch.coupon_id
+                    INNER JOIN ipc_portal.dealers dlr
+                        ON dlr.id = cp.dealer_id
+                    LEFT JOIN ipc.ipc_vpc_coupon_types ct
+                        ON ct.id = cp.coupon_type_id
                 WHERE 1 = 1
                     AND ph.status = 2
+                    AND ct.user_type_id = :user_type_id
                     AND rownum <= 15";
-        $query = DB::select($sql);
+        $query = DB::select($sql, $params);
         return $query;
     }
 
@@ -108,6 +128,30 @@ class Voucher extends Model
         $sql = "SELECT ".$sequence_name.".nextval control_number FROM dual";
         $query = DB::select($sql);
         return $query[0]->control_number;
+    }
+
+    public function getRecentClaimsByDealer($params){
+        $sql = "SELECT vch.id,
+                        vch.voucher_code,
+                        ph.creation_date,
+                        vch.amount,
+                        dlr.account_name,
+                        TRIM(TO_CHAR(ph.creation_date, 'Month')) || ' ' ||  TO_CHAR(ph.creation_date,'DD, YYYY') date_claimed
+                FROM ipc.ipc_vpc_vouchers vch
+                    INNER JOIN ipc.ipc_vpc_claim_lines pl
+                        ON pl.voucher_id = vch.id
+                    INNER JOIN ipc.ipc_vpc_claim_headers ph
+                        ON ph.id = pl.claim_header_id
+                    INNER JOIN ipc.ipc_vpc_coupons cp
+                        ON cp.id = vch.coupon_id
+                    INNER JOIN ipc_portal.dealers dlr
+                        ON dlr.id = cp.dealer_id
+                WHERE 1 = 1
+                    AND ph.status = 2
+                    AND cp.dealer_id = :dealer_id
+                    AND rownum <= 15";
+        $query = DB::select($sql, $params);
+        return $query;
     }
 
 }
