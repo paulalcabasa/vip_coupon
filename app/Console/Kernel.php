@@ -18,6 +18,7 @@ class Kernel extends ConsoleKernel
       Commands\PromoNotification::class,
       Commands\PromoRequestorNotif::class,
       Commands\ClaimApprovalNotif::class,
+      Commands\ApprovedClaimMail::class,
     ];
 
     /**
