@@ -25,13 +25,27 @@ class Denomination extends Model
             ->delete();
     }
 
-    public function getTotalDenomination(){
+    public function getTotalDenomination($params){
         $sql = "SELECT nvl(sum(quantity),0) quantity
                 FROM ipc.ipc_vpc_denominations dn
                     LEFT JOIN ipc.ipc_vpc_coupons cp
                         ON cp.id = dn.coupon_id
-                WHERE cp.status NOT IN (4,1)";
-        $query = DB::select($sql);
+                    LEFT JOIN ipc.ipc_vpc_coupon_types ct
+                        ON ct.id = cp.coupon_type_id
+                WHERE cp.status NOT IN (4,1)
+                    AND ct.user_type_id = :user_type_id";
+        $query = DB::select($sql, $params);
+        return $query[0]->quantity;
+    }
+
+      public function getTotalDenominationByDealer($params){
+        $sql = "SELECT nvl(sum(quantity),0) quantity
+                FROM ipc.ipc_vpc_denominations dn
+                    LEFT JOIN ipc.ipc_vpc_coupons cp
+                        ON cp.id = dn.coupon_id
+                WHERE cp.status NOT IN (4,1)
+                    AND cp.dealer_id = :dealer_id";
+        $query = DB::select($sql, $params);
         return $query[0]->quantity;
     }
 }
