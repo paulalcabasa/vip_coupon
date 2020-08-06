@@ -147,6 +147,7 @@ class ClaimHeader extends Model
         $query = DB::select($sql);
         return $query;
     }
+    
 
     public function updateCurrentApprovalHierarchy($params){
         $this
@@ -158,6 +159,23 @@ class ClaimHeader extends Model
             ]);
     }
 
+    public function getApproved(){
+        $sql = "SELECT usr.first_name || ' ' || usr.last_name approver_name,
+                        usr.email_address,
+                        cp.date_mail_sent,
+                        cp.id claim_header_id
+                FROM ipc.ipc_vpc_claim_headers cp
+               
+                    INNER JOIN ipc_vpc_users_v usr
+                        ON usr.user_id = cp.created_by
+                        AND usr.user_source_id = cp.create_user_source
+            
+                WHERE 1 = 1
+                    AND cp.status = 2
+                    AND cp.date_mail_sent IS NULL";
+        $query = DB::select($sql);
+        return $query;
+    }
     
 
 
