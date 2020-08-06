@@ -11,7 +11,7 @@ use App\Models\Approval;
 use Carbon\Carbon;
 use App\Models\Email;
 
-class ClaimApprovalNotif extends Command
+class ApprovedClaimMail extends Command
 {
     /**
      * The name and signature of the console command.
