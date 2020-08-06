@@ -1,6 +1,6 @@
 <template>
     <div>
-        <KTPortlet v-bind:title="'Clam Request'">
+        <KTPortlet v-bind:title="'Claim Request'">
             <template v-slot:body>
                 <b-tabs content-class="mt-3">
                     <b-tab title="Details" active>
