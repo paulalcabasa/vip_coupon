@@ -240,9 +240,13 @@ class CouponService {
             $coupon->promo_id           = $promo;
             $coupon->purpose_id         = $purpose;
             $coupon->description        = $description;
-            $coupon->vehicle_type       = $vehicle_type;
+            
             $coupon->email              = $email_recipients;
+            
 
+            if($couponType == 1) {
+                $coupon->vehicle_type       = $vehicle_type;
+            }
             if(!empty($_FILES)){
                 $coupon->attachment   = $symlink_dir . $filename;
                 $coupon->filename     = $origFilename;
