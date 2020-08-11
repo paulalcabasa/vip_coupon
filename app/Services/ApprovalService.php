@@ -45,8 +45,7 @@ class ApprovalService {
                 ->leftJoin('ipc.ipc_vpc_status st', 'st.id','=','vpa.status')
                 ->leftJoin('ipc.ipc_vpc_approvers apr','apr.id','=','vpa.approver_id')
                 ->first();
-        
-            
+       
             $check_approval = $approval->checkCoupon([
                 'module_reference_id' => $approval_data->module_reference_id,
                 'module_id' => $approval_data->module_id,

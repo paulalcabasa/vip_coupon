@@ -99,13 +99,13 @@ class Approval extends Model
         return !empty($query) ? $query[0] : $query;
     }
 
-    public function setApproval($couponId, $moduleId, $origVehicleType, $newVehicleType, $approvers){
+    public function setApproval($couponId, $moduleId, $origVehicleType, $newVehicleType, $approvers, $couponType){
         DB::beginTransaction();
 
         try {
             
             // only delete if vehicle type has been updated
-            if($origVehicleType != $newVehicleType){
+            if($origVehicleType != $newVehicleType && $couponType == 1){
                 // delete previous approval
                 $this->where([
                     'module_reference_id' => $couponId,
