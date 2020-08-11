@@ -264,7 +264,7 @@ class CouponService {
                 );
                 
                 $approval = new Approval;
-                $approval->setApproval($couponId, $module_id, $old_vehicle_type, $vehicle_type, $approvers);
+                $approval->setApproval($couponId, $module_id, $old_vehicle_type, $vehicle_type, $approvers, $couponType);
                       
                 // revert current approver
                 $coupon->current_approval_hierarchy = 1;
@@ -307,7 +307,7 @@ class CouponService {
             );
             
             $approval = new Approval;
-            $approval->setApproval($couponId, $module_id, $old_vehicle_type, $vehicle_type, $approvers);
+            $approval->setApproval($couponId, $module_id, $old_vehicle_type, $vehicle_type, $approvers, $couponType);
             
            
             DB::commit();
