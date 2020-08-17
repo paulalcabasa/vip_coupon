@@ -25,7 +25,7 @@ Vue.use(Router);
 
 export default new Router({
   mode: 'history',
-  base : 'vip_coupon',
+  base: process.env.VUE_APP_ROUTE_BASE,
   routes: [
     {
       path: "/",
