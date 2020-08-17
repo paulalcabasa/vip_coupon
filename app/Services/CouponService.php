@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Storage;
 use File;
 use App\Models\Approver;
 use App\Models\Approval;
+use App\Services\VoucherService;
 
 class CouponService {
 
@@ -563,7 +564,5 @@ class CouponService {
             ];
         } 
     }
-
-  
 
 }
