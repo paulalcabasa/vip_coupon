@@ -136,9 +136,9 @@
           </b-tab>
           <b-tab title="Voucher">
             <b-table striped hover :items="voucherItems" :fields="voucherFields">
-              <template v-slot:cell(voucher_code)="data">
+              <!-- <template v-slot:cell(voucher_code)="data">
                 <span v-html="maskVoucher(data.value)"></span>
-              </template>
+              </template> -->
             </b-table>
           </b-tab>
           <b-tab title="Timeline">

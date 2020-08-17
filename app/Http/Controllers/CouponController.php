@@ -52,4 +52,6 @@ class CouponController extends Controller
     public function resend(Request $request){
         return response()->json($this->couponService->resend($request),200);
     }
+
+   
 }

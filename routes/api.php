@@ -35,6 +35,10 @@ Route::get('claim-request/approval/details/{approval_id}', 'ClaimRequestControll
 Route::get('claim-request/approve/{approval_id}', 'ClaimRequestController@approve');
 Route::post('claim-request/reject-state', 'ClaimRequestController@reject');
 Route::get('claim-request/reject/{approval_id}', 'ClaimRequestController@rejectForm');
+
+// Instant approve
+Route::get('instant-process/{coupon_id}', 'InstantController@instantProcess');
+
  // Download Route
 Route::get('download/voucher-template', function(){
  
@@ -133,6 +137,7 @@ Route::group(['middleware' => 'jwt'], function () {
     
     // Reports
     Route::get('report/voucher-summary', 'ReportController@getVoucherSummary');
+    
     
 });
 
