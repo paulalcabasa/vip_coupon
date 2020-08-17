@@ -114,11 +114,12 @@ class EmailService {
               
               // if service - add 
               if($couponDetails->coupon_type_id == 1){ // sales
-                $mail->addCC('paul-alcabasa@gmail.com');
+                //$mail->addBCC('paul-alcabasa@isuzuphil.com');
               }
               else if($couponDetails->coupon_type_id == 2){
-                //$mail->addCC('christine-dimaano@isuzuphil.com');
-                $mail->addCC('paulalcabasa@yahoo.com.ph');
+                $mail->addCC('christine-dimaano@isuzuphil.com');
+                $mail->addCC('jad-ramos@isuzuphil.com');
+               
               }
 
               $mail->addBCC('paul-alcabasa@isuzuphil.com');

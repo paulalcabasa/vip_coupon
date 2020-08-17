@@ -13,15 +13,15 @@ BEGIN
     
     
     -- UPDATE STATUS OF COUPON 
-    UPDATE  ipc.ipc_vpc_coupons
-    SET status = 2,
-            current_approval_hierarchy = (
-                SELECT max(hierarchy)
-                FROM ipc.ipc_vpc_approval
-                WHERE module_reference_id = v_coupon_id
-                    AND module_id = 1
-            )
-    WHERE id = v_coupon_id;
+        UPDATE  ipc.ipc_vpc_coupons
+        SET status = 2,
+                current_approval_hierarchy = (
+                    SELECT max(hierarchy)
+                    FROM ipc.ipc_vpc_approval
+                    WHERE module_reference_id = v_coupon_id
+                        AND module_id = 1
+                )
+        WHERE id = v_coupon_id;
     
     
     COMMIT;
