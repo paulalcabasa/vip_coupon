@@ -151,7 +151,7 @@
               <b-col sm="9">
                   <input type="file"  v-if="uploadReady"  id="file" ref="file" v-on:change="handleFileUpload()"/>
                   <b-link variant="primary" target="_blank" :href="downloadUrl()" v-show="couponDetails.filename">{{ couponDetails.filename }}</b-link>
-                  <b-form-text>Allowable max file size is 5mb.</b-form-text>
+                  <b-form-text>Allowable max file size is 5mb. PNG, JPEG and PDF are the only acceptable file formats.</b-form-text>
               </b-col>
           </b-row>
          
@@ -502,6 +502,12 @@ export default {
       return err > 0 ? true : false;
     },
     validateForm(){
+
+      if(this.validateFileType()){
+        this.makeToast('danger','PDF, JPEG and PNG are the only allowed file types.','System message');
+        return true;
+      }
+
       if(this.dealer == ''){
         this.makeToast('danger','Select the dealer','System message');
         return true;
@@ -775,6 +781,13 @@ export default {
         if(size_mb > 5){
           return true;
         }
+      }
+      return false;
+    },
+    validateFileType(){
+      console.log(this.file.type);
+      if(this.file.type != "application/pdf" && this.file.type != "image/jpeg" && this.file.type != "image/png"){
+        return true;
       }
       return false;
     },

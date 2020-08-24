@@ -29,6 +29,8 @@ class EmailService {
         $mail = new PHPMailer();                            // Passing `true` enables exceptions
         $coupon = new Coupon;
         $couponDetails = $coupon->getDetails($row->module_reference_id);
+    
+        
         $denominations = $denomination->getByCoupon($row->module_reference_id);
         
         try {
@@ -62,7 +64,10 @@ class EmailService {
           $mail->Subject = 'System Notification : VIP Coupon Approval';
           $mail->Body    = view('email/approval', $data); // . $row->email_address;
           $mail->AddEmbeddedImage(config('app.project_root') . 'public/images/isuzu-logo.png', 'isuzu_logo');
-          
+          $directory = config('app.project_root') . $couponDetails->attachment;
+        //  $directory = config('app.project_root') . 'storage/app/public/uploads/' . $couponDetails->new_filename;
+         
+          $mail->addAttachment($directory, $couponDetails->filename);
           if($mail->send()){
             $this->email->updateStatus($row->id);
             \Log::info("Mail sent");
