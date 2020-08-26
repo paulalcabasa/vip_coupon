@@ -785,9 +785,10 @@ export default {
       return false;
     },
     validateFileType(){
-      console.log(this.file.type);
-      if(this.file.type != "application/pdf" && this.file.type != "image/jpeg" && this.file.type != "image/png"){
-        return true;
+      if(this.file != null){
+        if(this.file.type != "application/pdf" && this.file.type != "image/jpeg" && this.file.type != "image/png"){
+          return true;
+        }
       }
       return false;
     },
