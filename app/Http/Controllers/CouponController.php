@@ -13,8 +13,8 @@ class CouponController extends Controller
 
     public function __construct(){
         $this->couponService = new CouponService;
-
     }
+    
     public function store(Request $request){
         return $this->couponService->saveCoupon($request);
     }

@@ -71,7 +71,7 @@
 
             .terms-title {
                 position: absolute;
-                top: 178px;
+                top: 185px;
                 left:173px;
                 font-size:.4em;
                 font-weight:bold;
