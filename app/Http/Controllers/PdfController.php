@@ -25,14 +25,14 @@ class PdfController extends Controller
         $docs = $voucher->getByCoupon($request->coupon_id);
         $header = $coupon->getDetails($request->coupon_id);
 
-        if($header->status_id != 12){
+       /*  if($header->status_id != 12){
             $data = [
                 "message" => "Failed printing! Voucher must be approved before printing and is only printed once.",
                 "couponDetails" => $header,
                 'image_url' => url('/') . '/public/images/approval-error.jpg'
             ];
             return view('failed-print', $data); 
-        }
+        } */
         
         $type = CouponType::where('id', $header->coupon_type_id)->first();
        
@@ -53,12 +53,12 @@ class PdfController extends Controller
         // add to timeline and who printed.
         $timeline = new Timeline;
             
-        $timeline->saveTimeline([
+      /*   $timeline->saveTimeline([
             'coupon_id'  => $request->coupon_id,
             'action_id'  => 3,
             'created_at' => Carbon::now(),
             'message'    => 'Coupon has been printed by <strong>' . $request->email . '</strong>'
-        ]); 
+        ]);  */
         
         
         $pdf = PDF::loadView($type->file_template,$data);

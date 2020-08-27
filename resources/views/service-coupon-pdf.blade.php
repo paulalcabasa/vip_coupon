@@ -43,9 +43,9 @@
             .amount {
                 position: absolute;
                 top: 85px;
-                right: 340px;
+                left:180px;
                 font-weight:bold;
-                font-size:3.9em;
+                font-size:3em;
                 color:#fff;
             }
 
@@ -57,6 +57,26 @@
                 font-size:.6em;
                 color:#fff;
             }
+            
+            .terms {
+                position: absolute;
+                top: 200px;
+                left:140px;
+                font-size:.35em;
+                text-align:left;
+                line-height:1.5;
+                color:#fff;
+            }
+
+            .terms-title {
+                position: absolute;
+                top: 200px;
+                left:173px;
+                font-size:.5em;
+                font-weight:bold;
+                text-align:left;
+                color:#fff;
+            }
 
             .validity {
                 position: absolute;
@@ -65,7 +85,6 @@
                 font-size:.5em;
                 color:#000;
             }
-
            
 
 
@@ -154,6 +173,10 @@
         </div>
 
         <div class="amount"><span style="font-family: DejaVu Sans; sans-serif;">&#8369;</span>  {{ number_format($row->amount,0,'',',') }}</div>
+        <div class="terms-title">Terms and Condition:</div>
+        <div class="terms">
+            <span class="list"><?php echo $header->terms; ?></span>
+        </div>
         <div class="coupon-no">Control No. {{ $row->voucher_no }}</div>
         <div class="validity">Expires at : {{ $row->expiration_date }}</div>
     </div>   
