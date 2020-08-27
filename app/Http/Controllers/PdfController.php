@@ -53,12 +53,12 @@ class PdfController extends Controller
         // add to timeline and who printed.
         $timeline = new Timeline;
             
-      /*   $timeline->saveTimeline([
+        $timeline->saveTimeline([
             'coupon_id'  => $request->coupon_id,
             'action_id'  => 3,
             'created_at' => Carbon::now(),
             'message'    => 'Coupon has been printed by <strong>' . $request->email . '</strong>'
-        ]);  */
+        ]); 
         
         
         $pdf = PDF::loadView($type->file_template,$data);
