@@ -60,19 +60,20 @@
             
             .terms {
                 position: absolute;
-                top: 200px;
+                top: 180px;
                 left:140px;
-                font-size:.35em;
+                font-size:.3em;
                 text-align:left;
                 line-height:1.5;
                 color:#fff;
+                width:290px;
             }
 
             .terms-title {
                 position: absolute;
-                top: 200px;
+                top: 178px;
                 left:173px;
-                font-size:.5em;
+                font-size:.4em;
                 font-weight:bold;
                 text-align:left;
                 color:#fff;
