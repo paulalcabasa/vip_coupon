@@ -8,7 +8,7 @@ class SerialNumber extends Model
 {
 
     protected $connection = "oracle";
-    protected $table = "apps.mtl_serial_numbers";
+    protected $table = "IPC_VPC_SERIAL_MASTER";
     protected $primaryKey = 'inventory_item_id';
     public $timestamps = false;
 
