@@ -39,7 +39,8 @@ class PdfController extends Controller
         $data = [
             'docs' => $docs,
             'header' => $header,
-            'claimApiUrl' => url('/') . '/api/voucher/claim/'
+            'claimApiUrl' => url('/') . '/api/voucher/claim/',
+            'single' => 'N'
         ];
 
         // update status to printed
@@ -77,6 +78,28 @@ class PdfController extends Controller
         $template = $promoDetail->coupon_type_id == 1 ? 'preview-coupon' : 'preview-service-coupon';
         $pdf = PDF::loadView($template,$data);
         return $pdf->setPaper('a4','portrait')->stream();
+    }
+
+    public function printVoucher(Request $request){
+        $voucher = new Voucher;
+        $coupon = new Coupon;
+        $couponType = new CouponType;
+
+        $docs = $voucher->getByVoucher($request->voucher_id);
+        $header = $coupon->getDetails($docs[0]->coupon_id);
+        $type = CouponType::where('id', $header->coupon_type_id)->first();
+        
+     
+        $data = [
+            'docs' => $docs,
+            'header' => $header,
+            'claimApiUrl' => url('/') . '/api/voucher/claim/',
+            'single' => 'Y'
+        ];
+
+        
+        $pdf = PDF::loadView($type->file_template,$data);
+        return $pdf->setPaper('a4','portrait')->stream(); 
     }
 
 }

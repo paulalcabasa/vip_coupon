@@ -97,7 +97,16 @@
                 font-size:.4em;
                 color:black;
             }
-           
+            
+            .vehicle-type {
+                position: absolute;
+                top: 200px;
+                right: 45px;
+                font-weight:bold;
+                font-size:.4em;
+                color:black;
+            }
+
 
 
                 
@@ -106,7 +115,8 @@
         </style>
     </head>
 <body>
-    
+
+    <?php if($single == 'N') : ?>
      <header>
         <table width="100%" style="margin-bottom:-0.5em;">
             <tr>
@@ -196,7 +206,7 @@
     </table> -->
 
     <div style="page-break-before: always"></div>
-     
+    <?php endif; ?>
     @foreach($docs as $row)
    
  
@@ -218,6 +228,7 @@
         <div class="coupon-no">{{ $row->voucher_no }}</div>
         <div class="cs-no"><span class="label">CS no.</span> <span class="cs"><?php echo $row->cs_number; ?></span></div>
         <div class="validity"><span class="label">Expires at : </span> <span class="validity-text">{{ $row->expiration_date }}</span></div>
+        <div class="vehicle-type"><span class="label">Type : </span> <span class="vehicle-type-text">{{ $header->vehicle_type }}</span></div>
     </div>
        
       
