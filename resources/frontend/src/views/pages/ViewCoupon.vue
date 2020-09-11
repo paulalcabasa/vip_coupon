@@ -136,9 +136,11 @@
           </b-tab>
           <b-tab title="Voucher">
             <b-table striped hover :items="voucherItems" :fields="voucherFields">
-              <!-- <template v-slot:cell(voucher_code)="data">
-                <span v-html="maskVoucher(data.value)"></span>
-              </template> -->
+              <template v-slot:cell(actions)="data">
+                 <a :href="baseUrl + '/api/print-voucher/' + data.item.id" target="_blank">
+                    <i class="fa fa-print fa-1x text-dark"></i>
+                </a>
+              </template>
             </b-table>
           </b-tab>
           <b-tab title="Timeline">
@@ -236,6 +238,10 @@ export default {
               sortable: true, 
               sortDirection: 'desc' 
         },
+           { 
+              key: 'actions', 
+              label: 'Actions', 
+        },
       ],
       approvalItems : [],
       approvalFields : [
@@ -301,6 +307,7 @@ export default {
       disableActions : false,
       submitFlag : false,
       user : JSON.parse(jwtService.getUser()),
+      baseUrl : process.env.VUE_APP_API_URL
     }
   },
   mounted() {

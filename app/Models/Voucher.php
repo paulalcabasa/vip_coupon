@@ -154,4 +154,26 @@ class Voucher extends Model
         return $query;
     }
 
+     public function getByVoucher($voucherId){
+        //return $this->where('coupon_id', $couponId)->get();
+        $sql = "SELECT cd.id,
+                    cd.amount,
+                    nvl(pl.cs_number,cd.cs_number) cs_number,
+                    st.status,
+                    lpad(cd.control_number,6,0) voucher_no,
+                    cd.voucher_code,
+                    to_char(cd.expiration_date,'MM/DD/YYYY') expiration_date,
+                    cd.coupon_id
+                FROM ipc.ipc_vpc_vouchers cd
+                    LEFT JOIN ipc.ipc_vpc_status st
+                        ON cd.status = st.id
+                    LEFT JOIN ipc.ipc_vpc_claim_lines pl
+                        ON pl.voucher_id = cd.id
+                WHERE cd.id = :id
+                    AND cd.status NOT IN (4)
+                ORDER BY cd.control_number";
+        $query = DB::select($sql,['id' => $voucherId]);
+        return $query;
+    }
+
 }

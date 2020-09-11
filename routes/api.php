@@ -24,6 +24,7 @@ Route::get('print-coupon/{coupon_id}/{email}', 'PdfController@printCoupon');
 Route::get('approve/{approval_id}', 'ApprovalController@approve');
 Route::get('reject/{approval_id}', 'ApprovalController@reject');
 Route::post('reject', 'ApprovalController@rejectCoupon');
+Route::get('print-voucher/{voucher_id}', 'PdfController@printVoucher');
 
 Route::get('promo/approve/{promo_id}/{approver_id}/{approver_source}','PromoController@approve');
 Route::get('promo/reject/{promo_id}/{approver_id}/{approver_source}','PromoController@reject');
