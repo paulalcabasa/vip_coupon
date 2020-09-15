@@ -10,7 +10,7 @@ module.exports = {
 
   outputDir: '../../public/assets/app',
   publicPath: process.env.NODE_ENV === 'production'
-    ? 'public/assets/app/'
+    ? process.env.VUE_APP_BUILD_ENV
     : '/',
 
   // modify the location of the generated HTML file.
