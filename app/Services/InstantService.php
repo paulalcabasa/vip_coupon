@@ -11,7 +11,7 @@ class InstantService {
 
     public function instantProcess($request){
         $today = date('Y-m-d');
-        $expiry_date = '2020-09-01';
+        $expiry_date = '2020-09-30';
 
         $today = strtotime($today); 
         $expiry_date = strtotime($expiry_date); 

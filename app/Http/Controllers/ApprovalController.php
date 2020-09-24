@@ -15,7 +15,7 @@ class ApprovalController extends Controller
         $approvalId = $request->approval_id;
     
         $result = $approvalService->approve($approvalId);
-        dd($result);
+      
         $data = [
             'coupon_id' => $result['module_reference_id'],
             'image_url' => $result['image_url'],
