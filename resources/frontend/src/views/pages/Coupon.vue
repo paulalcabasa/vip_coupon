@@ -591,7 +591,7 @@ export default {
          else {
           self.couponDetails.coupon_id = res.data.couponId;
           self.submitFlag = true;
-          self.clearForm();
+         // self.clearForm();
          }
        })
        .catch(err => {

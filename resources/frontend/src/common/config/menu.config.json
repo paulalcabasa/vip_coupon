@@ -135,6 +135,17 @@
         ]
       },
       {
+        "title": "Users",
+        "root": true,
+        "icon": "flaticon-list",
+        "page": "users",
+        "users": [
+          "Administrator",
+          "Accounting",
+          "Sales"
+        ]
+      },
+      {
         "title": "Promo",
         "root": true,
         "icon": "flaticon-price-tag",

@@ -110,12 +110,16 @@ class CouponService {
                 1, 
                 $user->user_type_id, 
                 $vehicle_type,
-                $couponId
+                $couponId,
+                $dealer
             );
+
+   
             $approval = new Approval;
             $approval->batchInsert($approvers);
         
-    
+            // update current approver
+            $coupon->initializeCurrentHierarchy($couponId);
     
             DB::commit();
 
