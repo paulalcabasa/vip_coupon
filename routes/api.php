@@ -138,6 +138,10 @@ Route::group(['middleware' => 'jwt'], function () {
     
     // Reports
     Route::get('report/voucher-summary', 'ReportController@getVoucherSummary');
+
+
+    // users
+    Route::get('user/dealer', 'UserController@getUserDealer');
     
     
 });

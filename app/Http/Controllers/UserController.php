@@ -4,10 +4,21 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use DB;
-use App\Models\User;
-class AuthController extends Controller
+use App\User;
+
+class UserController extends Controller
 {
     //
+
+    public function getUserDealer(){
+        $users = User::where('user_type_id', 51)->select(DB::raw("
+            user_id,
+            email_address,
+            account_name,
+            first_name,
+            last_name"))->get();
+        return $users;
+    }
 
     public function login(Request $request){
         $user = new User;
@@ -28,6 +39,8 @@ class AuthController extends Controller
             'message' => 'Unauthenticated.'
         ], 401);
         
-        //return 'testapi call';
+        
     }
+    
+  
 }

@@ -9,7 +9,7 @@ use App\Models\Approver;
 use App\Models\Approval;
 use Carbon\Carbon;
 use App\Services\VoucherService;
-
+use App\Models\DealerApprover;
 
 class ApprovalService {
     
@@ -285,40 +285,71 @@ class ApprovalService {
 
     }
 
-    public function getCouponApprovers($coupon_type, $module_id, $user_type_id, $vehicle_type, $coupon_id){
+    public function getCouponApprovers($coupon_type, $module_id, $user_type_id, $vehicle_type, $coupon_id, $dealer_id){
         $params = [];
-        $approvers = Approver::where([
+
+        if($vehicle_type == "LCV"){
+            $approvers = Approver::where([
                 ['coupon_type_id', $coupon_type], 
                 ['module_id' , $module_id],
                 ['user_type_id', $user_type_id],
                 ['vehicle_type', $vehicle_type]
             ]) ->orderBy('hierarchy', 'asc')->get();
-        foreach($approvers as $approver){
-        
-         /*    
-            if($approver->approver_type == 2 || $approver->approver_type == 1) { // sales manager CV / LCV
-                if($approver->vehicle_type == $vehicle_type){
+        }
+        else if ($vehicle_type == "CV"){
+            $approvers = Approver::where([
+                ['coupon_type_id', $coupon_type], 
+                ['module_id' , $module_id],
+                ['user_type_id', $user_type_id],
+                ['vehicle_type', $vehicle_type]
+            ])
+            ->where("hierarchy", ">", 1)
+            ->orderBy('hierarchy', 'asc')->get();
+
+            // get tier 1 approver
+            $dealerSalesAdmin = Approver::where([
+                ['coupon_type_id', $coupon_type], 
+                ['module_id' , $module_id],
+                ['user_type_id', $user_type_id],
+                ['vehicle_type', $vehicle_type],
+                ['hierarchy', 1]
+            ])->get();
+
+         
+             
+            $dealerCoveredArr = [];
+            foreach($dealerSalesAdmin as $dealerSales){
+          
+                $dealerCovered = DealerApprover::where([
+                    ['approver_id', $dealerSales->id],
+                    ['dealer_id', $dealer_id],
+                ])->get();
+
+     
+                foreach($dealerCovered as $row){
                     array_push($params, [
-                        'approver_id'         => $approver->id,
+                        'approver_id'         => $dealerSales->id,
                         'module_reference_id' => $coupon_id,
-                        'hierarchy'           => $approver->hierarchy,
+                        'hierarchy'           => $dealerSales->hierarchy,
                         'module_id'           => 1,
                         'status'              => 1,
                         'created_at'          => Carbon::now()
                     ]);
-                }
+                } 
             }
-            else { */
-                array_push($params, [
-                    'approver_id'         => $approver->id,
-                    'module_reference_id' => $coupon_id,
-                    'hierarchy'           => $approver->hierarchy,
-                    'module_id'           => 1,
-                    'status'              => 1,
-                    'created_at'          => Carbon::now()
-                ]);
-            //}
         }
+  
+        foreach($approvers as $approver){
+            array_push($params, [
+                'approver_id'         => $approver->id,
+                'module_reference_id' => $coupon_id,
+                'hierarchy'           => $approver->hierarchy,
+                'module_id'           => 1,
+                'status'              => 1,
+                'created_at'          => Carbon::now()
+            ]);
+        }
+    
         return $params;
 
     }

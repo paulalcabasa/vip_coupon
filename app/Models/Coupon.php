@@ -280,6 +280,18 @@ class Coupon extends Model
         return $query;
     
     }
+
+    public function initializeCurrentHierarchy($couponId){
+        $sql = "UPDATE ipc.ipc_vpc_coupons
+                SET current_approval_hierarchy = (
+                    SELECT min(hierarchy) current_hierarchy
+                    FROM ipc.ipc_vpc_approval
+                    WHERE module_reference_id = :coupon_id
+                        AND module_id = 1
+                )
+                WHERE id = :coupon_id";
+        DB::update($sql, ['coupon_id' => $couponId]);
+    }
    
 
     
