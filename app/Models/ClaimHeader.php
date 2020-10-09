@@ -30,7 +30,9 @@ class ClaimHeader extends Model
                     ph.creation_date,
                     usr.first_name || ' ' || usr.last_name created_by,
                     TRIM(TO_CHAR(ph.creation_date, 'Month')) || ' ' ||  TO_CHAR(ph.creation_date,'DD, YYYY') date_created,
-                    lower(st.status) status
+                    lower(st.status) status,
+                    ph.filename,
+                    ph.attachment
                 FROM ipc.ipc_vpc_claim_headers ph
                 LEFT JOIN ipc.ipc_vpc_status st
                     ON ph.status = st.id
@@ -79,7 +81,9 @@ class ClaimHeader extends Model
                         dlr.account_name dealer,
                         sum(cl.amount) total_amount,
                         ct.id coupon_type_id,
-                        ph.current_approval_hierarchy
+                        ph.current_approval_hierarchy,
+                        ph.attachment,
+                        ph.filename
                 FROM ipc.ipc_vpc_claim_headers ph
                     LEFT JOIN ipc.ipc_vpc_status st
                         ON ph.status = st.id
@@ -104,7 +108,9 @@ class ClaimHeader extends Model
                         ph.dealer_id,
                         dlr.account_name,
                         ct.id,
-                        ph.current_approval_hierarchy";
+                        ph.current_approval_hierarchy,
+                        ph.attachment,
+                        ph.filename";
         $query = DB::select($sql, ['claim_header_id' => $claimHeaderId]);
         return !empty($query) ? $query[0] : $query;
     }

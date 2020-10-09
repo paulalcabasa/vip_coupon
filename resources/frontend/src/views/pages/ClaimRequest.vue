@@ -98,116 +98,134 @@
             </b-form>
             </template>
         </KTPortlet>
-        <KTPortlet v-bind:title="'List'" v-show="items.length > 0">
+
+   
+
+     
+
+        <KTPortlet v-bind:title="'Request Details'" v-show="items.length > 0">
             <template v-slot:toolbar>
                 <b-button type="submit" @click.prevent="submit" variant="success" :disabled="formBusy">Submit</b-button>
             </template> 
 
             <template v-slot:body>
                 <div>
-                    <b-row>
-                    <b-col lg='6'></b-col>
-                    <b-col lg="6" class="my-1">
-                        <b-form-group
-                            label="Filter"
-                            label-cols-sm="3"
-                            label-align-sm="right"
-                            label-size="sm"
-                            label-for="filterInput"
-                            class="mb-0"
-                        >
-                            <b-input-group size="sm">
-                                <b-form-input
-                                v-model="filter"
-                                type="search"
-                                id="filterInput"
-                                placeholder="Type to Search"
-                                ></b-form-input>
-                                <b-input-group-append>
-                                <b-button :disabled="!filter" @click="filter = ''"><i class="fa fa-eraser"></i></b-button>
-                                </b-input-group-append>
-                            </b-input-group>
-                        </b-form-group>
-                    </b-col>
-                    </b-row>
-                    <b-table 
-                        responsive 
-                        sticky-header
-                        show-empty
-                        small
-                        :items="items"
-                        :fields="fields"
-                        :current-page="currentPage"
-                        :per-page="perPage"
-                        :filter="filter"
-                        :filterIncludedFields="filterOn"
-                        :sort-by.sync="sortBy"
-                        :sort-desc.sync="sortDesc"
-                        :sort-direction="sortDirection"
-                        @filtered="onFiltered"
-                        :busy="form.formBusy"
-                    >
-                        <template v-slot:table-busy>
-                            <div class="text-center text-danger my-2">
-                                <b-spinner class="align-middle"></b-spinner>
-                                <strong>Loading...</strong>
+                    <b-tabs content-class="mt-3">
+                        <b-tab title="Vouchers" active>
+                            <div>
+                                <b-row>
+                                    <b-col lg='6'></b-col>
+                                    <b-col lg="6" class="my-1">
+                                        <b-form-group
+                                            label="Filter"
+                                            label-cols-sm="3"
+                                            label-align-sm="right"
+                                            label-size="sm"
+                                            label-for="filterInput"
+                                            class="mb-0"
+                                        >
+                                            <b-input-group size="sm">
+                                                <b-form-input
+                                                v-model="filter"
+                                                type="search"
+                                                id="filterInput"
+                                                placeholder="Type to Search"
+                                                ></b-form-input>
+                                                <b-input-group-append>
+                                                <b-button :disabled="!filter" @click="filter = ''"><i class="fa fa-eraser"></i></b-button>
+                                                </b-input-group-append>
+                                            </b-input-group>
+                                        </b-form-group>
+                                    </b-col>
+                                </b-row>
+                                <b-table 
+                                    responsive 
+                                    sticky-header
+                                    show-empty
+                                    small
+                                    :items="items"
+                                    :fields="fields"
+                                    :current-page="currentPage"
+                                    :per-page="perPage"
+                                    :filter="filter"
+                                    :filterIncludedFields="filterOn"
+                                    :sort-by.sync="sortBy"
+                                    :sort-desc.sync="sortDesc"
+                                    :sort-direction="sortDirection"
+                                    @filtered="onFiltered"
+                                    :busy="form.formBusy"
+                                >
+                                    <template v-slot:table-busy>
+                                        <div class="text-center text-danger my-2">
+                                            <b-spinner class="align-middle"></b-spinner>
+                                            <strong>Loading...</strong>
+                                        </div>
+                                    </template>
+
+                                    <template v-slot:cell(actions)="row">
+                                        <b-button size="sm" @click="remove(row)" class="mr-1">
+                                            <i class="fa fa-trash"></i>
+                                        </b-button>
+                                    
+                                    </template>
+
+                                    <template v-slot:cell(status)="row">
+                                        <b-badge class="mr-1" :variant="statusColors[row.value.trim()]">{{ row.value }}</b-badge>
+                                    </template>
+
+                                    
+                                </b-table>
+                                <b-row>
+                                    <b-col sm="4" md="4" class="my-1">
+                                        <b-form-group
+                                        label="Per page"
+                                        label-cols-sm="6"
+                                        label-cols-md="4"
+                                        label-cols-lg="3"
+                                        label-align-sm="right"
+                                        label-size="sm"
+                                        label-for="perPageSelect"
+                                        class="mb-0"
+                                        >
+                                        <b-form-select
+                                            v-model="perPage"
+                                            id="perPageSelect"
+                                            size="sm"
+                                            :options="pageOptions"
+                                        ></b-form-select>
+                                        </b-form-group>
+                                    </b-col>
+                                    <b-col sm="4" md="4"></b-col>
+                                    <b-col sm="4" md="4" class="my-1">
+                                        <b-pagination
+                                        v-model="currentPage"
+                                        :total-rows="totalRows"
+                                        :per-page="perPage"
+                                        align="fill"
+                                        size="sm"
+                                        class="my-0"
+                                        ></b-pagination>
+                                    </b-col>  
+                                </b-row>
                             </div>
-                        </template>
-
-                        <template v-slot:cell(actions)="row">
-                            <b-button size="sm" @click="remove(row)" class="mr-1">
-                                <i class="fa fa-trash"></i>
-                            </b-button>
-                         
-                        </template>
-
-                     <!--    <template v-slot:cell(amount)="row">
-                            <b-form-input v-model="row.item.amount"/>
-                        </template> -->
-
-                        <template v-slot:cell(status)="row">
-                            <b-badge class="mr-1" :variant="statusColors[row.value.trim()]">{{ row.value }}</b-badge>
-                        </template>
-
-                        
-                    </b-table>
-
+                        </b-tab>
+                        <b-tab title="Other information">
+                            <b-row class="my-3">
+                                <b-col sm="3">
+                                    <label>Attachment</label>
+                                </b-col>
+                                <b-col sm="9">
+                                    <input type="file"  v-if="uploadReady"  id="file" ref="file" v-on:change="handleFileUpload()"/>
+                                    <b-form-text>Allowable max file size is 5mb. PNG, JPEG and PDF are the only acceptable file formats.</b-form-text>
+                                </b-col>
+                            </b-row>
+                        </b-tab>
+                    </b-tabs>
                 </div>
             </template>
 
             <template v-slot:foot>
-                <b-row>
-                    <b-col sm="4" md="4" class="my-1">
-                        <b-form-group
-                        label="Per page"
-                        label-cols-sm="6"
-                        label-cols-md="4"
-                        label-cols-lg="3"
-                        label-align-sm="right"
-                        label-size="sm"
-                        label-for="perPageSelect"
-                        class="mb-0"
-                        >
-                        <b-form-select
-                            v-model="perPage"
-                            id="perPageSelect"
-                            size="sm"
-                            :options="pageOptions"
-                        ></b-form-select>
-                        </b-form-group>
-                    </b-col>
-                    <b-col sm="4" md="4"></b-col>
-                    <b-col sm="4" md="4" class="my-1">
-                        <b-pagination
-                        v-model="currentPage"
-                        :total-rows="totalRows"
-                        :per-page="perPage"
-                        align="fill"
-                        size="sm"
-                        class="my-0"
-                        ></b-pagination>
-                    </b-col>  
-                </b-row>
+                
             </template>
         </KTPortlet>
     </div>
@@ -225,6 +243,7 @@ import axios from 'axios';
 import badge from '@/common/config/status.config.json';
 import axiosRetry from 'axios-retry';
 import jwtService from '@/common/jwt.service.js';
+import objectToFormData from 'object-to-formdata';
 export default {
     name: "claimrequest",
     mounted() {
@@ -241,6 +260,7 @@ export default {
             dealers : [],
             coupon_types: [],
             searchFlag : false,
+            uploadReady: true,
             form : {
                 startDate : '',
                 endDate : '',
@@ -337,7 +357,8 @@ export default {
                     id : 'CV',
                     text : 'CV'
                 }
-            ]
+            ],
+            file : null,
            
         }
     },
@@ -358,7 +379,9 @@ export default {
         }
     },
     methods: {
-      
+        handleFileUpload(){
+            this.file = this.$refs.file.files[0];
+        },
         onFiltered(filteredItems) {
             // Trigger pagination to update the number of buttons/pages due to filtering
             this.totalRows = filteredItems.length
@@ -458,10 +481,24 @@ export default {
                 self.$Progress.fail();
             });
         },
+        validateFileType(){
+            if(this.file != null){
+                if(this.file.type != "application/pdf" && this.file.type != "image/jpeg" && this.file.type != "image/png"){
+                return true;
+                }
+            }
+            return false;
+        },
+        
         submit(){
 
             var self = this;
-
+            
+             if(this.validateFileType()){
+                this.makeToast('danger','PDF, JPEG and PNG are the only allowed file types.','System message');
+                return true;
+            }
+            
             const swalWithBootstrapButtons = this.$swal.mixin({
                 customClass: {
                     confirmButton: 'btn btn-success',
@@ -480,14 +517,30 @@ export default {
             }).then((result) => {
                 if (result.value) {
 
+                    let formData = new FormData();
+                    formData.append('attachment', this.file);
+                    formData.append('dealer_id', this.form.dealer);
+                    formData.append('vouchers', JSON.stringify(this.items));
+                    formData.append('user', this.user);
+                    formData.append('coupon_type', this.form.couponType);
+                    formData.append('vehicle_type', this.form.vehicleType);
+
                     self.formBusy = true;
-                    axios.post( '/api/claim-request/submit', {
+                    axios.post( '/api/claim-request/submit', 
+                        formData,
+                        {
+                            headers: {
+                                'Content-Type': 'multipart/form-data',
+                            }
+                        }
+                    /* {
                         user        : this.user,
                         vouchers    : this.items,
                         dealer_id   : this.form.dealer,
                         coupon_type : this.form.couponType,
                         vehicle_type: this.form.vehicleType
-                    }).then(res => {
+                    } */
+                    ).then(res => {
                         
                         if(res.data.error){
                             self.invalidVoucherCodes = res.data.invalidVoucherCodes;

@@ -12,13 +12,15 @@ use App\Models\SerialNumber;
 use App\Models\Approver;
 use App\Models\Approval;
 use App\Services\ApprovalService;
+use Illuminate\Support\Facades\Storage;
+use File;
 
 class ClaimRequestService {
 
 
     public function savePayment($request){
-        $user         = $request->user;
-        $vouchers     = $request->vouchers;
+        $user         = auth()->user();
+        $vouchers     = json_decode($request->vouchers);
         $dealer_id    = $request->dealer_id;
         $coupon_type  = $request->coupon_type;
         $vehicle_type = $request->vehicle_type;
@@ -27,16 +29,37 @@ class ClaimRequestService {
         $claimHeader = new ClaimHeader;
         $claimLine   = new ClaimLine;
 
+        $filename         = "";
+        $attachment_path  = "";
+        $origFilename     = "";
+        $symlink_dir      = "";
+        $attachment       = $request->attachment;
+
         $voucherCodes = collect($vouchers)->pluck('voucher_code')->toArray();
         
+       
+
         $invalidVoucherCodes = $voucher->getInvalidVouchers($voucherCodes);
         $claimedVoucherCodes = $claimLine->getClaimedVouchers($voucherCodes);
         
         $csNumbers = [];
+
+      
         foreach($vouchers as $row){
-            if($row['cs_number'] != ""){
-                array_push($csNumbers, $row['cs_number']);
+            if($row->cs_number != ""){
+                array_push($csNumbers, $row->cs_number);
             }
+        }
+
+   
+        if(!empty($_FILES)){
+            
+            $filename = Carbon::now()->timestamp . '.' . $attachment->getClientOriginalExtension();
+            $origFilename = $attachment->getClientOriginalName();
+            $symlink_dir = 'public/storage/uploads/';
+            $attachment_path = Storage::putFileAs(
+                'public/uploads', $attachment, $filename
+            );
         }
 
         
@@ -60,14 +83,14 @@ class ClaimRequestService {
 
          /* Validate voucher codes per amount and cs number validity */
         $errors = [];
-        
+       
         foreach($vouchers as $row){
             // voucher details
-            $voucherDetails = $voucher->getByCode($row['voucher_code']);
+            $voucherDetails = $voucher->getByCode($row->voucher_code);
             
-            if($row['amount'] > $voucherDetails[0]->amount ){
+            if($row->amount > $voucherDetails[0]->amount ){
                 array_push($errors,[
-                    'voucher_code' => $row['voucher_code'],
+                    'voucher_code' => $row->voucher_code,
                     'message' => 'Invalid amount specified.'
                 ]);
             }
@@ -85,27 +108,32 @@ class ClaimRequestService {
         }
 
 
+       
 
         DB::beginTransaction();
         try {
-            
+         
             $claimHeaderId = $claimHeader->insertHeader([
                 'status'             => 1,
-                'created_by'         => $user['user_id'],
-                'create_user_source' => $user['user_source_id'],
+                'created_by'         => $user->user_id,
+                'create_user_source' => $user->user_source_id,
                 'creation_date'      => Carbon::now(),
                 'coupon_type'        => $coupon_type,
                 'dealer_id'          => $dealer_id,
-                'vehicle_type'       => $vehicle_type
+                'vehicle_type'       => $vehicle_type,
+                'attachment'         => $symlink_dir . $filename,
+                'filename'           => $origFilename,
             ]);
+            
+        
 
-
+                
           
             $approvalService = new ApprovalService;
             $approvers = $approvalService->getClaimApprovers(
                 $coupon_type, 
                 2,// claim request 
-                $user['user_type_id'], 
+                $user->user_type_id, 
                 $vehicle_type,
                 $claimHeaderId
             );
@@ -118,23 +146,25 @@ class ClaimRequestService {
               
                 array_push($lineParams,[
                     'claim_header_id'    => $claimHeaderId,
-                    'voucher_code'       => $row['voucher_code'],
-                    'voucher_id'         => $row['voucher_no'],
-                    'cs_number'          => $row['cs_number'],
-                    'service_invoice_no' => $row['service_invoice_number'],
-                    'service_date'       => $row['raw_service_date'],
-                    'plate_no'           => $row['plate_no'],
-                    'customer_name'      => $row['customer_name'],
-                    'amount'             => $row['amount'],
-                    'created_by'         => $user['user_id'],
-                    'create_user_source' => $user['user_source_id'],
+                    'voucher_code'       => $row->voucher_code,
+                    'voucher_id'         => $row->voucher_no,
+                    'cs_number'          => $row->cs_number,
+                    'service_invoice_no' => $row->service_invoice_number,
+                    'service_date'       => $row->raw_service_date,
+                    'plate_no'           => $row->plate_no,
+                    'customer_name'      => $row->customer_name,
+                    'amount'             => $row->amount,
+                    'created_by'         => $user->user_id,
+                    'create_user_source' => $user->user_source_id,
                     'creation_date'      => Carbon::now(),
-                    'claim_id'           => $row['id']
+                    'claim_id'           => $row->id
                 ]);
             }
+
+       
           //  return $lineParams;
             $claimLine->batchInsert($lineParams);
-           
+            
             DB::commit();
         
             return [
@@ -348,20 +378,46 @@ class ClaimRequestService {
 
         
     }
-   /*  public function cancelPayment($request){
-        $paymentHeader = new PaymentHeader();
-        $paymentHeader->updateStatus([
+     public function cancel($request){
+
+        $user = auth()->user();
+        DB::beginTransaction();
+        try{
+
+            $claimHeader = ClaimHeader::findOrFail($request->claimHeader['id']);
+            $claimHeader->status = 4;
+            $claimHeader->updated_by = $user->user_id;
+            $claimHeader->update_user_source = $user->user_source_id;
+            $claimHeader->save();
+            
+            DB::table('ipc.ipc_vpc_claim_lines')
+                ->where('claim_header_id', $request->claimHeader['id'])
+                ->delete();
+
+            DB::commit();
+
+            return [
+                'message' => 'Claim request has been cancelled.',
+                'status' => 'cancelled'
+            ];
+
+        }catch(Exception $e){
+            DB::rollBack();
+        }
+        
+        
+       /*  $claimHeader->updateStatus([
             'status'             => 4,
-            'updated_by'         => $request->userId,
-            'update_user_source' => $request->userSource,
-            'payment_header_id'    => $request->paymentHeaderId
-        ]);
+            'updated_by'         => $user->user_id,
+            'update_user_source' => $user->user_source_id,
+            'payment_header_id'    => $claimHeader->paymentHeaderId
+        ]); */
 
         return [
             'message' => 'Payment request has been cancelled.'
         ];
     }
-
+    /*
     public function updateStatus($request){
         $paymentHeader = new PaymentHeader();
         $paymentHeader->updateStatus([

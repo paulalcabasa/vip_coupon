@@ -24,8 +24,8 @@ class ClaimRequestController extends Controller
         return response()->json($claimRequestService->getHeader($request),200);
     }
 
-    public function cancelPayment(Request $request, ClaimRequestService $claimRequestService){
-        return response()->json($claimRequestService->cancelPayment($request),200);
+    public function cancel(Request $request, ClaimRequestService $claimRequestService){
+        return response()->json($claimRequestService->cancel($request),200);
     }
 
     public function updateStatus(Request $request, ClaimRequestService $claimRequestService){
@@ -57,4 +57,6 @@ class ClaimRequestController extends Controller
     
         return view($result['view'], $result['data']);
     }
+
+
 }
