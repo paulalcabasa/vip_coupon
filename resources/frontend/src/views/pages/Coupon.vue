@@ -174,9 +174,10 @@
                           <tr v-for="(row,index) in denominations" :key="index">
                               
                               <td>
-                                  <b-form-input
+                                  <b-form-select
+                                    :options="denominationOptions"
                                       v-model="row.amount"
-                                  ></b-form-input>
+                                  ></b-form-select>
                               </td>
                               <td>
                                   <b-form-input
@@ -300,16 +301,10 @@ export default {
           state : false
         },
         vehicle_type : '',
+        denominationOptions : [100, 500, 1000, 5000, 10000],
         defaultDenominations : [
-       
           {
               amount : 500,
-              quantity : 0,
-              csNumbers : [],
-              csNumber : ''
-          },
-          {
-              amount : 1000,
               quantity : 0,
               csNumbers : [],
               csNumber : ''
@@ -459,7 +454,7 @@ export default {
     },
     addDenomination(){
       this.denominations.push({
-        amount : 0,
+        amount : 100,
         quantity : 0,
         csNumbers : [],
         csNumber : ''

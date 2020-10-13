@@ -1,6 +1,9 @@
 <template>
     <div>
         <KTPortlet v-bind:title="'Claim Request'">
+             <template v-slot:toolbar>
+                <b-button :disabled="formBusy" v-show="claimHeader.status.trim() != 'cancelled'" size="sm" @click="cancel" variant="danger" class="ml-2">Cancel</b-button>
+            </template>
             <template v-slot:body>
                 <b-tabs content-class="mt-3">
                     <b-tab title="Details" active>
@@ -29,6 +32,18 @@
                                     <span class="display-value">
                                         <b-badge class="mr-1" :variant="statusColors[claimHeader.status.trim().toLowerCase()]">{{ claimHeader.status.toLowerCase() }}</b-badge>
                                     </span>
+                                </div>
+                            </b-col>
+                            <b-col sm="3">
+                                <div class="mb-3">
+                                    <span class="text-bold">Attachment</span>
+                                    <b-col sm="4"><b-link variant="primary" target="_blank" :href="downloadUrl()">{{ claimHeader.filename }}</b-link></b-col>
+                                </div>
+                            </b-col>
+                            <b-col sm="3">
+                                <div class="mb-3">
+                                    <span class="text-bold">Total amount</span>
+                                    <span class="kt-font-bold display-value">{{ formatPrice(claimHeader.total_amount) }}</span>
                                 </div>
                             </b-col>
                         </b-row>
@@ -75,7 +90,9 @@ export default {
                 id : '',
                 status : '',
                 created_by : '',
-                date_created : ''
+                date_created : '',
+                attachment : '',
+                filename : ''
             },
             claimLineItems : [],
             claimLineFields : [
@@ -227,7 +244,7 @@ export default {
                 
             });
         },
-        doAction(apiUrl, action, status, verb, toastState){
+        cancel(){
             var self = this;
             const swalWithBootstrapButtons = this.$swal.mixin({
                 customClass: {
@@ -238,7 +255,7 @@ export default {
             })
       
             swalWithBootstrapButtons.fire({
-                title: "Are you sure to " + action +" this claim request?",
+                title: "Are you sure to cancel this claim request?",
                 icon: 'info',
                 showCancelButton: true,
                 confirmButtonText: 'Yes',
@@ -249,18 +266,13 @@ export default {
                 if (result.value) {
                     self.$Progress.start();
                     self.formBusy = true;
-                    axios.post(apiUrl,{
-                        claimHeaderId: self.claimHeaderId,
-                        userId         : self.$store.getters.currentUser.user_id,
-                        userSource     : self.$store.getters.currentUser.user_source_id,
-                        status         : status,
-                        statusVerb     : verb
+                    axios.post('api/claim-request/cancel',{
+                        claimHeader : self.claimHeader
                     }).then(res => {
-                        self.makeToast(toastState,res.data.message,'System message');
+                        self.makeToast('error',res.data.message,'System message');
                         self.claimHeader.status = res.data.status;
                         self.$Progress.finish();
                         self.formBusy = false;
-
                     }).catch(err => {
                         self.makeToast('error',err,'System message');
                         self.$Progress.fail();
@@ -269,15 +281,14 @@ export default {
                 }
             });
         },
-        cancel(){
-            this.doAction('api/claim/update/status', 'cancel', 4, 'cancelled', 'danger');
+       
+        downloadUrl(){
+            return process.env.VUE_APP_API_URL + '/' + this.claimHeader.attachment;
         },
-        approve(){
-            this.doAction('api/claim/update/status', 'approve', 2, 'approved', 'success');
+        formatPrice(value){
+            return (parseFloat(value).toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,'));
         },
-        reject(){
-            this.doAction('api/claim/update/status', 'reject', 6, 'rejected', 'danger');
-        }
+        
     }
 };
 </script>

@@ -134,6 +134,7 @@ Route::group(['middleware' => 'jwt'], function () {
     Route::post('coupon/resend', 'CouponController@resend');
 
     Route::get('claims/get', 'ClaimController@get');
+    Route::post('claim-request/cancel', 'ClaimRequestController@cancel');
     
     
     // Reports

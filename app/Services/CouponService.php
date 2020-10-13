@@ -269,7 +269,8 @@ class CouponService {
                     $module_id, 
                     $user->user_type_id, 
                     $vehicle_type,
-                    $couponId
+                    $couponId,
+                    $dealer
                 );
                 
                 $approval = new Approval;
@@ -312,7 +313,8 @@ class CouponService {
                 $module_id, 
                 $user->user_type_id, 
                 $vehicle_type,
-                $couponId
+                $couponId,
+                $dealer
             );
             
             $approval = new Approval;
