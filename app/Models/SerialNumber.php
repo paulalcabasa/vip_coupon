@@ -13,7 +13,7 @@ class SerialNumber extends Model
     public $timestamps = false;
 
     public function getInvalidCsNumbers($csNumbers){
-        $isExist = DB::connection('oracle')->table('mtl_serial_numbers')
+        $isExist = DB::connection('oracle')->table('IPC_VPC_SERIAL_MASTER')
                     ->whereIn('serial_number', $csNumbers)
                     ->select('serial_number')
                     ->get()
