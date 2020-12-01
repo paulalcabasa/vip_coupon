@@ -30,8 +30,8 @@ class Email extends Model
                     INNER JOIN ipc.ipc_vpc_modules mdl
                         ON mdl.id = apl.module_id
                 WHERE 1 = 1
-                   -- AND apl.mail_sent_flag = 'N'
-                    AND cp.id = 48
+                    AND apl.mail_sent_flag = 'N'
+                
                    ";
         
         $query = DB::select($sql);
