@@ -165,7 +165,7 @@ class Approval extends Model
                         AND usr.user_source_id = apr.approver_source_id
                 WHERE apl.module_reference_id = :module_reference_id
                         and apl.module_id = :module_id
-                    AND apl.hierarchy = :hierarchy";
+                    AND apr.hierarchy = :hierarchy";
         $query = DB::select($sql,$params);
         return $query;
     }

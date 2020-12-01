@@ -8,12 +8,38 @@ FROM ipc.ipc_vpc_approvers approver
     left join ipc_vpc_users_v users
         on users.user_id = approver.approver_user_id
         and users.user_source_id = approver.approver_source_id
-where approver.coupon_type_id = 1
+where approver.coupon_type_id = 2
     and approver.module_id = 2
-    and approver.user_type_id = 51
-    and approver.vehicle_type = 'CV'
+    and approver.user_type_id = 47
+  --  and approver.vehicle_type = 'CV'
 order by approver.hierarchy;
+1483 - 1
+select *
+from ipc_vpc_users_v;
+
+select *
+from ipc_dms.ipc_vehicle_models_v
+where sales_model = 'D-MAX RZ4E 4X2 LS MT';
+select *
+from ipc.ipc_jo_job_types;
+
+select attribute2 
+from mtl_serial_numbers
+where attribute9 = 'D-MAX RZ4E 4X2 LS MT';
+
+
+SELECT *
+FROM MTL_SERIAL_NUMBERS msn
+    LEFT JOIN mtl_seria;
+
+select *
+from ipc_dms.fs_fpc_validity_request;
+
+select * from ipc.ipc_vpc_modules;
+where last_name = 'RAMOS';
  
+select *
+from ipc.ipc_vpc_coupon_types;
 SELECT GET_CUST_BUSINESS_STYLE(15107)
 FROM DUAL;
 

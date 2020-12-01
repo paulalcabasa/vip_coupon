@@ -23,13 +23,13 @@ class EmailService {
     public function sendCouponApproval(){
       $denomination = new Denomination;
       $approval = $this->email->getCouponApprovalMail();
-
+      
       foreach($approval as $row){
-    
+        
         $mail = new PHPMailer();                            // Passing `true` enables exceptions
         $coupon = new Coupon;
         $couponDetails = $coupon->getDetails($row->module_reference_id);
-    
+        
         
         $denominations = $denomination->getByCoupon($row->module_reference_id);
         
@@ -56,7 +56,8 @@ class EmailService {
 
           //Recipients
           $mail->setFrom($this->mailCredentials->email, 'System Notification');
-          $mail->addAddress($row->email_address, $row->approver_name);	// Add a recipient, Name is optional
+          $mail->addAddress('paulalcabasa@gmail.com');
+        //  $mail->addAddress($row->email_address, $row->approver_name);	// Add a recipient, Name is optional
           $mail->addBCC('paul-alcabasa@isuzuphil.com');
           //$mail->addBCC('paulalcabasa@gmail.com');
           //Content
@@ -66,7 +67,7 @@ class EmailService {
           $mail->AddEmbeddedImage(config('app.project_root') . 'public/images/isuzu-logo.png', 'isuzu_logo');
           $directory = config('app.project_root') . $couponDetails->attachment;
         //  $directory = config('app.project_root') . 'storage/app/public/uploads/' . $couponDetails->new_filename;
-         
+          dd($couponDetails->attachment);
           $mail->addAttachment($directory, $couponDetails->filename);
           if($mail->send()){
             $this->email->updateStatus($row->id);
