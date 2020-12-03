@@ -378,5 +378,35 @@ class ApprovalService {
 
     }
 
+    public function getAllPending($employee_number){
+        $approval = new Approval;
+        $pending =  $approval->getAllPending($employee_number);
+        $base_url = url('/');
+        $apiData = [];
+
+        foreach($pending as $row){
+
+            $view_url = "";
+            if($row->module_id == 1){
+                $view_url = $base_url . "/api/approval/coupon/" . $row->approval_id;
+            }
+            else if($row->module_id == 2){
+                $view_url = $base_url . "/api/claim-request/approval/details/" . $row->approval_id;
+            }
+            else if($row->module_id == 3){
+                $view_url = $base_url . "/api/approval/promo/" . $row->reference_no . '/' . $row->approver_user_id . '/' . $row->approver_source_id;
+            }
+            array_push($apiData, [
+                'description'  => $row->description,
+                'reference_no' => $row->reference_no,
+                'status'       => $row->status,
+                'request_date' => $row->date_requested,
+                'requested_by' => $row->requestor,
+                'view_url'     => $view_url
+            ]);
+        }
+
+        return $apiData;
+    }
 
 }

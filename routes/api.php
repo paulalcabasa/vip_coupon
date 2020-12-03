@@ -40,6 +40,13 @@ Route::get('claim-request/reject/{approval_id}', 'ClaimRequestController@rejectF
 // Instant approve
 Route::get('instant-process/{coupon_id}', 'InstantController@instantProcess');
 
+// OneSign pending
+Route::get('approval/pending/{employee_number}', 'ApprovalController@getAllPending');
+
+Route::get('approval/coupon/{approval_id}', 'ApprovalController@viewCoupon');
+Route::get('approval/claim-request/{approval_id}', 'ApprovalController@viewClaimRequest');
+Route::get('approval/promo/{promo_id}/{approver_user_id}/{approver_source_id}', 'ApprovalController@viewPromo');
+
  // Download Route
 Route::get('download/voucher-template', function(){
  
