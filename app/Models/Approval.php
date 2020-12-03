@@ -298,8 +298,7 @@ class Approval extends Model
                         AND approver_user.user_source_id = approver.approver_source_id
                 
                 WHERE 1 = 1
-                
-                --   AND promo.status = 1
+                        AND promo.status = 1
                 )
                 WHERE approver_employee_number = :approver_employee_number";
         $query = DB::select($sql, ['approver_employee_number' => $employee_number]);
