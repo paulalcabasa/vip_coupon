@@ -79,6 +79,7 @@ class Promo extends Model
         $sql = "SELECT  prm.id,
                         prm.promo_name,
                         prm.terms,
+                        ct.name coupon_type,
                         prm.coupon_type_id,
                         to_char(prm.coupon_expiry_date,'YYYY-MM-DD') coupon_expiry_date_orig,
                         to_char(prm.effective_date_from,'YYYY-MM-DD') effective_date_from_orig,
@@ -88,6 +89,8 @@ class Promo extends Model
                         trim(to_char(prm.effective_date_to, 'Month')) || ' ' || to_char(prm.effective_date_to, 'D, YYYY') effective_date_to,
                         CASE WHEN (prm.effective_date_from >= sysdate AND prm.effective_date_to <= sysdate) THEN 'active' ELSE 'inactive' END status
                 FROM ipc.ipc_vpc_promos prm
+                    LEFT JOIN ipc.ipc_vpc_coupon_types ct
+                        ON ct.id = prm.coupon_type_id
                 WHERE prm.id = :promo_id";
         $query = DB::select($sql,['promo_id' => $promo_id]);
         
