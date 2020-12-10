@@ -222,12 +222,12 @@ export default {
                 
                 let user = JSON.parse(jwtService.getUser());
 
-                //console.log(user);
                 axios.get('api/coupon/get', {
                     params : {
                         userId : user.user_id,
                         sourceId : user.user_source_id,
-                        userType : user.user_type_id
+                        userType : user.user_type_id,
+                        salesGroup : user.sales_group_name
                     }
                 }).then( (res) => {
                     self.items = res.data;

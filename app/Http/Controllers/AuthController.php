@@ -37,7 +37,8 @@ class AuthController extends Controller
             'user_type_id',
             'user_type_name',
             'user_source_id',
-            'dealer_id')
+            'dealer_id',
+            'sales_group_name')
         ->first();
         
         if(empty($user)){

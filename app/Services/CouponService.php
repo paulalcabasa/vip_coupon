@@ -154,8 +154,14 @@ class CouponService {
         if($params['userType'] == 49 || $params['userType'] == 44){ // administrator
             $coupons = $coupon->getCoupons();
         }
+        else if($params['userType'] == 45) { // sales
+            $coupons = $coupon->getBySalesGroup([
+                'vehicle_type' => $params['salesGroup']
+            ]);
+        }
         else {
             unset($params['userType']);
+            unset($params['salesGroup']);
             $coupons = $coupon->getByUser($params);
         }
     
