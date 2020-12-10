@@ -28,7 +28,8 @@ class CouponController extends Controller
         $params = [
             'userId' => $request->userId,
             'sourceId' => $request->sourceId,
-            'userType' => $request->userType
+            'userType' => $request->userType,
+            'salesGroup' => $request->salesGroup
         ];
         return response()->json($this->couponService->getCoupons($params),200);
     }

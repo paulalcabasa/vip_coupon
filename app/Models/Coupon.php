@@ -292,6 +292,30 @@ class Coupon extends Model
                 WHERE id = :coupon_id";
         DB::update($sql, ['coupon_id' => $couponId]);
     }
+
+    public function getBySalesGroup($params){
+        $sql = "SELECT cp.id coupon_id,
+                    dlr.account_name,
+                    usr.first_name || ' ' || usr.last_name created_by,
+                    TRIM(TO_CHAR(cp.creation_date, 'Month')) || ' ' ||  TO_CHAR(cp.creation_date,'DD, YYYY') date_created,
+                    lower(st.status) status,
+                    cp.dealer_id,
+                    ct.name coupon_type
+                FROM ipc.ipc_vpc_coupons cp
+                    LEFT JOIN ipc_portal.dealers dlr
+                        ON cp.dealer_id = dlr.id
+                    LEFT JOIN apps.ipc_vpc_users_v usr
+                        ON usr.user_id = cp.created_by
+                        AND usr.user_source_id = cp.create_user_source
+                    LEFT JOIN ipc.ipc_vpc_status st
+                        ON st.id = cp.status
+                    LEFT JOIN ipc.ipc_vpc_coupon_types ct
+                        ON ct.id = cp.coupon_type_id
+                WHERE 1 = 1
+                    AND cp.vehicle_type = :vehicle_type";
+        $query = DB::select($sql,$params);
+        return $query;
+    }
    
 
     
