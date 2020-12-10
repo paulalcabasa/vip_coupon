@@ -161,6 +161,7 @@ class CouponService {
         }
         else {
             unset($params['userType']);
+            unset($params['salesGroup']);
             $coupons = $coupon->getByUser($params);
         }
     
