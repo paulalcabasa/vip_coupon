@@ -26,7 +26,8 @@ class Report extends Model
                         customer_claim.amount claimed_amount,
                         payment.amount paid_amount,
                         ct.name coupon_type,
-                        cp.vehicle_type
+                        cp.vehicle_type,
+                        payment.id claim_request_id
                 FROM ipc.ipc_vpc_vouchers vch
                     LEFT JOIN ipc.ipc_vpc_coupons cp
                         ON cp.id = vch.coupon_id

@@ -250,6 +250,7 @@ export default {
                 'Requested by'         : 'coupon_requested_by',
                 'Coupon Type'          : 'coupon_type',
                 'Vehicle Type'         : 'vehicle_type',
+                'Claim Request No'     : 'claim_request_id'
             }, 
             tableFields: [],  
 
