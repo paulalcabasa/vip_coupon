@@ -20,7 +20,7 @@ class PdfController extends Controller
     public function printCoupon(Request $request){
 
         ini_set('max_execution_time',36000); //300 seconds = 5 minutes
-
+        ini_set('memory_limit','2048M');
         $voucher = new Voucher;
         $coupon = new Coupon;
         $couponType = new CouponType;
