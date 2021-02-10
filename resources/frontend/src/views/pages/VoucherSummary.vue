@@ -63,7 +63,7 @@
 
                         <b-form-group  label="Coupon Type" >
                             <b-form-select 
-                                disabled
+                                v-show="user.user_type_id == 47"
                                 v-model="form.couponType" 
                                 :options="coupon_types"
                                 value-field="id"
@@ -203,7 +203,6 @@ export default {
         this.loadDropdowns();
         this.user = JSON.parse(jwtService.getUser());
         this.form.dealer = this.user.dealer_id;
-    
     },
     data(){
         return {
