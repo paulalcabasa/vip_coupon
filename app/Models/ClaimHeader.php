@@ -182,6 +182,79 @@ class ClaimHeader extends Model
         $query = DB::select($sql);
         return $query;
     }
+
+    public function getBySales($params){
+
+        $sql = "SELECT ph.id,
+                    st.status,
+                    ph.creation_date,
+                    usr.first_name || ' ' || usr.last_name created_by,
+                    TRIM(TO_CHAR(ph.creation_date, 'Month')) || ' ' ||  TO_CHAR(ph.creation_date,'DD, YYYY') date_created,
+                    lower(st.status) status,
+                    dlr.account_name
+                FROM ipc.ipc_vpc_claim_headers ph
+                LEFT JOIN ipc.ipc_vpc_status st
+                    ON ph.status = st.id
+                LEFT JOIN apps.ipc_vpc_users_v usr
+                    ON usr.user_id = ph.created_by
+                    AND usr.user_source_id = ph.create_user_source
+                LEFT JOIN ipc_portal.dealers dlr
+                    ON dlr.id = ph.dealer_id
+                WHERE 1 = 1
+                    AND ph.vehicle_type = :vehicle_type
+                    AND ph.coupon_type = 1";
+        
+ 
+        $query = DB::select($sql, $params);
+        return $query;
+    }
+
+    public function getByService(){
+
+        $sql = "SELECT ph.id,
+                    st.status,
+                    ph.creation_date,
+                    usr.first_name || ' ' || usr.last_name created_by,
+                    TRIM(TO_CHAR(ph.creation_date, 'Month')) || ' ' ||  TO_CHAR(ph.creation_date,'DD, YYYY') date_created,
+                    lower(st.status) status,
+                    dlr.account_name
+                FROM ipc.ipc_vpc_claim_headers ph
+                LEFT JOIN ipc.ipc_vpc_status st
+                    ON ph.status = st.id
+                LEFT JOIN apps.ipc_vpc_users_v usr
+                    ON usr.user_id = ph.created_by
+                    AND usr.user_source_id = ph.create_user_source
+                LEFT JOIN ipc_portal.dealers dlr
+                    ON dlr.id = ph.dealer_id
+                WHERE 1 = 1
+                    AND ph.coupon_type = 2";
+        
+ 
+        $query = DB::select($sql);
+        return $query;
+    }
+
+    public function getByAdmin(){
+
+        $sql = "SELECT ph.id,
+                    st.status,
+                    ph.creation_date,
+                    usr.first_name || ' ' || usr.last_name created_by,
+                    TRIM(TO_CHAR(ph.creation_date, 'Month')) || ' ' ||  TO_CHAR(ph.creation_date,'DD, YYYY') date_created,
+                    lower(st.status) status,
+                    dlr.account_name
+                FROM ipc.ipc_vpc_claim_headers ph
+                LEFT JOIN ipc.ipc_vpc_status st
+                    ON ph.status = st.id
+                LEFT JOIN apps.ipc_vpc_users_v usr
+                    ON usr.user_id = ph.created_by
+                    AND usr.user_source_id = ph.create_user_source
+                LEFT JOIN ipc_portal.dealers dlr
+                    ON dlr.id = ph.dealer_id
+                WHERE 1 = 1";
+        $query = DB::select($sql);
+        return $query;
+    }
     
 
 

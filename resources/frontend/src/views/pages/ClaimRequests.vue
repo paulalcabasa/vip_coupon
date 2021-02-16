@@ -124,6 +124,11 @@ export default {
                     label: 'Actions' 
                 },
                 { 
+                    key: 'account_name', 
+                    label: 'Dealer', 
+                    sortable: true, 
+                },
+                { 
                     key: 'id', 
                     label: 'Claim Request No.', 
                     sortable: true, 
@@ -216,6 +221,7 @@ export default {
                         userId : user.user_id,
                         sourceId : user.user_source_id,
                         userType : user.user_type_id,
+                        vehicleType : user.sales_group_name,
                         status : 'all'
                     }
                 }).then( (res) => {

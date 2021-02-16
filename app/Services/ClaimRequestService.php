@@ -191,14 +191,24 @@ class ClaimRequestService {
             'userId'   => $request->userId,
             'sourceId' => $request->sourceId,
         ];
-        return $claimHeader->getByUser($params);
-        /* if($request->userType == 49 || $request->userType == 44){ // administrator
-            return $paymentHeader->getHeaders($status);
+
+        $userType = $request->userType;
+    
+        if($userType == 49 || $userType == 44){ // administrator
+           return $claimHeader->getByAdmin();
+        }
+        else if($userType == 45) { // sales
+            return $claimHeader->getBySales([
+                'vehicle_type' => $request->vehicleType
+            ]);
+        }
+        else if($userType == 47){
+            return $claimHeader->getByService();
         }
         else {
-           
-            
-        } */
+            return $claimHeader->getByUser($params);
+        }
+
     }
 
     public function getLines($request){
