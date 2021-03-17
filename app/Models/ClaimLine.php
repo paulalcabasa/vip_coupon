@@ -42,7 +42,8 @@ class ClaimLine extends Model
                         pl.service_invoice_no,
                         to_char(pl.service_date,'mm/dd/yyyy') service_date,
                         pl.dealer_code,
-                        pl.customer_name
+                        pl.customer_name,
+                        pl.amount claimed_amount
                 FROM ipc.ipc_vpc_claim_lines pl
                     LEFT JOIN ipc.ipc_vpc_vouchers vch
                         ON pl.voucher_code = vch.voucher_code
