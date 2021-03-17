@@ -3,6 +3,7 @@
         <KTPortlet v-bind:title="'Claim Request'">
              <template v-slot:toolbar>
                 <b-button :disabled="formBusy" v-show="claimHeader.status.trim() != 'cancelled'" size="sm" @click="cancel" variant="danger" class="ml-2">Cancel</b-button>
+                <b-button :disabled="formBusy" size="sm" @click="print" variant="success" class="ml-2">Print</b-button>
             </template>
             <template v-slot:body>
                 <b-tabs content-class="mt-3">
@@ -281,13 +282,15 @@ export default {
                 }
             });
         },
-       
         downloadUrl(){
             return process.env.VUE_APP_API_URL + '/' + this.claimHeader.attachment;
         },
         formatPrice(value){
             return (parseFloat(value).toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,'));
         },
+        print(){
+            window.open(process.env.VUE_APP_API_URL + '/api/print-claim-request/' + this.claimHeaderId );
+        }
         
     }
 };

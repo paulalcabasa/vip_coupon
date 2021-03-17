@@ -12,7 +12,8 @@ use App\Models\Timeline;
 use App\Models\CouponType;
 use Carbon\Carbon;
 use App\Models\Promo;
-
+use App\Models\ClaimHeader;
+use App\Models\ClaimLine;
 
 class PdfController extends Controller
 {   
@@ -102,6 +103,23 @@ class PdfController extends Controller
 
         
         $pdf = PDF::loadView($type->file_template,$data);
+        return $pdf->setPaper('a4','portrait')->stream(); 
+    }
+
+    public function printClaimRequest(Request $request){
+        $claimHeader = new ClaimHeader();
+        $header =  $claimHeader->get($request->claim_request_id);
+        
+        $claimLine = new ClaimLine();
+        $lines =  $claimLine->get($request->claim_request_id);
+
+        $data = [
+            'header' => $header,
+            'lines' => $lines
+        ];
+
+        
+        $pdf = PDF::loadView('print-claim-request',$data);
         return $pdf->setPaper('a4','portrait')->stream(); 
     }
 
