@@ -55,10 +55,10 @@ return [
             'username'       => env('DB_ORA_USERNAME', ''),
             'password'       => env('DB_ORA_PASSWORD', ''),
             'charset'        => env('DB_CHARSET', 'AL32UTF8'),
-            'prefix'         => env('DB_PREFIX', ''),
-            'prefix_schema'  => env('DB_SCHEMA_PREFIX', ''),
-            'edition'        => env('DB_EDITION', 'ora$base'),
-            'server_version' => env('DB_SERVER_VERSION', '11g'),
+            // 'prefix'         => env('DB_PREFIX', ''),
+            // 'prefix_schema'  => env('DB_SCHEMA_PREFIX', ''),
+            // 'edition'        => env('DB_EDITION', 'ora$base'),
+            // 'server_version' => env('DB_SERVER_VERSION', '12c'),
         ],
 
         'ipc_central' => [
