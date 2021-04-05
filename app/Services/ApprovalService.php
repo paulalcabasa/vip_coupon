@@ -89,8 +89,7 @@ class ApprovalService {
             ]);
             
 
-            // update next approver is already the last, update the coupon to approved
-        
+            // update next approver is already the last, update the coupon to approved        
             if($approval_data->hierarchy == $max_hierarchy->hierarchy){
                 
                 // set coupon status as approved
@@ -99,6 +98,7 @@ class ApprovalService {
                     'status' => 2,
                     'updateDate' => Carbon::now()
                 ]);
+                
                 // add to timeline and email to dealer and approvers
                 $timeline = new Timeline;
 
