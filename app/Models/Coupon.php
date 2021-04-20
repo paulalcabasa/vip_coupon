@@ -227,7 +227,7 @@ class Coupon extends Model
                 FROM ipc.ipc_vpc_coupons cp
                     INNER JOIN ipc_portal.dealers dlr
                         ON dlr.id = cp.dealer_id
-                    INNER JOIN apps.ipc_vpc_users_v usr
+                    LEFT JOIN apps.ipc_vpc_users_v usr
                         ON usr.user_id = cp.created_by
                         AND usr.user_source_id = cp.create_user_source
                     INNER JOIN ipc.ipc_vpc_status st
